@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Minecraft Mouse Follow</title>
+	<style>
+		html, body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background: transparent;
+		}
+
+		#player-wrap {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 276px;
+			height: 368px;
+			pointer-events: none;
+		}
+
+		#skin-canvas {
+			width: 276px;
+			height: 368px;
+			display: block;
+			background: transparent;
+		}
+	</style>
+</head>
+<body>
+	<div id="player-wrap">
+		<canvas
+			id="skin-canvas"
+			class="skin-3d"
+			width="552"
+			height="736"
+			data-id="3425a5630d212e98"
+			data-model="slim"
+			data-flip="false"
+			data-cape="62db1a06cba0d59a">
+		</canvas>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
+
+	<script>
+		const TAU = Math.PI * 2
+		const EPS = 1e-3
+
+		const SKIN = [
+			[
+				[[[16,8,8,8],[0,8,8,8],[8,0,8,8],[16,7,8,-8],[8,8,8,8],[24,8,8,8]],[[48,8,8,8],[32,8,8,8],[40,0,8,8],[48,7,8,-8],[40,8,8,8],[56,8,8,8]]],
+					[[[28,20,4,12],[16,20,4,12],[20,16,8,4],[28,19,8,-4],[20,20,8,12],[32,20,8,12]]],
+					[[[[48,20,4,12],[40,20,4,12],[44,16,4,4],[48,19,4,-4],[44,20,4,12],[52,20,4,12]],[[47,20,4,12],[40,20,4,12],[44,16,3,4],[47,19,3,-4],[44,20,3,12],[51,20,3,12]]]],
+					[[[[43,20,-4,12],[51,20,-4,12],[47,16,-4,4],[51,19,-4,-4],[47,20,-4,12],[55,20,-4,12]],[[43,20,-4,12],[50,20,-4,12],[46,16,-3,4],[49,19,-3,-4],[46,20,-3,12],[53,20,-3,12]]]],
+					[[[8,20,4,12],[0,20,4,12],[4,16,4,4],[8,19,4,-4],[4,20,4,12],[12,20,4,12]]],
+					[[[3,20,-4,12],[11,20,-4,12],[7,16,-4,4],[11,19,-4,-4],[7,20,-4,12],[15,20,-4,12]]]
+				],
+				[
+					[[[16,8,8,8],[0,8,8,8],[8,0,8,8],[16,7,8,-8],[8,8,8,8],[24,8,8,8]],[[48,8,8,8],[32,8,8,8],[40,0,8,8],[48,7,8,-8],[40,8,8,8],[56,8,8,8]]],
+					[[[28,20,4,12],[16,20,4,12],[20,16,8,4],[28,19,8,-4],[20,20,8,12],[32,20,8,12]],[[28,36,4,12],[16,36,4,12],[20,32,8,4],[28,35,8,-4],[20,36,8,12],[32,36,8,12]]],
+					[[[[48,20,4,12],[40,20,4,12],[44,16,4,4],[48,19,4,-4],[44,20,4,12],[52,20,4,12]],[[47,20,4,12],[40,20,4,12],[44,16,3,4],[47,19,3,-4],[44,20,3,12],[51,20,3,12]]],[[[48,36,4,12],[40,36,4,12],[44,32,4,4],[48,35,4,-4],[44,36,4,12],[52,36,4,12]],[[47,36,4,12],[40,36,4,12],[44,32,3,4],[47,35,3,-4],[44,36,3,12],[51,36,3,12]]]],
+					[[[[40,52,4,12],[32,52,4,12],[36,48,4,4],[40,51,4,-4],[36,52,4,12],[44,52,4,12]],[[39,52,4,12],[32,52,4,12],[36,48,3,4],[39,51,3,-4],[36,52,3,12],[43,52,3,12]]],[[[56,52,4,12],[48,52,4,12],[52,48,4,4],[56,51,4,-4],[52,52,4,12],[60,52,4,12]],[[55,52,4,12],[48,52,4,12],[52,48,3,4],[55,51,3,-4],[52,52,3,12],[59,52,3,12]]]],
+					[[[8,20,4,12],[0,20,4,12],[4,16,4,4],[8,19,4,-4],[4,20,4,12],[12,20,4,12]],[[8,36,4,12],[0,36,4,12],[4,32,4,4],[8,35,4,-4],[4,36,4,12],[12,36,4,12]]],
+					[[[24,52,4,12],[16,52,4,12],[20,48,4,4],[24,51,4,-4],[20,52,4,12],[28,52,4,12]],[[8,52,4,12],[0,52,4,12],[4,48,4,4],[8,51,4,-4],[4,52,4,12],[12,52,4,12]]]
+			]
+		]
+
+		function radians(d) {
+			return d * (TAU / 360)
+		}
+
+		function getImage(id) {
+			return id && window.namemc && window.namemc.images && window.namemc.images[id]
+		}
+
+		function toImage(png) {
+			return new Promise((resolve, reject) => {
+				if (!png) return resolve(null)
+				const image = new Image()
+				image.onload = () => resolve(image)
+				image.onerror = reject
+				image.src = `data:image/png;base64,${png}`
+			})
+		}
+
+		function toCanvas(image, x = 0, y = 0, w = image?.width, h = image?.height) {
+			if (!image) return null
+			const canvas = document.createElement('canvas')
+			canvas.width = w
+			canvas.height = h
+			canvas.getContext('2d').drawImage(image, x, y, w, h, 0, 0, w, h)
+			return canvas
+		}
+
+		function getBitmap(canvas, x = 0, y = 0, w = canvas?.width, h = canvas?.height) {
+			if (!canvas) return null
+			return canvas.getContext('2d').getImageData(x, y, w, h)
+		}
+
+		function putBitmap(canvas, bitmap, x = 0, y = 0) {
+			canvas.getContext('2d').putImageData(bitmap, x, y)
+			return canvas
+		}
+
+		function hasAlphaLayer(bitmap) {
+			for (let p = 3; p < bitmap.data.length; p += 4) {
+				if (bitmap.data[p] < 255) return true
+			}
+			return false
+		}
+
+		function makeOpaque(bitmap) {
+			if (!bitmap) return null
+			for (let p = 3; p < bitmap.data.length; p += 4) {
+				bitmap.data[p] = 255
+			}
+			return bitmap
+		}
+
+		function capeScale(height) {
+			if (height % 22 === 0) return height / 22
+			if (height % 17 === 0) return height / 17
+			if (height >= 32 && (height & (height - 1)) === 0) return height / 32
+			return Math.max(1, Math.floor(height / 22))
+		}
+
+		function colorFaces(geometry, bitmap, rectangles) {
+			if (!rectangles) return null
+
+			const faces = []
+			const materials = []
+			const materialIndexMap = []
+			let f = 0
+			let side = THREE.FrontSide
+
+			rectangles.forEach(r => {
+				const dh = 4 * Math.sign(r[2])
+				const dv = 4 * Math.sign(r[3]) * bitmap.width
+				const r1 = 4 * (r[1] * bitmap.width + r[0])
+				const r2 = 4 * (r[3] * bitmap.width) + r1
+
+				for (let p1 = r1, p2 = r1 + 4 * r[2]; p1 !== r2; p1 += dv, p2 += dv) {
+					for (let p = p1; p !== p2; p += dh, f += 2) {
+						const a = bitmap.data[p + 3]
+						if (a < 255) side = THREE.DoubleSide
+						if (a === 0) continue
+
+						let materialIndex = materialIndexMap[a]
+						if (typeof materialIndex === 'undefined') {
+							materials.push(new THREE.MeshLambertMaterial({
+								vertexColors: THREE.FaceColors,
+								opacity: a / 255,
+								transparent: a < 255
+							}))
+							materialIndex = materials.length - 1
+							materialIndexMap[a] = materialIndex
+						}
+
+						const face1 = geometry.faces[f]
+						const face2 = geometry.faces[f + 1]
+						face1.color.r = bitmap.data[p] / 255
+						face1.color.g = bitmap.data[p + 1] / 255
+						face1.color.b = bitmap.data[p + 2] / 255
+						face2.color = face1.color
+						face1.materialIndex = materialIndex
+						face2.materialIndex = materialIndex
+						faces.push(face1)
+						faces.push(face2)
+					}
+				}
+			})
+
+			if (faces.length === 0) return null
+
+			geometry.faces = faces
+			geometry = new THREE.BufferGeometry().fromGeometry(geometry)
+
+			materials.forEach(m => m.side = side)
+
+			return new THREE.Mesh(geometry, materials)
+		}
+
+		function buildSkinModel(skin, cape, slim, flip) {
+			if (skin.width < 64 || skin.height < 32) return null
+
+			const v = skin.height >= 64 ? 1 : 0
+			const armW = slim ? 3 : 4
+			const bitmap = getBitmap(skin)
+			const hasAlpha = hasAlphaLayer(bitmap)
+			const opaque = hasAlpha ? makeOpaque(getBitmap(skin)) : bitmap
+
+			const headGroup = new THREE.Object3D()
+			headGroup.position.set(0, 12, 0)
+			const headBox = new THREE.BoxGeometry(8, 8, 8, 8, 8, 8)
+			headGroup.add(colorFaces(headBox, opaque, SKIN[v][0][0]))
+			if (hasAlpha) {
+				const hatBox = new THREE.BoxGeometry(9, 9, 9, 8, 8, 8)
+				const hatMesh = colorFaces(hatBox, bitmap, SKIN[v][0][1])
+				if (hatMesh) headGroup.add(hatMesh)
+			}
+
+			const torsoGroup = new THREE.Object3D()
+			torsoGroup.position.set(0, 2, 0)
+			const torsoBox = new THREE.BoxGeometry(8 + EPS, 12 + EPS, 4 + EPS, 8, 12, 4)
+			torsoGroup.add(colorFaces(torsoBox, opaque, SKIN[v][1][0]))
+			if (v >= 1 && hasAlpha) {
+				const jacketBox = new THREE.BoxGeometry(8.5 + EPS, 12.5 + EPS, 4.5 + EPS, 8, 12, 4)
+				const jacketMesh = colorFaces(jacketBox, bitmap, SKIN[v][1][1])
+				if (jacketMesh) torsoGroup.add(jacketMesh)
+			}
+
+			const rightArmGroup = new THREE.Object3D()
+			rightArmGroup.position.set(slim ? -5.5 : -6, 6, 0)
+			const rightArmBox = new THREE.BoxGeometry(armW, 12, 4, armW, 12, 4).translate(0, -4, 0)
+			rightArmGroup.add(colorFaces(rightArmBox, opaque, SKIN[v][2][0][slim]))
+			if (v >= 1 && hasAlpha) {
+				const rightSleeveBox = new THREE.BoxGeometry(armW + 0.5 + EPS * 4, 12.5 + EPS * 4, 4.5 + EPS * 4, armW, 12, 4).translate(0, -4, 0)
+				const rightSleeveMesh = colorFaces(rightSleeveBox, bitmap, SKIN[v][2][1][slim])
+				if (rightSleeveMesh) rightArmGroup.add(rightSleeveMesh)
+			}
+
+			const leftArmGroup = new THREE.Object3D()
+			leftArmGroup.position.set(slim ? 5.5 : 6, 6, 0)
+			const leftArmBox = new THREE.BoxGeometry(armW, 12, 4, armW, 12, 4).translate(0, -4, 0)
+			leftArmGroup.add(colorFaces(leftArmBox, opaque, SKIN[v][3][0][slim]))
+			if (v >= 1 && hasAlpha) {
+				const leftSleeveBox = new THREE.BoxGeometry(armW + 0.5 + EPS * 4, 12.5 + EPS * 4, 4.5 + EPS * 4, armW, 12, 4).translate(0, -4, 0)
+				const leftSleeveMesh = colorFaces(leftSleeveBox, bitmap, SKIN[v][3][1][slim])
+				if (leftSleeveMesh) leftArmGroup.add(leftSleeveMesh)
+			}
+
+			const rightLegGroup = new THREE.Object3D()
+			rightLegGroup.position.set(-2, -4, 0)
+			const rightLegBox = new THREE.BoxGeometry(4, 12, 4, 4, 12, 4).translate(0, -6, 0)
+			rightLegGroup.add(colorFaces(rightLegBox, opaque, SKIN[v][4][0]))
+			if (v >= 1 && hasAlpha) {
+				const rightPantBox = new THREE.BoxGeometry(4.5 + EPS * 2, 12.5 + EPS * 2, 4.5 + EPS * 2, 4, 12, 4).translate(0, -6, 0)
+				const rightPantMesh = colorFaces(rightPantBox, bitmap, SKIN[v][4][1])
+				if (rightPantMesh) rightLegGroup.add(rightPantMesh)
+			}
+
+			const leftLegGroup = new THREE.Object3D()
+			leftLegGroup.position.set(2, -4, 0)
+			const leftLegBox = new THREE.BoxGeometry(4, 12, 4, 4, 12, 4).translate(0, -6, 0)
+			leftLegGroup.add(colorFaces(leftLegBox, opaque, SKIN[v][5][0]))
+			if (v >= 1 && hasAlpha) {
+				const leftPantBox = new THREE.BoxGeometry(4.5 + EPS * 3, 12.5 + EPS * 3, 4.5 + EPS * 3, 4, 12, 4).translate(0, -6, 0)
+				const leftPantMesh = colorFaces(leftPantBox, bitmap, SKIN[v][5][1])
+				if (leftPantMesh) leftLegGroup.add(leftPantMesh)
+			}
+
+			const model = new THREE.Object3D()
+			model.add(headGroup)
+			model.add(torsoGroup)
+			model.add(rightArmGroup)
+			model.add(leftArmGroup)
+			model.add(rightLegGroup)
+			model.add(leftLegGroup)
+
+			if (cape) {
+				const cs = capeScale(cape.height)
+				const capeGroup = new THREE.Object3D()
+				capeGroup.position.set(0, 8, -2)
+				capeGroup.rotation.y += radians(180)
+				const capeBox = new THREE.BoxGeometry(10, 16, 1, 10 * cs, 16 * cs, cs).translate(0, -8, 0.5)
+				const capeMesh = colorFaces(capeBox, getBitmap(cape), [
+					[11 * cs, cs, cs, 16 * cs],
+					[0, cs, cs, 16 * cs],
+					[cs, 0, 10 * cs, cs],
+					[11 * cs, cs - 1, 10 * cs, -cs],
+					[cs, cs, 10 * cs, 16 * cs],
+					[12 * cs, cs, 10 * cs, 16 * cs]
+				])
+				capeGroup.add(capeMesh)
+				model.add(capeGroup)
+			}
+
+			if (flip) model.rotation.z += radians(180)
+
+			return model
+		}
+
+		const skin3d = {
+			canvas: document.getElementById('skin-canvas'),
+			modelCache: {},
+			mouseX: 0,
+			mouseY: 0,
+			targetTheta: 0,
+			targetPhi: 0,
+			currentTheta: 0,
+			currentPhi: 0
+		}
+
+		function renderSkin() {
+			skin3d.id = skin3d.canvas.getAttribute('data-id')
+			skin3d.cape = skin3d.canvas.getAttribute('data-cape')
+			skin3d.slim = skin3d.canvas.getAttribute('data-model') === 'slim' ? 1 : 0
+			skin3d.flip = skin3d.canvas.getAttribute('data-flip') === 'true'
+
+			const key = `${skin3d.id}:${skin3d.cape}:${skin3d.slim}`
+
+			if (!skin3d.modelCache[key]) {
+				const skin = toCanvas(getImage(skin3d.id))
+				const cape = toCanvas(getImage(skin3d.cape))
+				if (!skin) return
+				if (skin3d.cape && !cape) return
+				skin3d.modelCache[key] = buildSkinModel(skin, cape, skin3d.slim, skin3d.flip)
+			}
+
+			if (skin3d.modelCache[key] !== skin3d.model) {
+				if (skin3d.model) skin3d.scene.remove(skin3d.model)
+				skin3d.model = skin3d.modelCache[key]
+
+				if (!skin3d.scene) {
+					skin3d.scene = new THREE.Scene()
+
+					const ambLight = new THREE.AmbientLight(0xffffff, 0.78)
+					const dirLight = new THREE.DirectionalLight(0xffffff, 0.42)
+					dirLight.position.set(0.7, 0.3, 0.8)
+
+					skin3d.scene.add(ambLight)
+					skin3d.scene.add(dirLight)
+				}
+
+				skin3d.scene.add(skin3d.model)
+			}
+
+			if (!skin3d.camera) {
+				skin3d.camera = new THREE.PerspectiveCamera(
+					38,
+					skin3d.canvas.width / skin3d.canvas.height,
+					40,
+					80
+				)
+				skin3d.camera.position.set(0, 0, 60)
+				skin3d.camera.lookAt(new THREE.Vector3(0, 0, 0))
+			}
+
+			if (!skin3d.renderer) {
+				skin3d.renderer = new THREE.WebGLRenderer({
+					canvas: skin3d.canvas,
+					antialias: true,
+					alpha: true
+				})
+			}
+
+			skin3d.currentTheta += (skin3d.targetTheta - skin3d.currentTheta) * 0.08
+			skin3d.currentPhi += (skin3d.targetPhi - skin3d.currentPhi) * 0.08
+
+			skin3d.model.rotation.y = 0
+			skin3d.model.rotation.x = 0
+			skin3d.model.children[0].rotation.y = radians(skin3d.currentTheta)
+			skin3d.model.children[0].rotation.x = radians(skin3d.currentPhi)
+
+			const idle = Math.sin(performance.now() * 0.0025)
+			skin3d.model.children[2].rotation.x = radians(4) * idle
+			skin3d.model.children[3].rotation.x = radians(4) * idle
+			skin3d.model.children[4].rotation.x = 0
+			skin3d.model.children[5].rotation.x = 0
+
+			if (skin3d.model.children[6]) {
+				skin3d.model.children[6].rotation.x = radians(16) + radians(2) * idle
+			}
+
+			skin3d.renderer.render(skin3d.scene, skin3d.camera)
+		}
+
+		function animate() {
+			renderSkin()
+			requestAnimationFrame(animate)
+		}
+
+        function updateMouse(x, y) {
+            const nx = Math.max(-1, Math.min(1, (x / window.screen.width) * 2 - 1))
+            const ny = Math.max(-1, Math.min(1, (y / window.screen.height) * 2 - 1))
+
+            skin3d.targetTheta = nx * 45
+            skin3d.targetPhi = ny * 20
+        }
+
+		window.addEventListener('message', e => {
+			if (e.data.mouseX !== undefined) {
+				updateMouse(e.data.mouseX, e.data.mouseY)
+			}
+		})
+
+		async function nmci(pngs) {
+			if (!window.namemc) window.namemc = {}
+			if (!window.namemc.images) window.namemc.images = {}
+
+			for (const [id, png] of Object.entries(pngs)) {
+				if (!window.namemc.images[id]) {
+					window.namemc.images[id] = await toImage(png)
+				}
+			}
+
+			animate()
+		}
+
+		window.addEventListener('load', () => {
+			nmci({
+				"3425a5630d212e98": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAASFBMVEUAAAAAAAASEhIXFxcaGhofHx8iIiIkJCQmJiYpKSktLS1wZWWvhn6vh3+ym5vAm5DAm5HIppzMrZ/w8PD19fX39/f//fz///9NNW3rAAAAAXRSTlMAQObYZgAAAldJREFUWMPNlouWgiAQhilrRNMNMeT933RnhovoeiHr1P57NpTL5z8DiEJ4AYCUwOJSzEVVC9Vju6zquvKIBQC2C4Ht6wB8sBzHw5KBTQtSVqjIkOJZUQQUg4QGdQAQQ1AdSsHzAJ/EVnVad6o94MBN3zqA2jcGrpVj4hNAWBP8L9E8JPMnAQOREOvDKHcfWK6efs47goq64LMqTBIieITAkuqxFLKmhhrttSi0iTcV3dfn6oxlXCah35/5Dw1Fcb8XxQYAl4pYALC17g5QFF1XFAD3DgEVWz5jGQH4U/lyNjmYHN0A/Nza9vYD0OhJEjPnv2nD/HMetrb1ksryejHG9OG+f7B6qr9cyzLUYxet1en0EUDTvAhQKhfQl9iPOpKwc08yRinz4MsQjmH1vvkUJYZyWAKkvfl6FcAO/Hgi8PPsQHLPHty1ZTmMtRsO3gMYngDMQ+C84Qg08QjXBFCshqXUThLDoPRasxxA67mDbIDzMQFwvbXem9bOkb3YKxX45xfTKsAm2aEL58gDQoJyAURwDvp8B2a26hiAY3oaRYCrS84qYNwo42Y6JIP76suAV0M4LDdt47spGvq2g/cDpgv2X4XwHiVBrb0PxHZyxu38ppz0nA/nYCc38/dBPPKefXI6mF+uKQzPSq33ALyjvwp4NYQ42B8w4ZWeHPGY6oWvk7CEw5RFgF9EmYCZA44B/3ARxhOHl9sBB58C5Icwvc9w4L8o/PdFroM5QHutApJdzABr4zrwp6k/WxcAk5iS9wIJv0zMLmALmAWYrLTp1ynf7wF+AUHKZEWeCQb8AAAAAElFTkSuQmCC",
+				"62db1a06cba0d59a": "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAACXBIWXMAAA7EAAAOxAGVKw4bAAADI0lEQVRoge2YsWvcSBjFf7MsKtWc4sKNSXGVHXAgYa904wW3JzeGdG4MB6nSWI1zcKhKEQIHGxBcmSOEI6QxLDZxuyTggO8fkIsEb9aNuEpF3hXakbWxE8ta6dYHfjBIGj1G8735vtGTDCBqhiRT95hNwQDyPI80TXEch9FohOu6ADiOA8BoNMLzvPx4GRf+PyK07IkNwPM8HMeZCMgGWYVbFaYVyLQCmfVh7RlaRBuYWNGL4DgOaZpSljsNbMDdnXCiT6/mGsmoNpAH9O4F3FuCN29h/lZ2/v5vuL+RpX5ZblWY9aG6d+YAWAk+ZJ2ni/B8DtMKpC9hIyIIkC5pFFoZriSqNPwTdR9LYXqo8FOq/TRUmB6q+1jCbFce91utDaCjbPXsKt5bypQp9mkJzJ3y3Mqr8WrOmPWhVoDOD0/oAIPqw12KNsAvv2UXf7zOjh8/nxG+vleW+/uf1SZ0VgYfJ/r7R0MaLYEoilQ8l6SL7pXlVkp/s52n/34a6p9xy0vAP6m9BFoXKbK5ucnx8XF+vbq6+k31rsKtjNPF7PjX0/rH5mzTkiTFcawoihRFkeI4lqRzGVCGW8cmaLOgO5DCT2kjGyGAXNcVIN/3J9JZknzfV5FThjuNAEURimWwPxai7lIw46AASJKEOI7p9XoAbG1tsbCwQPF+GW6SJGgKK2weoO6PmRfosEtn3D8ABqwRbMxTlzHKjZB1er1ej729vXNE6/DKcKeBaQXq7oRwGw4Ol+nc3QXg5xfbrGxkgsBmfc9jnAE2sCRJJghFb28z4DLuNBlgBbBO8CGZAM9Y4yBchjXo/xTU9krM3wJ2VV3XxXVdPM/L7e/XuAr3qtCX0PSPhhyEy3nwAB126R8NWbn7oZbnWLSBcyv5PVyFWxXWDdqaL+4DB+Ey8LK2Z7UkmSbaNJMyrSD/KAIYnD5qzA5faISuFU4XCeZ3GLAGQP/X+uofoFZbWatB8U8Upoe58Wnqa9BIjf5wqQz7Y8S+75v6H3BtBYDmgp54xnUW4L/A9d8EG8aNALOewKxxI8CsJzBr3Agw6wnMGjcCzHoCs8a/tojdd2ogBEAAAAAASUVORK5CYII="
+			})
+		})
+	</script>
+</body>
+</html>

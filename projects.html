@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    #scene {
+      position: fixed;
+      top: 0; left: 0;
+      width: 1400px; height: 900px;
+      transform-origin: top left;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel {
+      width: 920px;
+      height: 820px;
+      background: #3a3a3a;
+      border: 3px solid #111;
+      box-shadow:
+        inset 2px 2px 0 #575757,
+        inset -2px -2px 0 #1a1a1a,
+        0 12px 48px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      background: #2e2e2e;
+      border-bottom: 3px solid #111;
+      flex-shrink: 0;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 26px 11px;
+      font-size: 11px;
+      color: #999;
+      border-right: 2px solid #111;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.08s;
+    }
+
+    .tab.active { background: #3a3a3a; color: #fff; }
+    .tab:not(.active):hover { background: #353535; color: #ccc; }
+
+    .tab-count { font-size: 7px; color: #666; margin-left: 2px; }
+
+    .tab-close {
+      margin-left: auto;
+      padding: 14px 20px;
+      font-size: 14px;
+      color: #777;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .tab-close:hover { color: #fff; }
+
+    /* ── TAB CONTENT WRAPPER ── */
+    .tab-content { display: none; flex: 1; flex-direction: column; min-height: 0; }
+    .tab-content.active { display: flex; }
+
+    /* ── CREATE BAR ── */
+    .create-bar {
+      background: #444;
+      border-bottom: 2px solid #111;
+      padding: 13px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #bbb;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 #555, inset 0 -1px 0 #222;
+    }
+
+    /* ── WORLD LIST ── */
+    .world-list { overflow-y: auto; flex: 1; }
+    .world-list::-webkit-scrollbar { width: 8px; }
+    .world-list::-webkit-scrollbar-track { background: #222; }
+    .world-list::-webkit-scrollbar-thumb { background: #555; border: 1px solid #111; }
+
+    .world-row {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid #272727;
+      cursor: pointer;
+      background: #3a3a3a;
+      min-height: 100px;
+      transition: background 0.08s;
+    }
+    .world-row:hover { background: #484848; }
+
+    .world-thumb {
+      width: 120px; min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      background: #272727;
+      border-right: 2px solid #1a1a1a;
+    }
+
+    .world-info {
+      flex: 1;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .world-name { font-size: 14px; color: #fff; }
+    .world-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .badge {
+      font-size: 7px;
+      padding: 2px 6px;
+      background: #222;
+      color: #999;
+      border: 1px solid #3e3e3e;
+    }
+
+    .world-type { font-size: 8px; color: #777; }
+
+    .world-meta {
+      padding: 0 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 5px;
+      min-width: 120px;
+    }
+    .world-date { font-size: 10px; color: #ccc; }
+    .world-size { font-size: 8px; color: #777; }
+
+    .world-edit {
+      width: 56px; min-width: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #333;
+      border-left: 2px solid #1a1a1a;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+    }
+    .world-edit:hover { background: #4a4a4a; color: #fff; }
+
+    /* ── SKILLS TAB ── */
+    .skills-content {
+      flex: 1;
+      padding: 28px 32px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .skills-content::-webkit-scrollbar { width: 8px; }
+    .skills-content::-webkit-scrollbar-track { background: #222; }
+    .skills-content::-webkit-scrollbar-thumb { background: #555; border: 1px solid #111; }
+
+    .skill-group-label {
+      font-size: 9px;
+      color: #555;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #2e2e2e;
+      padding-bottom: 8px;
+    }
+
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .skill-item {
+      background: #2e2e2e;
+      border: 2px solid #222;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: default;
+      transition: background 0.08s, border-color 0.08s;
+    }
+    .skill-item:hover { background: #383838; border-color: #555; }
+
+    .skill-icon { font-size: 24px; }
+    .skill-name { font-size: 8px; color: #bbb; text-align: center; line-height: 1.4; }
+
+    .skill-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: #1a1a1a;
+      border: 1px solid #111;
+    }
+
+    .skill-bar {
+      height: 100%;
+      background: #4a7a4a;
+    }
+
+    /* ── DETAIL OVERLAY ── */
+    .detail-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+    }
+    .detail-overlay.show { display: flex; }
+
+    .detail-panel {
+      width: 1100px;
+      height: 720px;
+      background: #3a3a3a;
+      border: 3px solid #111;
+      box-shadow: inset 2px 2px 0 #575757, inset -2px -2px 0 #1a1a1a, 0 12px 48px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid #111;
+      background: #2e2e2e;
+      min-height: 72px;
+      flex-shrink: 0;
+    }
+
+    .detail-header-icon {
+      width: 72px; min-width: 72px; height: 72px;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      background: #222;
+      border-right: 3px solid #111;
+    }
+
+    .detail-header-info {
+      flex: 1;
+      padding: 12px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .detail-header-name { font-size: 16px; color: #fff; }
+    .detail-header-sub { font-size: 8px; color: #555; letter-spacing: 1px; }
+
+    .detail-header-close {
+      padding: 0 22px;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .detail-header-close:hover { color: #fff; }
+
+    .detail-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 0;
+    }
+
+    .detail-left {
+      border-right: 3px solid #111;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+    }
+    .detail-left::-webkit-scrollbar { width: 6px; }
+    .detail-left::-webkit-scrollbar-track { background: #222; }
+    .detail-left::-webkit-scrollbar-thumb { background: #555; }
+
+    .section-label {
+      font-size: 7px;
+      color: #555;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .detail-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+    .detail-stack .badge { font-size: 8px; padding: 4px 8px; color: #bbb; border-color: #444; }
+
+    .detail-bullets { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .detail-bullets li {
+      font-size: 9px;
+      color: #aaa;
+      line-height: 2;
+      padding-left: 14px;
+      position: relative;
+    }
+    .detail-bullets li::before { content: ">"; position: absolute; left: 0; color: #555; }
+
+    .detail-right {
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .photo-main {
+      flex: 1;
+      background: #222;
+      border: 2px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .photo-main img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-main img.active { display: block; }
+
+    .photo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .photo-placeholder span:first-child { font-size: 44px; }
+    .photo-placeholder span:last-child { font-size: 8px; color: #333; letter-spacing: 1px; }
+
+    .photo-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .photo-prev, .photo-next {
+      font-size: 11px;
+      color: #777;
+      background: #222;
+      border: 2px solid #111;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+    }
+    .photo-prev:hover, .photo-next:hover { color: #fff; background: #333; }
+
+    .photo-thumbs { display: flex; gap: 8px; flex: 1; overflow-x: auto; }
+    .photo-thumbs::-webkit-scrollbar { height: 4px; }
+    .photo-thumbs::-webkit-scrollbar-track { background: #222; }
+    .photo-thumbs::-webkit-scrollbar-thumb { background: #555; }
+
+    .photo-thumb {
+      width: 72px; min-width: 72px; height: 54px;
+      background: #222;
+      border: 2px solid #333;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      overflow: hidden;
+    }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-thumb.active { border-color: #aaa; }
+
+    .detail-footer {
+      display: flex;
+      border-top: 3px solid #111;
+      flex-shrink: 0;
+    }
+
+    .detail-btn {
+      flex: 1;
+      padding: 16px;
+      text-align: center;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      color: #aaa;
+      background: #333;
+      border: none;
+      border-right: 2px solid #111;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 #444, inset 0 -1px 0 #222;
+    }
+    .detail-btn:last-child { border-right: none; }
+    .detail-btn:hover { background: #444; color: #fff; }
+  </style>
+</head>
+<body>
+<div id="scene">
+
+  <div class="panel">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('projects')">🌍 <span>Projects</span> <span class="tab-count">3</span></div>
+      <div class="tab" onclick="switchTab('skills')">⚙️ <span>Skills</span></div>
+      <div class="tab-close" onclick="window.parent.postMessage('closeProjects', '*')">✕</div>
+    </div>
+
+    <!-- PROJECTS TAB -->
+    <div class="tab-content active" id="tab-projects">
+      <div class="create-bar">+ New Project In Progress...</div>
+      <div class="world-list">
+
+        <div class="world-row" onclick="openDetail(0)">
+          <div class="world-thumb">🤖</div>
+          <div class="world-info">
+            <div class="world-name">Mini Me AI</div>
+            <div class="world-tags">
+              <span class="badge">C++</span><span class="badge">Python</span><span class="badge">Ollama</span><span class="badge">Piper</span><span class="badge">Vosk</span>
+            </div>
+            <div class="world-type">Local AI Agent  ·  Embedded GPU</div>
+          </div>
+          <div class="world-meta">
+            <div class="world-date">2026</div>
+            <div class="world-size">3 screenshots</div>
+          </div>
+          <div class="world-edit">✏️</div>
+        </div>
+
+        <div class="world-row" onclick="openDetail(1)">
+          <div class="world-thumb">🗺️</div>
+          <div class="world-info">
+            <div class="world-name">WasteLess AI</div>
+            <div class="world-tags">
+              <span class="badge">Next.js</span><span class="badge">React</span><span class="badge">TypeScript</span><span class="badge">Supabase</span><span class="badge">Leaflet</span><span class="badge">NVIDIA</span>
+            </div>
+            <div class="world-type">Full Stack Web App  ·  Food Distribution</div>
+          </div>
+          <div class="world-meta">
+            <div class="world-date">2026</div>
+            <div class="world-size">3 screenshots</div>
+          </div>
+          <div class="world-edit">✏️</div>
+        </div>
+
+        <div class="world-row" onclick="openDetail(2)">
+          <div class="world-thumb">🎓</div>
+          <div class="world-info">
+            <div class="world-name">ProfessorMatch</div>
+            <div class="world-tags">
+              <span class="badge">Python</span><span class="badge">pandas</span><span class="badge">Streamlit</span><span class="badge">FastAPI</span>
+            </div>
+            <div class="world-type">Data + ML  ·  Recommendation System</div>
+          </div>
+          <div class="world-meta">
+            <div class="world-date">2026</div>
+            <div class="world-size">3 screenshots</div>
+          </div>
+          <div class="world-edit">✏️</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SKILLS TAB -->
+    <div class="tab-content" id="tab-skills">
+      <div class="skills-content">
+
+        <div>
+          <div class="skill-group-label">LANGUAGES</div>
+          <div class="skill-grid">
+            <div class="skill-item"><span class="skill-icon">🔵</span><span class="skill-name">C++</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">☕</span><span class="skill-name">Java</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🐍</span><span class="skill-name">Python</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🟨</span><span class="skill-name">JavaScript</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🗄️</span><span class="skill-name">SQL</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🌐</span><span class="skill-name">HTML/CSS</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="skill-group-label">FRAMEWORKS</div>
+          <div class="skill-grid">
+            <div class="skill-item"><span class="skill-icon">⚛️</span><span class="skill-name">React</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">▲</span><span class="skill-name">Next.js</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">⚡</span><span class="skill-name">FastAPI</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">📊</span><span class="skill-name">Streamlit</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="skill-group-label">TOOLS & TECHNOLOGIES</div>
+          <div class="skill-grid">
+            <div class="skill-item"><span class="skill-icon">🐙</span><span class="skill-name">Git</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🐧</span><span class="skill-name">Linux</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">☁️</span><span class="skill-name">AWS</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🔧</span><span class="skill-name">Jenkins</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🗺️</span><span class="skill-name">Supabase</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">📮</span><span class="skill-name">Postman</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🤖</span><span class="skill-name">Ollama</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
+            <div class="skill-item"><span class="skill-icon">🔬</span><span class="skill-name">REST APIs</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAIL OVERLAY -->
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-panel">
+
+      <div class="detail-header">
+        <div class="detail-header-icon" id="detailIcon"></div>
+        <div class="detail-header-info">
+          <div class="detail-header-name" id="detailName"></div>
+          <div class="detail-header-sub" id="detailSub"></div>
+        </div>
+        <div class="detail-header-close" onclick="closeDetail()">✕</div>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-left">
+          <div>
+            <div class="section-label">TECH STACK</div>
+            <div class="detail-stack" id="detailStack"></div>
+          </div>
+          <div>
+            <div class="section-label">WHAT I BUILT</div>
+            <ul class="detail-bullets" id="detailBullets"></ul>
+          </div>
+        </div>
+
+        <div class="detail-right">
+          <div class="section-label">SCREENSHOTS</div>
+          <div class="photo-main" id="photoMain">
+            <div class="photo-placeholder" id="photoPlaceholder">
+              <span>🖼️</span>
+              <span>NO SCREENSHOT YET</span>
+            </div>
+          </div>
+          <div class="photo-nav">
+            <button class="photo-prev" onclick="prevPhoto()">◄</button>
+            <div class="photo-thumbs" id="photoThumbs"></div>
+            <button class="photo-next" onclick="nextPhoto()">►</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button class="detail-btn" onclick="closeDetail()">← Back</button>
+        <button class="detail-btn">GitHub →</button>
+        <button class="detail-btn">Play World ▶</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const projects = [
+    {
+      icon: "🤖",
+      name: "Mini Me AI",
+      sub: "2026  ·  LOCAL AI AGENT  ·  EMBEDDED GPU",
+      stack: ["C++", "Python", "Ollama", "Piper", "Vosk", "Jetson GPU"],
+      bullets: [
+        "Built a personality-driven AI agent running fully locally using Ollama for LLM inference.",
+        "Set up a real-time text-to-speech pipeline with Piper for fast conversational responses.",
+        "Worked around memory limits on an embedded GPU (Jetson) to keep the model running smoothly."
+      ],
+      photos: [null, null, null]
+    },
+    {
+      icon: "🗺️",
+      name: "WasteLess AI",
+      sub: "2026  ·  FULL STACK WEB APP",
+      stack: ["Next.js", "React", "TypeScript", "Supabase", "Leaflet", "NVIDIA API"],
+      bullets: [
+        "Built a web platform that connects restaurants with surplus food to nearby shelters.",
+        "Developed a live map using Leaflet with filtering, availability tracking, and pickup constraints.",
+        "Integrated Supabase for backend data and used NVIDIA APIs to guide distribution decisions."
+      ],
+      photos: [null, null, null]
+    },
+    {
+      icon: "🎓",
+      name: "ProfessorMatch",
+      sub: "2026  ·  DATA + ML  ·  RECOMMENDATION SYSTEM",
+      stack: ["Python", "pandas", "Streamlit", "FastAPI"],
+      bullets: [
+        "Built a recommendation system that ranks professors based on custom scoring logic.",
+        "Combined data from RateMyProfessors, LinkedIn, and course info into a single dataset.",
+        "Created a Streamlit interface for searching and filtering results in real time."
+      ],
+      photos: [null, null, null]
+    }
+  ]
+
+  // Tab switching
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', t.textContent.toLowerCase().includes(name))
+    })
+    document.querySelectorAll('.tab-content').forEach(c => {
+      c.classList.toggle('active', c.id === 'tab-' + name)
+    })
+  }
+
+  // Detail
+  let currentPhotoIndex = 0
+  let currentPhotos = []
+
+  function openDetail(i) {
+    const p = projects[i]
+    document.getElementById('detailIcon').textContent = p.icon
+    document.getElementById('detailName').textContent = p.name
+    document.getElementById('detailSub').textContent = p.sub
+    document.getElementById('detailStack').innerHTML = p.stack.map(s => `<span class="badge">${s}</span>`).join('')
+    document.getElementById('detailBullets').innerHTML = p.bullets.map(b => `<li>${b}</li>`).join('')
+    currentPhotos = p.photos
+    currentPhotoIndex = 0
+    buildPhotos()
+    document.getElementById('detailOverlay').classList.add('show')
+  }
+
+  function buildPhotos() {
+    const main = document.getElementById('photoMain')
+    const thumbsEl = document.getElementById('photoThumbs')
+    const placeholder = document.getElementById('photoPlaceholder')
+    main.querySelectorAll('img').forEach(el => el.remove())
+    thumbsEl.innerHTML = ''
+    const hasPhotos = currentPhotos.some(p => p !== null)
+    placeholder.style.display = hasPhotos ? 'none' : 'flex'
+    currentPhotos.forEach((src, idx) => {
+      if (src) {
+        const img = document.createElement('img')
+        img.src = src
+        img.classList.toggle('active', idx === currentPhotoIndex)
+        main.appendChild(img)
+      }
+      const thumb = document.createElement('div')
+      thumb.className = 'photo-thumb' + (idx === currentPhotoIndex ? ' active' : '')
+      thumb.onclick = () => setPhoto(idx)
+      if (src) {
+        const tImg = document.createElement('img')
+        tImg.src = src
+        thumb.appendChild(tImg)
+      } else {
+        thumb.textContent = '🖼️'
+        thumb.style.color = '#333'
+      }
+      thumbsEl.appendChild(thumb)
+    })
+  }
+
+  function setPhoto(idx) {
+    currentPhotoIndex = idx
+    document.getElementById('photoMain').querySelectorAll('img').forEach((img, i) => img.classList.toggle('active', i === idx))
+    document.querySelectorAll('.photo-thumb').forEach((t, i) => t.classList.toggle('active', i === idx))
+  }
+
+  function prevPhoto() { setPhoto((currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length) }
+  function nextPhoto() { setPhoto((currentPhotoIndex + 1) % currentPhotos.length) }
+  function closeDetail() { document.getElementById('detailOverlay').classList.remove('show') }
+
+  function scaleScene() {
+    const scene = document.getElementById('scene')
+    const scaleX = window.innerWidth / 1400
+    const scaleY = window.innerHeight / 900
+    const scale = Math.min(scaleX, scaleY)
+    const offsetX = (window.innerWidth - 1400 * scale) / 2
+    const offsetY = (window.innerHeight - 900 * scale) / 2
+    scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+  }
+
+  scaleScene()
+  window.addEventListener('resize', scaleScene)
+</script>
+</body>
+</html>

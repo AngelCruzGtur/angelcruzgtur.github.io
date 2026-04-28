@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Minecraft Running</title>
+	<style>
+		html, body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background: transparent;
+		}
+
+		#player-wrap {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 276px;
+			height: 368px;
+			pointer-events: none;
+		}
+
+		#skin-canvas {
+			width: 276px;
+			height: 368px;
+			display: block;
+			background: transparent;
+		}
+	</style>
+</head>
+<body>
+	<div id="player-wrap">
+		<canvas
+			id="skin-canvas"
+			width="552"
+			height="736"
+			data-id="3425a5630d212e98"
+			data-model="slim"
+			data-flip="false"
+			data-cape="62db1a06cba0d59a">
+		</canvas>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
+
+	<script>
+		const TAU = Math.PI * 2
+		function radians(d){ return d * (TAU / 360) }
+
+		const skin3d = {
+			canvas: document.getElementById('skin-canvas'),
+			mouseX: 0,
+			mouseY: 0,
+			targetTheta: 0,
+			targetPhi: 0,
+			currentTheta: 0,
+			currentPhi: 0
+		}
+
+		// --- SIMPLE MODEL (you already built it before, keeping minimal here) ---
+		let scene = new THREE.Scene()
+
+		let camera = new THREE.PerspectiveCamera(38, 552/736, 40, 80)
+		camera.position.set(0,0,60)
+
+		let renderer = new THREE.WebGLRenderer({
+			canvas: skin3d.canvas,
+			alpha: true,
+			antialias: true
+		})
+
+		const light = new THREE.DirectionalLight(0xffffff, 1)
+		light.position.set(1,1,1)
+		scene.add(light)
+
+		const amb = new THREE.AmbientLight(0xffffff, 0.7)
+		scene.add(amb)
+
+		// --- BASIC BLOCK CHARACTER ---
+		const material = new THREE.MeshLambertMaterial({color: 0xffffff})
+
+		const model = new THREE.Group()
+
+		const head = new THREE.Mesh(new THREE.BoxGeometry(8,8,8), material)
+		head.position.y = 12
+
+		const body = new THREE.Mesh(new THREE.BoxGeometry(8,12,4), material)
+		body.position.y = 2
+
+		const rArm = new THREE.Mesh(new THREE.BoxGeometry(3,12,4), material)
+		rArm.position.set(-5.5,6,0)
+
+		const lArm = new THREE.Mesh(new THREE.BoxGeometry(3,12,4), material)
+		lArm.position.set(5.5,6,0)
+
+		const rLeg = new THREE.Mesh(new THREE.BoxGeometry(4,12,4), material)
+		rLeg.position.set(-2,-4,0)
+
+		const lLeg = new THREE.Mesh(new THREE.BoxGeometry(4,12,4), material)
+		lLeg.position.set(2,-4,0)
+
+		model.add(head, body, rArm, lArm, rLeg, lLeg)
+		scene.add(model)
+
+		// --- RUNNING ANIMATION ---
+		function animate(){
+			requestAnimationFrame(animate)
+
+			const t = performance.now() * 0.01
+			const run = Math.sin(t)
+
+			// arms swing
+			rArm.rotation.x = radians(40) * run
+			lArm.rotation.x = radians(-40) * run
+
+			// legs swing opposite
+			rLeg.rotation.x = radians(-40) * run
+			lLeg.rotation.x = radians(40) * run
+
+			// bounce
+			model.position.y = Math.abs(Math.sin(t)) * 1.5
+
+			// slight forward lean
+			model.rotation.x = radians(5)
+
+			renderer.render(scene, camera)
+		}
+
+		animate()
+	</script>
+</body>
+</html>

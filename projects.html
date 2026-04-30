@@ -562,12 +562,13 @@ ${graphStyle}
       image: "images/roguelike-maker.png",
       desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
       tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
-      bullets: [
-        "Split into two roles: one handled Godot game systems, the other handled the AI generator.",
-        "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
-        "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
-        "Scoped for 24h: one weapon, two enemy types, a few rooms, and a working demo."
-      ],
+    bullets: [
+      "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
+      "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
+      "Implemented live config reloading, allowing instant gameplay updates without restarting the game.",
+      "Enabled each prompt to generate a distinct run, increasing replayability and showcasing dynamic game generation.",
+      "Implemented a map generation system using a 40x40 sprite to define and spawn the game layout."
+    ],
       chart: `flowchart LR
   A((Prompt)) --> B{AI Interprets}
   B --> C[Player Speed]

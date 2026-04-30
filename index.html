@@ -33,6 +33,7 @@
 			height: 100%;
 			object-fit: cover;
 			z-index: 0;
+			transition: opacity 0.8s ease;
 		}
 
 		#scene {
@@ -233,7 +234,8 @@
 
 <body>
 
-	<video class="bg-video" autoplay muted playsinline id="bgVideo"></video>
+	<video class="bg-video" autoplay muted playsinline id="bgVideo0" style="opacity:1;"></video>
+	<video class="bg-video" autoplay muted playsinline id="bgVideo1" style="opacity:0;"></video>
 
 	<div id="scene">
 		<div class="overlay">
@@ -314,15 +316,14 @@
 			}
 		});
 
-		// ── Video preloading ──────────────────────────────────────────
-		// One hidden <video> per clip — the browser starts buffering all
-		// of them immediately in the background via preload="auto".
+		// ── Video crossfade ───────────────────────────────────────────
 		const VIDEO_COUNT = 7;
 		const videoPaths = [];
 		for (let i = 1; i <= VIDEO_COUNT; i++) {
 			videoPaths.push(`videos/bg${i}.MP4`);
 		}
 
+		// Preload all clips in hidden elements
 		const preloaded = videoPaths.map(src => {
 			const v = document.createElement('video');
 			v.src = src;
@@ -333,24 +334,78 @@
 			return v;
 		});
 
-		const bgVideo = document.getElementById('bgVideo');
-		let lastIndex = -1;
+		const players = [
+			document.getElementById('bgVideo0'),
+			document.getElementById('bgVideo1')
+		];
 
-		function playRandomVideo() {
+		let active = 0;
+		let lastIndex = -1;
+		let transitioning = false;
+
+		function pickNextIndex() {
 			let index;
 			do {
 				index = Math.floor(Math.random() * preloaded.length);
 			} while (index === lastIndex && preloaded.length > 1);
 			lastIndex = index;
-
-			// Point the visible player at the already-buffered src
-			bgVideo.src = preloaded[index].src;
-			bgVideo.load();
-			bgVideo.play();
+			return index;
 		}
 
-		playRandomVideo();
-		bgVideo.addEventListener('ended', playRandomVideo);
+		function crossfadeTo(index) {
+			transitioning = true;
+			const next = 1 - active;
+			const incoming = players[next];
+			const outgoing = players[active];
+
+			// Reset incoming player fully before loading new src
+			incoming.pause();
+			incoming.removeAttribute('src');
+			incoming.load();
+
+			incoming.src = videoPaths[index];
+			incoming.load();
+
+			incoming.addEventListener('canplay', function onCanPlay() {
+				incoming.removeEventListener('canplay', onCanPlay);
+				incoming.play().catch(() => {});
+				incoming.style.opacity = '1';
+				outgoing.style.opacity = '0';
+				active = next;
+				transitioning = false;
+			}, { once: true });
+
+			// Fallback: if canplay never fires, force switch after 1s
+			setTimeout(() => {
+				if (transitioning) {
+					incoming.play().catch(() => {});
+					incoming.style.opacity = '1';
+					outgoing.style.opacity = '0';
+					active = next;
+					transitioning = false;
+				}
+			}, 1000);
+		}
+
+		// Only the active player's ended event triggers a transition
+		function onEnded(playerIndex) {
+			return function() {
+				if (playerIndex === active && !transitioning) {
+					crossfadeTo(pickNextIndex());
+				}
+			};
+		}
+
+		players[0].addEventListener('ended', onEnded(0));
+		players[1].addEventListener('ended', onEnded(1));
+
+		// Kick off first video
+		const firstIndex = pickNextIndex();
+		players[0].src = videoPaths[firstIndex];
+		players[0].load();
+		players[0].play().catch(() => {});
+		players[0].style.opacity = '1';
+		players[1].style.opacity = '0';
 		// ─────────────────────────────────────────────────────────────
 
 		// Experience modal

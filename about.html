@@ -35,7 +35,7 @@
       background:
         radial-gradient(ellipse 80% 60% at 20% 110%, rgba(80,80,80,0.4) 0%, transparent 60%),
         radial-gradient(ellipse 60% 50% at 80% -10%,  rgba(20,20,20,0.8) 0%, transparent 70%),
-        radial-gradient(ellipse 100% 80% at 50% 50%,  #1a1a1a 0%, #2e2e2e 100%);
+        #2e2e2e;
       pointer-events: none;
     }
 
@@ -44,7 +44,6 @@
       pointer-events: none;
     }
 
-    /* ── CLOSE BTN ── */
     .close-btn {
       position: fixed;
       top: 1rem; right: 1.25rem;
@@ -60,7 +59,6 @@
     }
     .close-btn:hover { background: #9b9b9b; }
 
-    /* ── LAYOUT ── */
     .page {
       position: relative; z-index: 1;
       display: grid;
@@ -72,7 +70,6 @@
       align-items: start;
     }
 
-    /* ── SIDEBAR ── */
     .sidebar {
       display: flex;
       flex-direction: column;
@@ -90,27 +87,15 @@
     .sidebar::-webkit-scrollbar-track { background: transparent; }
     .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    .avatar-placeholder {
+    .avatar {
       width: clamp(72px, 8vw, 130px);
       height: clamp(72px, 8vw, 130px);
       border-radius: 50%;
-      background: linear-gradient(135deg, #3a3a3a, #555);
+      object-fit: cover;
       border: 3px solid #888;
-      display: grid; place-items: center;
-      font-family: Georgia, serif;
-      font-size: clamp(1.5rem, 3vw, 2.75rem);
-      color: #c8c8c8;
       margin-bottom: 1.1rem;
-      flex-shrink: 0;
     }
-  .avatar {
-    width: clamp(72px, 8vw, 130px);
-    height: clamp(72px, 8vw, 130px);
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #888;
-    margin-bottom: 1.1rem;
-  }
+
     .name-en {
       font-weight: 600;
       font-size: clamp(0.85rem, 1.1vw, 1.1rem);
@@ -139,7 +124,6 @@
       display: flex; align-items: center; gap: 5px;
     }
 
-    /* socials */
     .socials {
       display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;
       margin-bottom: 1.8rem;
@@ -172,7 +156,6 @@
       text-align: left;
     }
 
-    /* stat bars */
     .stat-row { margin-bottom: 0.65rem; width: 100%; }
     .stat-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
     .stat-name { font-size: clamp(0.62rem, 0.75vw, 0.72rem); color: rgba(242,242,238,0.75); }
@@ -189,7 +172,6 @@
       border-radius: 4px;
     }
 
-    /* ── DIVIDER ── */
     .divider-v {
       background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
       margin: 0 clamp(1.5rem, 3.5vw, 3rem);
@@ -197,7 +179,6 @@
       min-height: 100%;
     }
 
-    /* ── CONTENT ── */
     .content {
       display: flex;
       flex-direction: column;
@@ -222,7 +203,6 @@
       color: var(--white);
     }
 
-    /* bio */
     .bio { display: flex; flex-direction: column; gap: 0.9rem; }
     .bio p {
       font-size: clamp(0.78rem, 0.92vw, 0.9rem);
@@ -230,7 +210,6 @@
       color: rgba(242,242,238,0.78);
     }
 
-    /* two-col */
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -251,7 +230,6 @@
       flex-shrink: 0;
     }
 
-    /* education */
     .edu-card {
       border-left: 2px solid var(--border);
       padding-left: 1.25rem;
@@ -280,7 +258,7 @@
       background: var(--card-bg);
     }
 
-    /* clubs */
+    /* ── CLUBS ── */
     .clubs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
@@ -302,11 +280,17 @@
     .club-header {
       display: flex;
       align-items: center;
-      gap: 0.7rem;
+      gap: 0.75rem;
       margin-bottom: 0.55rem;
     }
 
-    .club-icon { font-size: clamp(1.2rem, 1.8vw, 1.5rem); flex-shrink: 0; }
+    .club-icon {
+      width: clamp(28px, 3vw, 38px);
+      height: clamp(28px, 3vw, 38px);
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
 
     .club-name {
       font-weight: 600;
@@ -331,43 +315,24 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── RESPONSIVE: stack on small screens ── */
     @media (max-width: 680px) {
       html, body { height: auto; }
-
-      .page {
-        grid-template-columns: 1fr;
-        padding: 4.5rem 1.2rem 2rem;
-      }
-
+      .page { grid-template-columns: 1fr; padding: 4.5rem 1.2rem 2rem; }
       .divider-v { display: none; }
-
       .sidebar {
-        position: static;
-        max-height: none;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        gap: 0.5rem 1rem;
+        position: static; max-height: none;
+        flex-direction: row; flex-wrap: wrap;
+        align-items: flex-start; gap: 0.5rem 1rem;
         padding: 0 0 1.5rem;
         border-bottom: 1px solid var(--border);
         margin-bottom: 1.5rem;
       }
-
-      .avatar-placeholder {
-        width: 56px; height: 56px;
-        font-size: 1.4rem;
-        margin-bottom: 0;
-      }
-
+      .avatar { width: 56px; height: 56px; margin-bottom: 0; }
       .sidebar-identity { display: flex; flex-direction: column; justify-content: center; }
       .name-en, .role-label, .org, .location { text-align: left; }
       .location { margin-bottom: 0; }
-
       .stat-block, .socials { width: 100%; justify-content: flex-start; }
-
       .content { max-height: none; overflow: visible; }
-
       .two-col { grid-template-columns: 1fr; gap: 1.5rem; }
     }
   </style>
@@ -483,7 +448,7 @@
           <span class="chip">Big Data</span>
           <span class="chip">Blockchain</span>
           <span class="chip">Mobile Dev</span>
-          <span class="chip">Architecture</span>
+          <span class="chip">Computer Architecture</span>
         </div>
       </section>
     </div>
@@ -494,48 +459,47 @@
 
         <div class="club-card">
           <div class="club-header">
-            <span class="club-icon">🤖</span>
+            <img src="images/formula.png" alt="Formula" class="club-icon">
             <div>
-              <p class="club-name">Formula</p>
+              <p class="club-name">Spartan Racing</p>
               <p class="club-role">Intern</p>
             </div>
           </div>
-          <p class="club-desc">Car goes br.</p>
+          <p class="club-desc">Supported the SJSU Formula SAE team during test days by helping with car setup and assisting the team on track.</p>
         </div>
 
         <div class="club-card">
           <div class="club-header">
-            <span class="club-icon">💡</span>
+            <img src="images/sec.png" alt="The Software and Computer
+Engineering Society" class="club-icon">
             <div>
               <p class="club-name">Software Engineering Club</p>
               <p class="club-role">Member</p>
             </div>
           </div>
-          <p class="club-desc">Attend meetings, learn from team projects, and get exposure to real-world software development.</p>
+          <p class="club-desc">Attended meetings, learnt from team projects, and got exposure to real-world software development.</p>
         </div>
 
         <div class="club-card">
           <div class="club-header">
-            <span class="club-icon">🌐</span>
+            <img src="images/acm.png" alt="ACM" class="club-icon">
             <div>
               <p class="club-name">ACM</p>
               <p class="club-role">Member</p>
             </div>
           </div>
-         <p class="club-desc">Working with MCP to integrate LinkedIn data into AI-driven tools and workflows.</p>
+          <p class="club-desc">Working with MCP to integrate LinkedIn data into AI-driven tools and workflows.</p>
         </div>
 
-      </div>
-
-       <div class="club-card">
+        <div class="club-card">
           <div class="club-header">
-            <span class="club-icon">🌐</span>
+            <img src="images/soles.png" alt="Soles SJSU" class="club-icon">
             <div>
               <p class="club-name">Soles SJSU</p>
               <p class="club-role">Member</p>
             </div>
           </div>
-         <p class="club-desc">Attended national conference in Philadelphia, participated in workshops, and networked with professionals from companies like Apple, Boeing, Microsoft, and Synopsys.</p>
+          <p class="club-desc">Attended national conference in Philadelphia, participated in workshops, and networked with professionals from companies like Apple, Boeing, Microsoft, and Synopsys.</p>
         </div>
 
       </div>

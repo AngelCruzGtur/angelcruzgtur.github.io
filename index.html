@@ -8,7 +8,11 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 	<style>
-		* { box-sizing: border-box; margin: 0; padding: 0; }
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
 
 		html, body {
 			width: 100%;
@@ -23,15 +27,18 @@
 
 		.bg-video {
 			position: fixed;
-			top: 0; left: 0;
-			width: 100%; height: 100%;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
 			object-fit: cover;
 			z-index: 0;
 		}
 
 		#scene {
 			position: fixed;
-			top: 0; left: 0;
+			top: 0;
+			left: 0;
 			width: 1920px;
 			height: 1080px;
 			transform-origin: top left;
@@ -97,7 +104,9 @@
 			cursor: pointer;
 		}
 
-		.menu button:hover { background: #9b9b9b; }
+		.menu button:hover {
+			background: #9b9b9b;
+		}
 
 		.new-tag {
 			position: absolute;
@@ -110,31 +119,6 @@
 			border: 2px solid #2f2f2f;
 			text-shadow: 2px 2px 0 #1d1d1d;
 		}
-
-		/* Popup — lives inside #scene so it scales with everything */
-		#downloadPopup {
-			position: absolute;
-			/* centered horizontally under the menu */
-			left: 50%;
-			top: 680px;
-			transform: translateX(-50%);
-			font-family: 'Press Start 2P', cursive;
-			font-size: 16px;
-			padding: 20px 30px;
-			background: #c6c6c6;
-			color: #3f3f3f;
-			border: 3px solid #1d1d1d;
-			box-shadow:
-				inset 2px 2px 0 #f3f3f3,
-				inset -2px -2px 0 #7a7a7a;
-			text-align: center;
-			white-space: nowrap;
-			pointer-events: none;
-			opacity: 0;
-			transition: opacity 0.2s ease;
-		}
-
-		#downloadPopup.show { opacity: 1; }
 
 		.player-panel {
 			position: absolute;
@@ -149,7 +133,7 @@
 		.player-name {
 			font-size: 26px;
 			color: white;
-			background: rgba(0,0,0,0.5);
+			background: rgba(0, 0, 0, 0.5);
 			padding: 8px 12px;
 		}
 
@@ -185,14 +169,16 @@
 		.mc-modal {
 			position: fixed;
 			inset: 0;
-			background: rgba(0,0,0,0.85);
+			background: rgba(0, 0, 0, 0.85);
 			display: none;
 			justify-content: center;
 			align-items: center;
 			z-index: 999;
 		}
 
-		.mc-modal.show { display: flex; }
+		.mc-modal.show {
+			display: flex;
+		}
 
 		.mc-modal-box {
 			position: relative;
@@ -208,14 +194,41 @@
 			border: none;
 		}
 
-		#slime-canvas {
+		/* ── TOAST — fixed bottom-right, never scaled with scene ── */
+		#toast {
 			position: fixed;
-			inset: 0;
-			width: 100vw;
-			height: 100vh;
-			pointer-events: none;
+			bottom: 24px;
+			right: 24px;
 			z-index: 9999;
+			font-family: 'Press Start 2P', cursive;
+			font-size: 11px;
+			padding: 12px 18px;
+			background: #c6c6c6;
+			color: #3f3f3f;
+			border: 3px solid #1d1d1d;
+			box-shadow:
+				inset 2px 2px 0 #f3f3f3,
+				inset -2px -2px 0 #7a7a7a;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			transform: translateY(10px);
+			transition: opacity 0.2s ease, transform 0.2s ease;
 		}
+
+		#toast.show {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+#slime-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 2;  /* was 9999 */
+}
 	</style>
 </head>
 
@@ -240,14 +253,15 @@
 				<div class="new-tag">Updated</div>
 			</div>
 
-			<!-- Popup lives inside the scene so it scales correctly -->
-			<div id="downloadPopup">Resume Downloaded!</div>
-
 			<div class="player-panel">
 				<div class="player-name">Angel Cruz</div>
 			</div>
 
-			<iframe id="characterFrame" src="character.html" class="character"></iframe>
+			<iframe
+				id="characterFrame"
+				src="character.html"
+				class="character">
+			</iframe>
 
 			<div class="icon-row">
 				<img src="media/linkedin.png" alt="LinkedIn">
@@ -277,6 +291,9 @@
 			<iframe src="about.html"></iframe>
 		</div>
 	</div>
+
+	<!-- Toast notification (replaces the old popup) -->
+	<div id="toast">Resume Downloaded!</div>
 
 	<script>
 		// Scale scene
@@ -323,21 +340,35 @@
 		playRandomVideo();
 		video.addEventListener('ended', playRandomVideo);
 
-		// Modals
-		function openExperience() { document.getElementById('experiencePopup').classList.add('show'); }
-		function closeExperience() { document.getElementById('experiencePopup').classList.remove('show'); }
+		// Experience modal
+		function openExperience() {
+			document.getElementById('experiencePopup').classList.add('show');
+		}
+		function closeExperience() {
+			document.getElementById('experiencePopup').classList.remove('show');
+		}
 		document.getElementById('experiencePopup').addEventListener('click', e => {
 			if (e.target.id === 'experiencePopup') closeExperience();
 		});
 
-		function openProjects() { document.getElementById('projectsPopup').classList.add('show'); }
-		function closeProjects() { document.getElementById('projectsPopup').classList.remove('show'); }
+		// Projects modal
+		function openProjects() {
+			document.getElementById('projectsPopup').classList.add('show');
+		}
+		function closeProjects() {
+			document.getElementById('projectsPopup').classList.remove('show');
+		}
 		document.getElementById('projectsPopup').addEventListener('click', e => {
 			if (e.target.id === 'projectsPopup') closeProjects();
 		});
 
-		function openAbout() { document.getElementById('aboutPopup').classList.add('show'); }
-		function closeAbout() { document.getElementById('aboutPopup').classList.remove('show'); }
+		// About Me modal
+		function openAbout() {
+			document.getElementById('aboutPopup').classList.add('show');
+		}
+		function closeAbout() {
+			document.getElementById('aboutPopup').classList.remove('show');
+		}
 		document.getElementById('aboutPopup').addEventListener('click', e => {
 			if (e.target.id === 'aboutPopup') closeAbout();
 		});
@@ -349,8 +380,8 @@
 			if (e.data === 'closeAbout')      closeAbout();
 		});
 
-		// Resume download
-		let resumeTimer = null;
+		// Resume download — small toast, no giant popup
+		let toastTimer = null;
 		function downloadResume() {
 			const link = document.createElement('a');
 			link.href = 'resume.pdf';
@@ -359,14 +390,15 @@
 			link.click();
 			document.body.removeChild(link);
 
-			const popup = document.getElementById('downloadPopup');
-			popup.classList.add('show');
-			clearTimeout(resumeTimer);
-			resumeTimer = setTimeout(() => popup.classList.remove('show'), 2200);
+			const toast = document.getElementById('toast');
+			toast.classList.add('show');
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
 		}
 	</script>
 
 	<canvas id="slime-canvas"></canvas>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
 	<script src="slime.js"></script>
 

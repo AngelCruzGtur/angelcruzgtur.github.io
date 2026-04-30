@@ -1,608 +1,691 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Projects</title>
-	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-	<script type="module">
-		import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      securityLevel: "loose",
+      flowchart: { curve: "basis", nodeSpacing: 55, rankSpacing: 70, padding: 18 },
+      themeVariables: {
+        background: "#1f1f1f",
+        fontFamily: "Trebuchet MS, Verdana, sans-serif",
+        primaryColor: "#3f4f5f",
+        primaryTextColor: "#f8fafc",
+        primaryBorderColor: "#cbd5e1",
+        secondaryColor: "#4f6d5f",
+        secondaryTextColor: "#f8fafc",
+        secondaryBorderColor: "#cbd5e1",
+        tertiaryColor: "#6b5f4a",
+        tertiaryTextColor: "#f8fafc",
+        tertiaryBorderColor: "#f5d06f",
+        lineColor: "#c9a84c",
+        nodeBorder: "#cbd5e1",
+        clusterBkg: "#252525",
+        clusterBorder: "#444"
+      }
+    });
+    window.renderMermaid = async function(code, containerId) {
+      const target = document.getElementById(containerId);
+      if (!target) return;
+      target.innerHTML = "";
+      const id = "fc-" + Date.now();
+      const { svg } = await mermaid.render(id, code);
+      target.innerHTML = svg;
+    };
+  </script>
 
-		mermaid.initialize({
-			startOnLoad: false,
-			theme: "base",
-			securityLevel: "loose",
-			flowchart: {
-				curve: "basis",
-				nodeSpacing: 55,
-				rankSpacing: 70,
-				padding: 18
-			},
-			themeVariables: {
-				background: "#1f1f1f",
-				fontFamily: "Trebuchet MS, Verdana, sans-serif",
-				primaryColor: "#3f4f5f",
-				primaryTextColor: "#f8fafc",
-				primaryBorderColor: "#cbd5e1",
-				secondaryColor: "#4f6d5f",
-				secondaryTextColor: "#f8fafc",
-				secondaryBorderColor: "#cbd5e1",
-				tertiaryColor: "#6b5f4a",
-				tertiaryTextColor: "#f8fafc",
-				tertiaryBorderColor: "#f5d06f",
-				lineColor: "#c9a84c",
-				nodeBorder: "#cbd5e1",
-				clusterBkg: "#252525",
-				clusterBorder: "#444"
-			}
-		});
+  <style>
+    :root {
+      --bg:     #2e2e2e;
+      --white:  #f2f2ee;
+      --muted:  rgba(242,242,238,0.62);
+      --border: rgba(200,200,200,0.15);
+      --gold:   #c9a84c;
+      --active: #4a7c59;
+      --active-glow: rgba(74,124,89,0.25);
+    }
 
-		window.renderMermaid = async function(code) {
-			const target = document.getElementById("flowchart");
-			target.innerHTML = "";
-			const id = "flowchart-" + Date.now();
-			const { svg } = await mermaid.render(id, code);
-			target.innerHTML = svg;
-		};
-	</script>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-	<style>
-		:root {
-			--bg: #2e2e2e;
-			--white: #f2f2ee;
-			--muted: rgba(242,242,238,0.62);
-			--border: rgba(200,200,200,0.15);
-			--gold: #c9a84c;
-		}
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: "Trebuchet MS", "Verdana", sans-serif;
+      color: var(--white);
+      font-size: clamp(13px, 1.1vw, 16px);
+    }
 
-		* { box-sizing: border-box; margin: 0; padding: 0; }
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 110%, rgba(90,90,90,0.38) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% -10%, rgba(20,20,20,0.85) 0%, transparent 70%),
+        radial-gradient(ellipse 100% 80% at 50% 50%, #1a1a1a 0%, #2e2e2e 100%);
+      pointer-events: none;
+    }
 
-		html, body {
-			width: 100%;
-			min-height: 100%;
-			background: var(--bg);
-			font-family: "Trebuchet MS", "Verdana", sans-serif;
-			color: var(--white);
-		}
+    .close-btn {
+      position: fixed;
+      top: 1rem; right: 1.25rem;
+      z-index: 100;
+      font-family: 'Press Start 2P', cursive;
+      font-size: clamp(9px, 0.85vw, 13px);
+      padding: 0.6rem 1rem;
+      background: #c6c6c6;
+      color: #3f3f3f;
+      border: 3px solid #1d1d1d;
+      box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+      cursor: pointer;
+      letter-spacing: .05em;
+    }
+    .close-btn:hover { background: #9b9b9b; }
 
-		body::before {
-			content: "";
-			position: fixed;
-			inset: 0;
-			z-index: 0;
-			background:
-				radial-gradient(ellipse 80% 60% at 20% 110%, rgba(90,90,90,0.38) 0%, transparent 60%),
-				radial-gradient(ellipse 60% 50% at 80% -10%, rgba(20,20,20,0.85) 0%, transparent 70%),
-				radial-gradient(ellipse 100% 80% at 50% 50%, #1a1a1a 0%, #2e2e2e 100%);
-			pointer-events: none;
-		}
+    /* ── SPLIT LAYOUT ── */
+    .layout {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
 
-		/* ── CLOSE BUTTON — matches experience page ── */
-		.close-btn {
-			position: fixed;
-			top: 16px;
-			right: 20px;
-			z-index: 100;
-			font-family: 'Press Start 2P', cursive;
-			font-size: 13px;
-			padding: 10px 16px;
-			background: #c6c6c6;
-			color: #3f3f3f;
-			border: 3px solid #1d1d1d;
-			box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
-			cursor: pointer;
-			letter-spacing: .05em;
-		}
-		.close-btn:hover { background: #9b9b9b; }
+    .col {
+      padding: clamp(3.5rem, 6vh, 5rem) clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vh, 3rem);
+      overflow-y: auto;
+    }
 
-		.page {
-			position: relative;
-			z-index: 1;
-			padding: 60px 80px;
-			max-width: 1200px;
-			margin: auto;
-		}
+    .col-built {
+      border-right: 1px solid var(--border);
+    }
 
-		.section-label {
-			font-size: 0.7rem;
-			letter-spacing: 0.15em;
-			text-transform: uppercase;
-			color: #9b9b9b;
-			margin-bottom: 10px;
-		}
+    .col-wip {
+      background: rgba(0,0,0,0.12);
+    }
 
-		.page-title {
-			font-family: Georgia, serif;
-			font-size: 2.6rem;
-			font-style: italic;
-			font-weight: 300;
-			margin-bottom: 40px;
-			letter-spacing: -0.02em;
-		}
+    .section-label {
+      font-size: clamp(0.52rem, 0.65vw, 0.68rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9b9b9b;
+      margin-bottom: 0.45rem;
+    }
 
-		.project-list {
-			display: flex;
-			flex-direction: column;
-			gap: 22px;
-		}
+    .page-title {
+      font-family: Georgia, serif;
+      font-size: clamp(1.3rem, 2.2vw, 2rem);
+      font-style: italic;
+      font-weight: 300;
+      margin-bottom: clamp(1.2rem, 3vh, 2rem);
+      letter-spacing: -0.02em;
+    }
 
-		.project-bar {
-			display: grid;
-			grid-template-columns: 250px 1fr;
-			background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
-			border: 1px solid var(--border);
-			border-radius: 16px;
-			overflow: hidden;
-			transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-			cursor: pointer;
-			box-shadow: 0 18px 45px rgba(0,0,0,0.18);
-			backdrop-filter: blur(8px);
-		}
+    .col-wip .page-title {
+      color: #a8c9a0;
+    }
 
-		.project-bar:hover {
-			background: linear-gradient(145deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
-			transform: translateY(-4px);
-			border-color: rgba(200,200,200,0.28);
-			box-shadow: 0 24px 58px rgba(0,0,0,0.28);
-		}
+    /* ── DIVIDER LINE ── */
+    .col-built .page-title::after {
+      content: '';
+      display: block;
+      width: 2rem;
+      height: 2px;
+      background: var(--gold);
+      margin-top: 0.6rem;
+    }
 
-		.project-photo {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 16px;
-			min-height: 120px;
-		}
+    .col-wip .page-title::after {
+      content: '';
+      display: block;
+      width: 2rem;
+      height: 2px;
+      background: var(--active);
+      margin-top: 0.6rem;
+    }
 
-		.project-photo img {
-			max-width: 75%;
-			max-height: 100px;
-			width: auto;
-			height: auto;
-			object-fit: contain;
-			display: block;
-			transition: transform 0.22s ease, opacity 0.22s ease;
-		}
+    /* ── PROJECT LIST ── */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
 
-		.project-bar:hover .project-photo img {
-			transform: scale(1.04);
-			opacity: 0.92;
-		}
+    .project-wrap {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: clamp(0.6rem, 1.2vh, 0.85rem);
+      transition: border-color .25s;
+    }
+    .project-wrap.open {
+      border-color: rgba(200,200,200,0.3);
+    }
 
-		.project-content {
-			padding: 24px 26px;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-		}
+    .project-bar {
+      display: grid;
+      grid-template-columns: clamp(80px, 10vw, 130px) 1fr;
+      background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+      cursor: pointer;
+      transition: background .22s;
+      position: relative;
+    }
+    .project-bar:hover,
+    .project-wrap.open .project-bar {
+      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+    }
 
-		.project-top {
-			display: flex;
-			justify-content: space-between;
-			margin-bottom: 7px;
-			gap: 16px;
-		}
+    .project-bar::after {
+      content: '▾';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(0deg);
+      font-size: 0.85rem;
+      color: rgba(200,200,200,0.45);
+      transition: transform .35s ease, color .2s;
+    }
+    .project-wrap.open .project-bar::after {
+      transform: translateY(-50%) rotate(180deg);
+      color: var(--gold);
+    }
 
-		.project-name {
-			font-size: 1.1rem;
-			font-weight: 700;
-			letter-spacing: 0.01em;
-		}
+    .project-photo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(0.6rem, 1.2vw, 0.9rem);
+      min-height: clamp(65px, 8vw, 90px);
+    }
+    .project-photo img {
+      max-width: 75%;
+      max-height: clamp(50px, 6vw, 75px);
+      object-fit: contain;
+      transition: transform .22s, opacity .22s;
+    }
+    .project-bar:hover .project-photo img { transform: scale(1.04); opacity: 0.9; }
 
-		.project-date {
-			font-size: 0.75rem;
-			color: var(--gold);
-			white-space: nowrap;
-		}
+    .project-content {
+      padding: clamp(0.8rem, 1.5vw, 1.1rem) clamp(0.8rem, 1.5vw, 1.1rem) clamp(0.8rem, 1.5vw, 1.1rem) 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 2rem;
+    }
 
-		.project-type {
-			font-size: 0.74rem;
-			color: #b3b3b3;
-			margin-bottom: 11px;
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
-		}
+    .project-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+      gap: 0.5rem;
+    }
 
-		.project-desc {
-			font-size: 0.92rem;
-			color: var(--muted);
-			line-height: 1.65;
-			margin-bottom: 14px;
-		}
+    .project-name {
+      font-size: clamp(0.8rem, 0.95vw, 1rem);
+      font-weight: 700;
+    }
 
-		.project-tags {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 7px;
-		}
+    .project-date {
+      font-size: clamp(0.6rem, 0.72vw, 0.72rem);
+      color: var(--gold);
+      white-space: nowrap;
+    }
 
-		.project-tag {
-			font-size: 0.7rem;
-			padding: 4px 10px;
-			border-radius: 20px;
-			border: 1px solid rgba(200,200,200,0.18);
-			background: rgba(255,255,255,0.055);
-			color: rgba(242,242,238,0.72);
-		}
+    .project-type {
+      font-size: clamp(0.58rem, 0.7vw, 0.7rem);
+      color: #b3b3b3;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+    }
 
-		.modal {
-			position: fixed;
-			inset: 0;
-			z-index: 50;
-			display: none;
-			align-items: center;
-			justify-content: center;
-			background: rgba(0,0,0,0.74);
-			padding: 36px;
-			backdrop-filter: blur(6px);
-		}
+    .project-desc {
+      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 0.6rem;
+    }
 
-		.modal.show { display: flex; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .project-tag {
+      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
+      padding: 2px 7px;
+      border-radius: 20px;
+      border: 1px solid rgba(200,200,200,0.18);
+      background: rgba(255,255,255,0.055);
+      color: rgba(242,242,238,0.72);
+    }
 
-		.modal-card {
-			width: min(1180px, 100%);
-			max-height: 88vh;
-			overflow-y: auto;
-			background: linear-gradient(145deg, #343434, #242424);
-			border: 1px solid rgba(200,200,200,0.22);
-			border-radius: 20px;
-			box-shadow: 0 30px 90px rgba(0,0,0,0.65);
-		}
+    /* ── DRAWER ── */
+    .project-drawer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .5s cubic-bezier(0.4,0,0.2,1);
+      background: rgba(0,0,0,0.18);
+    }
+    .project-wrap.open .project-drawer {
+      max-height: 600px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
 
-		.modal-header {
-			display: flex;
-			gap: 22px;
-			padding: 24px;
-			border-bottom: 1px solid rgba(255,255,255,0.1);
-			background: rgba(255,255,255,0.02);
-			align-items: center;
-		}
+    .drawer-inner {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.1rem);
+      padding: clamp(0.85rem, 1.5vw, 1.2rem);
+    }
 
-		.modal-image {
-			flex-shrink: 0;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 90px;
-			height: 90px;
-		}
+    .detail-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: clamp(0.75rem, 1.2vw, 1rem);
+    }
 
-		.modal-image img {
-			max-width: 100%;
-			max-height: 100%;
-			width: auto;
-			height: auto;
-			object-fit: contain;
-		}
+    .detail-box h3 {
+      font-size: clamp(0.7rem, 0.82vw, 0.85rem);
+      margin-bottom: 0.75rem;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
 
-		.modal-title { font-size: 1.45rem; margin-bottom: 7px; }
+    .detail-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .detail-box li {
+      color: var(--muted);
+      font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+      line-height: 1.6;
+      padding-left: 1rem;
+      position: relative;
+    }
+    .detail-box li::before {
+      content: "▸";
+      position: absolute; left: 0;
+      color: var(--gold);
+    }
 
-		.modal-type {
-			font-size: 0.78rem;
-			color: #b5b5b5;
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
-			margin-bottom: 12px;
-		}
+    .flowchart-box {
+      background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+                  rgba(0,0,0,0.2);
+      background-size: 24px 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: clamp(0.6rem, 1.2vw, 0.9rem);
+      overflow: auto;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flowchart-box svg { width: 100%; height: auto; background: transparent; }
 
-		.modal-desc {
-			font-size: 0.94rem;
-			line-height: 1.72;
-			color: var(--muted);
-			max-width: 720px;
-		}
+    .flowchart-wrap h3 {
+      font-size: clamp(0.7rem, 0.82vw, 0.85rem);
+      margin-bottom: 0.75rem;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
 
-		.close-modal {
-			margin-left: auto;
-			align-self: flex-start;
-			background: rgba(255,255,255,0.035);
-			border: 1px solid var(--border);
-			color: var(--white);
-			border-radius: 10px;
-			padding: 9px 13px;
-			cursor: pointer;
-			transition: background 0.2s ease, border-color 0.2s ease;
-		}
+    /* ── WIP CARDS ── */
+    .wip-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.6rem, 1.2vh, 0.85rem);
+    }
 
-		.close-modal:hover {
-			background: rgba(255,255,255,0.09);
-			border-color: rgba(255,255,255,0.25);
-		}
+    .wip-card {
+      border: 1px solid rgba(74,124,89,0.3);
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(145deg, rgba(74,124,89,0.06), rgba(255,255,255,0.02));
+      transition: border-color .25s, background .25s;
+    }
+    .wip-card:hover {
+      border-color: rgba(74,124,89,0.55);
+      background: linear-gradient(145deg, rgba(74,124,89,0.1), rgba(255,255,255,0.03));
+    }
 
-		.modal-body {
-			padding: 24px;
-			display: grid;
-			grid-template-columns: 0.85fr 1.15fr;
-			gap: 26px;
-		}
+    .wip-inner {
+      padding: clamp(0.9rem, 1.6vw, 1.2rem);
+    }
 
-		.detail-box {
-			background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
-			border: 1px solid var(--border);
-			border-radius: 16px;
-			padding: 18px;
-			box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-		}
+    .wip-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
 
-		.detail-box h3 { font-size: 0.95rem; margin-bottom: 14px; letter-spacing: 0.02em; }
+    .wip-name {
+      font-size: clamp(0.82rem, 0.98vw, 1rem);
+      font-weight: 700;
+    }
 
-		.detail-box ul {
-			list-style: none;
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-		}
+    .wip-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
+      color: #7ec896;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
-		.detail-box li {
-			color: var(--muted);
-			font-size: 0.9rem;
-			line-height: 1.6;
-			padding-left: 18px;
-			position: relative;
-		}
+    .wip-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #7ec896;
+      animation: blink 1.6s infinite ease-in-out;
+    }
 
-		.detail-box li::before {
-			content: "▸";
-			position: absolute;
-			left: 0;
-			color: var(--gold);
-		}
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
 
-		#flowchart {
-			width: 100%;
-			min-height: 340px;
-			background:
-				linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-				linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
-				rgba(0,0,0,0.2);
-			background-size: 28px 28px;
-			border: 1px solid rgba(255,255,255,0.12);
-			border-radius: 14px;
-			padding: 18px;
-			overflow: auto;
-		}
+    .wip-type {
+      font-size: clamp(0.58rem, 0.7vw, 0.7rem);
+      color: #8ab898;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
 
-		#flowchart svg {
-			width: 100%;
-			height: auto;
-			min-height: 290px;
-			background: transparent;
-		}
+    .wip-desc {
+      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 0.65rem;
+    }
 
-		#flowchart .edgePath path {
-			stroke-width: 2.4px;
-			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
-		}
+    .wip-progress-wrap {
+      margin-bottom: 0.65rem;
+    }
 
-		#flowchart text { font-weight: 700; letter-spacing: 0.01em; }
+    .wip-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
+      color: #7b8c80;
+      margin-bottom: 0.3rem;
+    }
 
-		@media (max-width: 800px) {
-			.page { padding: 56px 24px; }
-			.project-bar { grid-template-columns: 250px 1fr; align-items: center; }
-			.modal-header { flex-direction: column; }
-			.modal-image { width: 70px; height: 70px; }
-			.modal-body { grid-template-columns: 1fr; }
-		}
-	</style>
+    .wip-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .wip-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4a7c59, #7ec896);
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    .wip-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .wip-tag {
+      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
+      padding: 2px 7px;
+      border-radius: 20px;
+      border: 1px solid rgba(74,124,89,0.35);
+      background: rgba(74,124,89,0.1);
+      color: #a8c9a0;
+    }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .col-built { border-right: none; border-bottom: 1px solid var(--border); }
+      .drawer-inner { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
 
 <button class="close-btn" onclick="window.parent.postMessage('closeProjects', '*')">✕ Close</button>
 
-<main class="page">
-	<p class="section-label">Projects</p>
-	<h1 class="page-title">What I've Built</h1>
-	<section class="project-list" id="projectList"></section>
-</main>
+<div class="layout">
 
-<div class="modal" id="modal">
-	<div class="modal-card">
-		<div class="modal-header">
-			<div class="modal-image">
-				<img id="modalImg" src="" alt="">
-			</div>
-			<div>
-				<h2 class="modal-title" id="modalTitle"></h2>
-				<p class="modal-type" id="modalType"></p>
-				<p class="modal-desc" id="modalDesc"></p>
-			</div>
-			<button class="close-modal" onclick="closeModal()">Close</button>
-		</div>
-		<div class="modal-body">
-			<div class="detail-box">
-				<h3>What it does</h3>
-				<ul id="modalBullets"></ul>
-			</div>
-			<div class="detail-box">
-				<h3>System Flow</h3>
-				<div id="flowchart"></div>
-			</div>
-		</div>
-	</div>
+  <!-- LEFT: BUILT -->
+  <div class="col col-built">
+    <p class="section-label">Completed</p>
+    <h1 class="page-title">What I've Built</h1>
+    <section class="project-list" id="projectList"></section>
+  </div>
+
+  <!-- RIGHT: WIP -->
+  <div class="col col-wip">
+    <p class="section-label">In Progress</p>
+    <h1 class="page-title">Currently Working On</h1>
+    <section class="wip-list" id="wipList"></section>
+  </div>
+
 </div>
 
 <script>
-	const graphStyle = `
+  const graphStyle = `
 classDef start fill:#3f4f5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 classDef process fill:#4f6d5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 classDef decision fill:#6b5f4a,stroke:#f5d06f,color:#f8fafc,stroke-width:1.5px;
 classDef output fill:#5f4f63,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 `;
 
-	const projects = [
-		{
-			name: "Mini Me AI",
-			date: "2026",
-			type: "Local AI Systems",
-			image: "images/mini-me-ai.png",
-			desc: "A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
-			tags: ["C++", "Python", "Ollama", "Piper", "Vosk"],
-			bullets: [
-				"Runs local LLM inference through Ollama instead of depending fully on external APIs.",
-				"Uses voice input and text-to-speech to make the assistant feel more interactive.",
-				"Connects local AI, personality behavior, and system-level constraints into one project."
-			],
-			chart: `
-flowchart LR
-	A((User Input)) --> B[Speech / Text]
-	B --> C{Input Type}
-	C --> D[Local LLM]
-	C --> E[System Logic]
-	D --> F[Response]
-	E --> F
-	F --> G((Voice Output))
-
+  const projects = [
+    {
+      name: "Mini Me AI",
+      date: "2026",
+      type: "Local AI Systems",
+      image: "images/mini-me-ai.png",
+      desc: "A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
+      tags: ["C++", "Python", "Ollama", "Piper", "Vosk"],
+      bullets: [
+        "Runs local LLM inference through Ollama instead of depending fully on external APIs.",
+        "Uses voice input and text-to-speech to make the assistant feel more interactive.",
+        "Connects local AI, personality behavior, and system-level constraints into one project."
+      ],
+      chart: `flowchart LR
+  A((User Input)) --> B[Speech / Text]
+  B --> C{Input Type}
+  C --> D[Local LLM]
+  C --> E[System Logic]
+  D --> F[Response]
+  E --> F
+  F --> G((Voice Output))
 ${graphStyle}
-	class A,G start;
-	class B,D,E,F process;
-	class C decision;
-`
-		},
-		{
-			name: "WasteLess AI",
-			date: "2026",
-			type: "Full Stack Web App",
-			image: "images/wasteless-ai.png",
-			desc: "A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
-			tags: ["Next.js", "React", "Supabase", "Leaflet", "NVIDIA API"],
-			bullets: [
-				"Restaurants submit extra food with location, availability, quantity, and pickup windows.",
-				"The app compares shelter needs, distance, urgency, and constraints before matching.",
-				"Map and backend data work together so the system feels practical instead of just visual."
-			],
-			chart: `
-flowchart LR
-	A((Restaurant)) --> B[Food Listing]
-	B --> C{Match Check}
-	C --> D[Location Data]
-	C --> E[Shelter Needs]
-	C --> F[Pickup Window]
-	D --> G[Matching Logic]
-	E --> G
-	F --> G
-	G --> H[Map View]
-	G --> I((Shelter))
-
+  class A,G start;class B,D,E,F process;class C decision;`
+    },
+    {
+      name: "WasteLess AI",
+      date: "2026",
+      type: "Full Stack Web App",
+      image: "images/wasteless-ai.png",
+      desc: "A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
+      tags: ["Next.js", "React", "Supabase", "Leaflet", "NVIDIA API"],
+      bullets: [
+        "Restaurants submit extra food with location, availability, quantity, and pickup windows.",
+        "The app compares shelter needs, distance, urgency, and constraints before matching.",
+        "Map and backend data work together so the system feels practical instead of just visual."
+      ],
+      chart: `flowchart LR
+  A((Restaurant)) --> B[Food Listing]
+  B --> C{Match Check}
+  C --> D[Location Data]
+  C --> E[Shelter Needs]
+  C --> F[Pickup Window]
+  D --> G[Matching Logic]
+  E --> G
+  F --> G
+  G --> H[Map View]
+  G --> I((Shelter))
 ${graphStyle}
-	class A,I start;
-	class B,D,E,F,G,H process;
-	class C decision;
-`
-		},
-		{
-			name: "ProfessorMatch",
-			date: "2026",
-			type: "Recommendation System",
-			image: "images/professormatch.png",
-			desc: "A system that ranks professors using combined datasets and explains recommendations based on student goals.",
-			tags: ["Python", "pandas", "Streamlit", "FastAPI", "Data Cleaning"],
-			bullets: [
-				"Pulls together professor ratings, course data, and profile information.",
-				"Uses ranking logic to match professors to goals like GPA, learning depth, or career value.",
-				"Shows explainable results so students understand why each professor is recommended."
-			],
-			chart: `
-flowchart LR
-	A((Student Goal)) --> B{Goal Type}
-	B --> C[Ratings Data]
-	B --> D[Course Data]
-	B --> E[Profile Data]
-	C --> F[Data Cleaning]
-	D --> F
-	E --> F
-	F --> G[Ranking Logic]
-	G --> H[Streamlit UI]
-	H --> I((Recommendation))
-
+  class A,I start;class B,D,E,F,G,H process;class C decision;`
+    },
+    {
+      name: "ProfessorMatch",
+      date: "2026",
+      type: "Recommendation System",
+      image: "images/professormatch.png",
+      desc: "A system that ranks professors using combined datasets and explains recommendations based on student goals.",
+      tags: ["Python", "pandas", "Streamlit", "FastAPI", "Data Cleaning"],
+      bullets: [
+        "Pulls together professor ratings, course data, and profile information.",
+        "Uses ranking logic to match professors to goals like GPA, learning depth, or career value.",
+        "Shows explainable results so students understand why each professor is recommended."
+      ],
+      chart: `flowchart LR
+  A((Student Goal)) --> B{Goal Type}
+  B --> C[Ratings Data]
+  B --> D[Course Data]
+  B --> E[Profile Data]
+  C --> F[Data Cleaning]
+  D --> F
+  E --> F
+  F --> G[Ranking Logic]
+  G --> H[Streamlit UI]
+  H --> I((Recommendation))
 ${graphStyle}
-	class A,I start;
-	class C,D,E,F,G,H process;
-	class B decision;
-`
-		},
-		{
-			name: "Roguelike Maker",
-			date: "2026",
-			type: "Godot Game Generator",
-			image: "images/roguelike-maker.png",
-			desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
-			tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
-			bullets: [
-				"Split the project into two roles: one person handled Godot game systems while the other handled the AI generator.",
-				"Built a config pipeline where prompts changed player speed, enemy density, enemy types, weapon type, and room sequence.",
-				"Connected the generated JSON into Godot so changing the config directly changed gameplay.",
-				"Focused on a realistic 24-hour hackathon scope: one weapon, two enemy types, a few rooms, and a working demo."
-			],
-			chart: `
-flowchart LR
-	A((Prompt)) --> B{AI Interprets}
-	B --> C[Player Speed]
-	B --> D[Enemy Density]
-	B --> E[Room Sequence]
-	B --> F[Weapon Type]
-	C --> G[JSON Config]
-	D --> G
-	E --> G
-	F --> G
-	G --> H[Godot Config Loader]
-	H --> I[Game Systems]
-	I --> J((Playable Roguelike))
-
+  class A,I start;class C,D,E,F,G,H process;class B decision;`
+    },
+    {
+      name: "Roguelike Maker",
+      date: "2026",
+      type: "Godot Game Generator",
+      image: "images/roguelike-maker.png",
+      desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
+      tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
+      bullets: [
+        "Split into two roles: one handled Godot game systems, the other handled the AI generator.",
+        "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
+        "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
+        "Scoped for 24h: one weapon, two enemy types, a few rooms, and a working demo."
+      ],
+      chart: `flowchart LR
+  A((Prompt)) --> B{AI Interprets}
+  B --> C[Player Speed]
+  B --> D[Enemy Density]
+  B --> E[Room Sequence]
+  B --> F[Weapon Type]
+  C --> G[JSON Config]
+  D --> G
+  E --> G
+  F --> G
+  G --> H[Godot Config Loader]
+  H --> I[Game Systems]
+  I --> J((Playable Roguelike))
 ${graphStyle}
-	class A,J start;
-	class C,D,E,F,G,H,I process;
-	class B decision;
-`
-		}
-	];
+  class A,J start;class C,D,E,F,G,H,I process;class B decision;`
+    }
+  ];
 
-	const projectList = document.getElementById("projectList");
+  const wip = [
+    {
+      name: "Research Paper",
+      type: "Academic Writing",
+      status: "Writing",
+      progress: 35,
+      desc: "Developing a research paper titled “Rethinking Deep Self-Attention for Character-Level Language Modeling,” where I analyze and challenge the idea that transformer models fully replace recurrent neural networks. The paper explores limitations such as fixed context windows, computational cost, and reliance on auxiliary training techniques, while proposing hybrid or sequential approaches as a more practical direction.",
+      tags: ["Research", "Writing", "Self-directed"]
+    },
+    {
+      name: "3D Models In html using Three.js",
+      type: "Dev Log",
+      status: "Ongoing",
+      progress: 20,
+      desc: "Dev log: converting images to Base64, slicing them with canvas, and mapping textures onto a Three.js slime.",
+      tags: ["Three.js", "JavaScript", "Canvas"]
+    },
+    {
+      name: "...",
+      type: "TBD",
+      status: "Thinking",
+      progress: 0,
+      desc: "Give me a problem to solve or an idea to build!",
+      tags: ["???"]
+    }
+  ];
 
-	projects.forEach((p, index) => {
-		const card = document.createElement("article");
-		card.className = "project-bar";
-		card.onclick = () => openModal(index);
-		card.innerHTML = `
-			<div class="project-photo">
-				<img src="${p.image}" alt="${p.name}">
-			</div>
-			<div class="project-content">
-				<div class="project-top">
-					<div class="project-name">${p.name}</div>
-					<div class="project-date">${p.date}</div>
-				</div>
-				<div class="project-type">${p.type}</div>
-				<div class="project-desc">${p.desc}</div>
-				<div class="project-tags">
-					${p.tags.map(tag => `<span class="project-tag">${tag}</span>`).join("")}
-				</div>
-			</div>
-		`;
-		projectList.appendChild(card);
-	});
+  // ── Render built projects ──
+  const list = document.getElementById("projectList");
 
-	async function openModal(index) {
-		const p = projects[index];
-		document.getElementById("modalImg").src = p.image;
-		document.getElementById("modalTitle").textContent = p.name;
-		document.getElementById("modalType").textContent = p.type;
-		document.getElementById("modalDesc").textContent = p.desc;
-		document.getElementById("modalBullets").innerHTML =
-			p.bullets.map(b => `<li>${b}</li>`).join("");
-		document.getElementById("modal").classList.add("show");
-		setTimeout(() => { window.renderMermaid(p.chart); }, 100);
-	}
+  projects.forEach((p, i) => {
+    const chartId = `chart-${i}`;
+    const wrap = document.createElement("div");
+    wrap.className = "project-wrap";
 
-	function closeModal() {
-		document.getElementById("modal").classList.remove("show");
-		document.getElementById("flowchart").innerHTML = "";
-	}
+    wrap.innerHTML = `
+      <div class="project-bar" onclick="toggleProject(${i})">
+        <div class="project-photo">
+          <img src="${p.image}" alt="${p.name}">
+        </div>
+        <div class="project-content">
+          <div class="project-top">
+            <div class="project-name">${p.name}</div>
+            <div class="project-date">${p.date}</div>
+          </div>
+          <div class="project-type">${p.type}</div>
+          <div class="project-desc">${p.desc}</div>
+          <div class="project-tags">${p.tags.map(t => `<span class="project-tag">${t}</span>`).join("")}</div>
+        </div>
+      </div>
+      <div class="project-drawer">
+        <div class="drawer-inner">
+          <div class="detail-box">
+            <h3>What it does</h3>
+            <ul>${p.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+          </div>
+          <div class="flowchart-wrap">
+            <h3>System Flow</h3>
+            <div class="flowchart-box" id="${chartId}"></div>
+          </div>
+        </div>
+      </div>
+    `;
 
-	document.getElementById("modal").addEventListener("click", e => {
-		if (e.target.id === "modal") closeModal();
-	});
+    list.appendChild(wrap);
+  });
+
+  function toggleProject(i) {
+    const wraps = document.querySelectorAll(".project-wrap");
+    const isOpen = wraps[i].classList.contains("open");
+    wraps.forEach(w => w.classList.remove("open"));
+    if (!isOpen) {
+      wraps[i].classList.add("open");
+      setTimeout(() => window.renderMermaid(projects[i].chart, `chart-${i}`), 80);
+    }
+  }
+
+  // ── Render WIP cards ──
+  const wipList = document.getElementById("wipList");
+
+  wip.forEach(w => {
+    const card = document.createElement("div");
+    card.className = "wip-card";
+    card.innerHTML = `
+      <div class="wip-inner">
+        <div class="wip-top">
+          <div class="wip-name">${w.name}</div>
+          <div class="wip-status"><span class="wip-dot"></span>${w.status}</div>
+        </div>
+        <div class="wip-type">${w.type}</div>
+        <div class="wip-desc">${w.desc}</div>
+        <div class="wip-progress-wrap">
+          <div class="wip-progress-label"><span>Progress</span><span>${w.progress}%</span></div>
+          <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
+        </div>
+        <div class="wip-tags">${w.tags.map(t => `<span class="wip-tag">${t}</span>`).join("")}</div>
+      </div>
+    `;
+    wipList.appendChild(card);
+  });
 </script>
 
 </body>

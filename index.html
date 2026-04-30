@@ -194,7 +194,6 @@
 			border: none;
 		}
 
-		/* ── TOAST — fixed bottom-right, never scaled with scene ── */
 		#toast {
 			position: fixed;
 			bottom: 24px;
@@ -221,22 +220,20 @@
 			transform: translateY(0);
 		}
 
-#slime-canvas {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 2;  /* was 9999 */
-}
+		#slime-canvas {
+			position: fixed;
+			inset: 0;
+			width: 100vw;
+			height: 100vh;
+			pointer-events: none;
+			z-index: 2;
+		}
 	</style>
 </head>
 
 <body>
 
-	<video class="bg-video" autoplay muted playsinline id="bgVideo">
-		<source id="videoSource" src="" type="video/mp4">
-	</video>
+	<video class="bg-video" autoplay muted playsinline id="bgVideo"></video>
 
 	<div id="scene">
 		<div class="overlay">
@@ -292,7 +289,6 @@
 		</div>
 	</div>
 
-	<!-- Toast notification (replaces the old popup) -->
 	<div id="toast">Resume Downloaded!</div>
 
 	<script>
@@ -318,30 +314,44 @@
 			}
 		});
 
-		// Random background video
-		const videos = [];
-
-		for (let i = 1; i <= 7; i++) {
-			videos.push(`https://angelcruzgtur.com/videos/bg${i}.MP4`);
+		// ── Video preloading ──────────────────────────────────────────
+		// One hidden <video> per clip — the browser starts buffering all
+		// of them immediately in the background via preload="auto".
+		const VIDEO_COUNT = 7;
+		const videoPaths = [];
+		for (let i = 1; i <= VIDEO_COUNT; i++) {
+			videoPaths.push(`videos/bg${i}.MP4`);
 		}
 
-		const video = document.getElementById('bgVideo');
-		const videoSource = document.getElementById('videoSource');
+		const preloaded = videoPaths.map(src => {
+			const v = document.createElement('video');
+			v.src = src;
+			v.preload = 'auto';
+			v.muted = true;
+			v.style.display = 'none';
+			document.body.appendChild(v);
+			return v;
+		});
+
+		const bgVideo = document.getElementById('bgVideo');
 		let lastIndex = -1;
 
 		function playRandomVideo() {
 			let index;
 			do {
-				index = Math.floor(Math.random() * videos.length);
-			} while (index === lastIndex && videos.length > 1);
+				index = Math.floor(Math.random() * preloaded.length);
+			} while (index === lastIndex && preloaded.length > 1);
 			lastIndex = index;
-			videoSource.src = videos[index];
-			video.load();
-			video.play();
+
+			// Point the visible player at the already-buffered src
+			bgVideo.src = preloaded[index].src;
+			bgVideo.load();
+			bgVideo.play();
 		}
 
 		playRandomVideo();
-		video.addEventListener('ended', playRandomVideo);
+		bgVideo.addEventListener('ended', playRandomVideo);
+		// ─────────────────────────────────────────────────────────────
 
 		// Experience modal
 		function openExperience() {
@@ -383,7 +393,7 @@
 			if (e.data === 'closeAbout')      closeAbout();
 		});
 
-		// Resume download — small toast, no giant popup
+		// Resume download
 		let toastTimer = null;
 		function downloadResume() {
 			const link = document.createElement('a');

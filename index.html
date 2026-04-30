@@ -320,7 +320,10 @@
 
 		// Random background video
 		const videos = [];
-		videos.push(`https://angelcruzgtur.com/videos/bg${i}.MP4`);
+
+		for (let i = 1; i <= 7; i++) {
+			videos.push(`https://angelcruzgtur.com/videos/bg${i}.MP4`);
+		}
 
 		const video = document.getElementById('bgVideo');
 		const videoSource = document.getElementById('videoSource');

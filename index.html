@@ -316,7 +316,7 @@
 			}
 		});
 
-		// ── Video crossfade ───────────────────────────────────────────
+		// ── Video crossfade with blob preloading ─────────────────────
 		const videoPaths = [
 			'videos/bg1.MP4','videos/bg2.MP4','videos/bg3.MP4',
 			'videos/bg4.MP4','videos/bg5.MP4','videos/bg6.MP4','videos/bg7.MP4'
@@ -324,6 +324,18 @@
 
 		const vA = document.getElementById('bgVideo0');
 		const vB = document.getElementById('bgVideo1');
+
+		// Fetch all videos as blob URLs so they're fully in memory
+		// — no buffering stalls mid-playback ever
+		const blobURLs = new Array(videoPaths.length).fill(null);
+
+		videoPaths.forEach((path, i) => {
+			fetch(path)
+				.then(r => r.blob())
+				.then(blob => { blobURLs[i] = URL.createObjectURL(blob); })
+				.catch(() => { blobURLs[i] = path; }); // fallback to path if fetch fails
+		});
+
 		let lastIndex = -1;
 
 		function pickNext() {
@@ -334,28 +346,41 @@
 			return i;
 		}
 
-		// Play src on `incoming`, then crossfade once it can play
-		function playOn(incoming, outgoing, src) {
+		// Load src onto a player, wait for it to be ready, then play + fade in
+		function playOn(incoming, outgoing, index) {
+			const src = blobURLs[index] || videoPaths[index];
 			incoming.src = src;
 			incoming.load();
-			incoming.play().catch(() => {});
-			incoming.style.opacity = '1';
-			outgoing.style.opacity = '0';
+
+			function go() {
+				incoming.play().catch(() => {});
+				incoming.style.opacity = '1';
+				outgoing.style.opacity = '0';
+			}
+
+			if (incoming.readyState >= 3) {
+				go();
+			} else {
+				incoming.addEventListener('canplaythrough', go, { once: true });
+				// Safety fallback — fade in after 1.5s no matter what
+				setTimeout(go, 1500);
+			}
 		}
 
-		// When A ends → load next on B, swap, then listen on B
-		// When B ends → load next on A, swap, then listen on A
 		function setupEnded(current, other) {
 			current.addEventListener('ended', function handler() {
 				current.removeEventListener('ended', handler);
-				playOn(other, current, videoPaths[pickNext()]);
+				playOn(other, current, pickNext());
 				setupEnded(other, current);
 			});
 		}
 
-		// Start: play first video on A
-		playOn(vA, vB, videoPaths[pickNext()]);
-		setupEnded(vA, vB);
+		// Kick off — wait a tick so DOM is ready
+		setTimeout(() => {
+			const first = pickNext();
+			playOn(vA, vB, first);
+			setupEnded(vA, vB);
+		}, 0);
 		// ─────────────────────────────────────────────────────────────
 
 		// Experience modal

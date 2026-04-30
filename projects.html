@@ -1,697 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projects</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Projects</title>
+	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: transparent;
-      font-family: 'Press Start 2P', cursive;
-    }
+	<script type="module">
+		import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
 
-    #scene {
-      position: fixed;
-      top: 0; left: 0;
-      width: 1400px; height: 900px;
-      transform-origin: top left;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+		mermaid.initialize({
+			startOnLoad: false,
+			theme: "base",
+			securityLevel: "loose",
+			flowchart: {
+				curve: "basis",
+				nodeSpacing: 55,
+				rankSpacing: 70,
+				padding: 18
+			},
+			themeVariables: {
+				background: "#1f1f1f",
+				fontFamily: "Trebuchet MS, Verdana, sans-serif",
+				primaryColor: "#3f4f5f",
+				primaryTextColor: "#f8fafc",
+				primaryBorderColor: "#cbd5e1",
+				secondaryColor: "#4f6d5f",
+				secondaryTextColor: "#f8fafc",
+				secondaryBorderColor: "#cbd5e1",
+				tertiaryColor: "#6b5f4a",
+				tertiaryTextColor: "#f8fafc",
+				tertiaryBorderColor: "#f5d06f",
+				lineColor: "#c9a84c",
+				nodeBorder: "#cbd5e1",
+				clusterBkg: "#252525",
+				clusterBorder: "#444"
+			}
+		});
 
-    .panel {
-      width: 920px;
-      height: 820px;
-      background: #3a3a3a;
-      border: 3px solid #111;
-      box-shadow:
-        inset 2px 2px 0 #575757,
-        inset -2px -2px 0 #1a1a1a,
-        0 12px 48px rgba(0,0,0,0.8);
-      display: flex;
-      flex-direction: column;
-    }
+		window.renderMermaid = async function(code) {
+			const target = document.getElementById("flowchart");
+			target.innerHTML = "";
+			const id = "flowchart-" + Date.now();
+			const { svg } = await mermaid.render(id, code);
+			target.innerHTML = svg;
+		};
+	</script>
 
-    /* ── TABS ── */
-    .tabs {
-      display: flex;
-      background: #2e2e2e;
-      border-bottom: 3px solid #111;
-      flex-shrink: 0;
-    }
+	<style>
+		:root {
+			--bg: #2e2e2e;
+			--white: #f2f2ee;
+			--muted: rgba(242,242,238,0.62);
+			--border: rgba(200,200,200,0.15);
+			--gold: #c9a84c;
+		}
 
-    .tab {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 26px 11px;
-      font-size: 11px;
-      color: #999;
-      border-right: 2px solid #111;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.08s;
-    }
+		* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .tab.active { background: #3a3a3a; color: #fff; }
-    .tab:not(.active):hover { background: #353535; color: #ccc; }
+		html, body {
+			width: 100%;
+			min-height: 100%;
+			background: var(--bg);
+			font-family: "Trebuchet MS", "Verdana", sans-serif;
+			color: var(--white);
+		}
 
-    .tab-count { font-size: 7px; color: #666; margin-left: 2px; }
+		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			z-index: 0;
+			background:
+				radial-gradient(ellipse 80% 60% at 20% 110%, rgba(90,90,90,0.38) 0%, transparent 60%),
+				radial-gradient(ellipse 60% 50% at 80% -10%, rgba(20,20,20,0.85) 0%, transparent 70%),
+				radial-gradient(ellipse 100% 80% at 50% 50%, #1a1a1a 0%, #2e2e2e 100%);
+			pointer-events: none;
+		}
 
-    .tab-close {
-      margin-left: auto;
-      padding: 14px 20px;
-      font-size: 14px;
-      color: #777;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-    }
-    .tab-close:hover { color: #fff; }
+		/* ── CLOSE BUTTON — matches experience page ── */
+		.close-btn {
+			position: fixed;
+			top: 16px;
+			right: 20px;
+			z-index: 100;
+			font-family: 'Press Start 2P', cursive;
+			font-size: 13px;
+			padding: 10px 16px;
+			background: #c6c6c6;
+			color: #3f3f3f;
+			border: 3px solid #1d1d1d;
+			box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+			cursor: pointer;
+			letter-spacing: .05em;
+		}
+		.close-btn:hover { background: #9b9b9b; }
 
-    /* ── TAB CONTENT WRAPPER ── */
-    .tab-content { display: none; flex: 1; flex-direction: column; min-height: 0; }
-    .tab-content.active { display: flex; }
+		.page {
+			position: relative;
+			z-index: 1;
+			padding: 60px 80px;
+			max-width: 1200px;
+			margin: auto;
+		}
 
-    /* ── CREATE BAR ── */
-    .create-bar {
-      background: #444;
-      border-bottom: 2px solid #111;
-      padding: 13px 20px;
-      text-align: center;
-      font-size: 12px;
-      color: #bbb;
-      letter-spacing: 1px;
-      flex-shrink: 0;
-      box-shadow: inset 0 1px 0 #555, inset 0 -1px 0 #222;
-    }
+		.section-label {
+			font-size: 0.7rem;
+			letter-spacing: 0.15em;
+			text-transform: uppercase;
+			color: #9b9b9b;
+			margin-bottom: 10px;
+		}
 
-    /* ── WORLD LIST ── */
-    .world-list { overflow-y: auto; flex: 1; }
-    .world-list::-webkit-scrollbar { width: 8px; }
-    .world-list::-webkit-scrollbar-track { background: #222; }
-    .world-list::-webkit-scrollbar-thumb { background: #555; border: 1px solid #111; }
+		.page-title {
+			font-family: Georgia, serif;
+			font-size: 2.6rem;
+			font-style: italic;
+			font-weight: 300;
+			margin-bottom: 40px;
+			letter-spacing: -0.02em;
+		}
 
-    .world-row {
-      display: flex;
-      align-items: stretch;
-      border-bottom: 2px solid #272727;
-      cursor: pointer;
-      background: #3a3a3a;
-      min-height: 100px;
-      transition: background 0.08s;
-    }
-    .world-row:hover { background: #484848; }
+		.project-list {
+			display: flex;
+			flex-direction: column;
+			gap: 22px;
+		}
 
-    .world-thumb {
-      width: 120px; min-width: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 44px;
-      background: #272727;
-      border-right: 2px solid #1a1a1a;
-    }
+		.project-bar {
+			display: grid;
+			grid-template-columns: 250px 1fr;
+			background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			overflow: hidden;
+			transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+			cursor: pointer;
+			box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+			backdrop-filter: blur(8px);
+		}
 
-    .world-info {
-      flex: 1;
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 8px;
-    }
+		.project-bar:hover {
+			background: linear-gradient(145deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
+			transform: translateY(-4px);
+			border-color: rgba(200,200,200,0.28);
+			box-shadow: 0 24px 58px rgba(0,0,0,0.28);
+		}
 
-    .world-name { font-size: 14px; color: #fff; }
-    .world-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+		.project-photo {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 16px;
+			min-height: 120px;
+		}
 
-    .badge {
-      font-size: 7px;
-      padding: 2px 6px;
-      background: #222;
-      color: #999;
-      border: 1px solid #3e3e3e;
-    }
+		.project-photo img {
+			max-width: 75%;
+			max-height: 100px;
+			width: auto;
+			height: auto;
+			object-fit: contain;
+			display: block;
+			transition: transform 0.22s ease, opacity 0.22s ease;
+		}
 
-    .world-type { font-size: 8px; color: #777; }
+		.project-bar:hover .project-photo img {
+			transform: scale(1.04);
+			opacity: 0.92;
+		}
 
-    .world-meta {
-      padding: 0 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
-      gap: 5px;
-      min-width: 120px;
-    }
-    .world-date { font-size: 10px; color: #ccc; }
-    .world-size { font-size: 8px; color: #777; }
+		.project-content {
+			padding: 24px 26px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
 
-    .world-edit {
-      width: 56px; min-width: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #333;
-      border-left: 2px solid #1a1a1a;
-      font-size: 18px;
-      color: #888;
-      cursor: pointer;
-    }
-    .world-edit:hover { background: #4a4a4a; color: #fff; }
+		.project-top {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 7px;
+			gap: 16px;
+		}
 
-    /* ── SKILLS TAB ── */
-    .skills-content {
-      flex: 1;
-      padding: 28px 32px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
-    .skills-content::-webkit-scrollbar { width: 8px; }
-    .skills-content::-webkit-scrollbar-track { background: #222; }
-    .skills-content::-webkit-scrollbar-thumb { background: #555; border: 1px solid #111; }
+		.project-name {
+			font-size: 1.1rem;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+		}
 
-    .skill-group-label {
-      font-size: 9px;
-      color: #555;
-      letter-spacing: 3px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #2e2e2e;
-      padding-bottom: 8px;
-    }
+		.project-date {
+			font-size: 0.75rem;
+			color: var(--gold);
+			white-space: nowrap;
+		}
 
-    .skill-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
+		.project-type {
+			font-size: 0.74rem;
+			color: #b3b3b3;
+			margin-bottom: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
 
-    .skill-item {
-      background: #2e2e2e;
-      border: 2px solid #222;
-      padding: 14px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: default;
-      transition: background 0.08s, border-color 0.08s;
-    }
-    .skill-item:hover { background: #383838; border-color: #555; }
+		.project-desc {
+			font-size: 0.92rem;
+			color: var(--muted);
+			line-height: 1.65;
+			margin-bottom: 14px;
+		}
 
-    .skill-icon { font-size: 24px; }
-    .skill-name { font-size: 8px; color: #bbb; text-align: center; line-height: 1.4; }
+		.project-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 7px;
+		}
 
-    .skill-bar-wrap {
-      width: 100%;
-      height: 6px;
-      background: #1a1a1a;
-      border: 1px solid #111;
-    }
+		.project-tag {
+			font-size: 0.7rem;
+			padding: 4px 10px;
+			border-radius: 20px;
+			border: 1px solid rgba(200,200,200,0.18);
+			background: rgba(255,255,255,0.055);
+			color: rgba(242,242,238,0.72);
+		}
 
-    .skill-bar {
-      height: 100%;
-      background: #4a7a4a;
-    }
+		.modal {
+			position: fixed;
+			inset: 0;
+			z-index: 50;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			background: rgba(0,0,0,0.74);
+			padding: 36px;
+			backdrop-filter: blur(6px);
+		}
 
-    /* ── DETAIL OVERLAY ── */
-    .detail-overlay {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.88);
-      z-index: 20;
-      align-items: center;
-      justify-content: center;
-    }
-    .detail-overlay.show { display: flex; }
+		.modal.show { display: flex; }
 
-    .detail-panel {
-      width: 1100px;
-      height: 720px;
-      background: #3a3a3a;
-      border: 3px solid #111;
-      box-shadow: inset 2px 2px 0 #575757, inset -2px -2px 0 #1a1a1a, 0 12px 48px rgba(0,0,0,0.9);
-      display: flex;
-      flex-direction: column;
-    }
+		.modal-card {
+			width: min(1180px, 100%);
+			max-height: 88vh;
+			overflow-y: auto;
+			background: linear-gradient(145deg, #343434, #242424);
+			border: 1px solid rgba(200,200,200,0.22);
+			border-radius: 20px;
+			box-shadow: 0 30px 90px rgba(0,0,0,0.65);
+		}
 
-    .detail-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 3px solid #111;
-      background: #2e2e2e;
-      min-height: 72px;
-      flex-shrink: 0;
-    }
+		.modal-header {
+			display: flex;
+			gap: 22px;
+			padding: 24px;
+			border-bottom: 1px solid rgba(255,255,255,0.1);
+			background: rgba(255,255,255,0.02);
+			align-items: center;
+		}
 
-    .detail-header-icon {
-      width: 72px; min-width: 72px; height: 72px;
-      display: grid;
-      place-items: center;
-      font-size: 34px;
-      background: #222;
-      border-right: 3px solid #111;
-    }
+		.modal-image {
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 90px;
+			height: 90px;
+		}
 
-    .detail-header-info {
-      flex: 1;
-      padding: 12px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+		.modal-image img {
+			max-width: 100%;
+			max-height: 100%;
+			width: auto;
+			height: auto;
+			object-fit: contain;
+		}
 
-    .detail-header-name { font-size: 16px; color: #fff; }
-    .detail-header-sub { font-size: 8px; color: #555; letter-spacing: 1px; }
+		.modal-title { font-size: 1.45rem; margin-bottom: 7px; }
 
-    .detail-header-close {
-      padding: 0 22px;
-      font-size: 14px;
-      color: #555;
-      cursor: pointer;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
-    .detail-header-close:hover { color: #fff; }
+		.modal-type {
+			font-size: 0.78rem;
+			color: #b5b5b5;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			margin-bottom: 12px;
+		}
 
-    .detail-body {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 0;
-    }
+		.modal-desc {
+			font-size: 0.94rem;
+			line-height: 1.72;
+			color: var(--muted);
+			max-width: 720px;
+		}
 
-    .detail-left {
-      border-right: 3px solid #111;
-      padding: 22px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      overflow-y: auto;
-    }
-    .detail-left::-webkit-scrollbar { width: 6px; }
-    .detail-left::-webkit-scrollbar-track { background: #222; }
-    .detail-left::-webkit-scrollbar-thumb { background: #555; }
+		.close-modal {
+			margin-left: auto;
+			align-self: flex-start;
+			background: rgba(255,255,255,0.035);
+			border: 1px solid var(--border);
+			color: var(--white);
+			border-radius: 10px;
+			padding: 9px 13px;
+			cursor: pointer;
+			transition: background 0.2s ease, border-color 0.2s ease;
+		}
 
-    .section-label {
-      font-size: 7px;
-      color: #555;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
+		.close-modal:hover {
+			background: rgba(255,255,255,0.09);
+			border-color: rgba(255,255,255,0.25);
+		}
 
-    .detail-stack { display: flex; flex-wrap: wrap; gap: 6px; }
-    .detail-stack .badge { font-size: 8px; padding: 4px 8px; color: #bbb; border-color: #444; }
+		.modal-body {
+			padding: 24px;
+			display: grid;
+			grid-template-columns: 0.85fr 1.15fr;
+			gap: 26px;
+		}
 
-    .detail-bullets { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-    .detail-bullets li {
-      font-size: 9px;
-      color: #aaa;
-      line-height: 2;
-      padding-left: 14px;
-      position: relative;
-    }
-    .detail-bullets li::before { content: ">"; position: absolute; left: 0; color: #555; }
+		.detail-box {
+			background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 18px;
+			box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+		}
 
-    .detail-right {
-      padding: 22px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+		.detail-box h3 { font-size: 0.95rem; margin-bottom: 14px; letter-spacing: 0.02em; }
 
-    .photo-main {
-      flex: 1;
-      background: #222;
-      border: 2px solid #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      min-height: 0;
-    }
+		.detail-box ul {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
 
-    .photo-main img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .photo-main img.active { display: block; }
+		.detail-box li {
+			color: var(--muted);
+			font-size: 0.9rem;
+			line-height: 1.6;
+			padding-left: 18px;
+			position: relative;
+		}
 
-    .photo-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .photo-placeholder span:first-child { font-size: 44px; }
-    .photo-placeholder span:last-child { font-size: 8px; color: #333; letter-spacing: 1px; }
+		.detail-box li::before {
+			content: "▸";
+			position: absolute;
+			left: 0;
+			color: var(--gold);
+		}
 
-    .photo-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+		#flowchart {
+			width: 100%;
+			min-height: 340px;
+			background:
+				linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+				rgba(0,0,0,0.2);
+			background-size: 28px 28px;
+			border: 1px solid rgba(255,255,255,0.12);
+			border-radius: 14px;
+			padding: 18px;
+			overflow: auto;
+		}
 
-    .photo-prev, .photo-next {
-      font-size: 11px;
-      color: #777;
-      background: #222;
-      border: 2px solid #111;
-      padding: 7px 12px;
-      cursor: pointer;
-      font-family: 'Press Start 2P', cursive;
-    }
-    .photo-prev:hover, .photo-next:hover { color: #fff; background: #333; }
+		#flowchart svg {
+			width: 100%;
+			height: auto;
+			min-height: 290px;
+			background: transparent;
+		}
 
-    .photo-thumbs { display: flex; gap: 8px; flex: 1; overflow-x: auto; }
-    .photo-thumbs::-webkit-scrollbar { height: 4px; }
-    .photo-thumbs::-webkit-scrollbar-track { background: #222; }
-    .photo-thumbs::-webkit-scrollbar-thumb { background: #555; }
+		#flowchart .edgePath path {
+			stroke-width: 2.4px;
+			filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+		}
 
-    .photo-thumb {
-      width: 72px; min-width: 72px; height: 54px;
-      background: #222;
-      border: 2px solid #333;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      font-size: 20px;
-      overflow: hidden;
-    }
-    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .photo-thumb.active { border-color: #aaa; }
+		#flowchart text { font-weight: 700; letter-spacing: 0.01em; }
 
-    .detail-footer {
-      display: flex;
-      border-top: 3px solid #111;
-      flex-shrink: 0;
-    }
-
-    .detail-btn {
-      flex: 1;
-      padding: 16px;
-      text-align: center;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 10px;
-      color: #aaa;
-      background: #333;
-      border: none;
-      border-right: 2px solid #111;
-      cursor: pointer;
-      box-shadow: inset 0 1px 0 #444, inset 0 -1px 0 #222;
-    }
-    .detail-btn:last-child { border-right: none; }
-    .detail-btn:hover { background: #444; color: #fff; }
-  </style>
+		@media (max-width: 800px) {
+			.page { padding: 56px 24px; }
+			.project-bar { grid-template-columns: 250px 1fr; align-items: center; }
+			.modal-header { flex-direction: column; }
+			.modal-image { width: 70px; height: 70px; }
+			.modal-body { grid-template-columns: 1fr; }
+		}
+	</style>
 </head>
+
 <body>
-<div id="scene">
 
-  <div class="panel">
+<button class="close-btn" onclick="window.parent.postMessage('closeProjects', '*')">✕ Close</button>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('projects')">🌍 <span>Projects</span> <span class="tab-count">3</span></div>
-      <div class="tab" onclick="switchTab('skills')">⚙️ <span>Skills</span></div>
-      <div class="tab-close" onclick="window.parent.postMessage('closeProjects', '*')">✕</div>
-    </div>
+<main class="page">
+	<p class="section-label">Projects</p>
+	<h1 class="page-title">What I've Built</h1>
+	<section class="project-list" id="projectList"></section>
+</main>
 
-    <!-- PROJECTS TAB -->
-    <div class="tab-content active" id="tab-projects">
-      <div class="create-bar">+ New Project In Progress...</div>
-      <div class="world-list">
-
-        <div class="world-row" onclick="openDetail(0)">
-          <div class="world-thumb">🤖</div>
-          <div class="world-info">
-            <div class="world-name">Mini Me AI</div>
-            <div class="world-tags">
-              <span class="badge">C++</span><span class="badge">Python</span><span class="badge">Ollama</span><span class="badge">Piper</span><span class="badge">Vosk</span>
-            </div>
-            <div class="world-type">Local AI Agent  ·  Embedded GPU</div>
-          </div>
-          <div class="world-meta">
-            <div class="world-date">2026</div>
-            <div class="world-size">3 screenshots</div>
-          </div>
-          <div class="world-edit">✏️</div>
-        </div>
-
-        <div class="world-row" onclick="openDetail(1)">
-          <div class="world-thumb">🗺️</div>
-          <div class="world-info">
-            <div class="world-name">WasteLess AI</div>
-            <div class="world-tags">
-              <span class="badge">Next.js</span><span class="badge">React</span><span class="badge">TypeScript</span><span class="badge">Supabase</span><span class="badge">Leaflet</span><span class="badge">NVIDIA</span>
-            </div>
-            <div class="world-type">Full Stack Web App  ·  Food Distribution</div>
-          </div>
-          <div class="world-meta">
-            <div class="world-date">2026</div>
-            <div class="world-size">3 screenshots</div>
-          </div>
-          <div class="world-edit">✏️</div>
-        </div>
-
-        <div class="world-row" onclick="openDetail(2)">
-          <div class="world-thumb">🎓</div>
-          <div class="world-info">
-            <div class="world-name">ProfessorMatch</div>
-            <div class="world-tags">
-              <span class="badge">Python</span><span class="badge">pandas</span><span class="badge">Streamlit</span><span class="badge">FastAPI</span>
-            </div>
-            <div class="world-type">Data + ML  ·  Recommendation System</div>
-          </div>
-          <div class="world-meta">
-            <div class="world-date">2026</div>
-            <div class="world-size">3 screenshots</div>
-          </div>
-          <div class="world-edit">✏️</div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- SKILLS TAB -->
-    <div class="tab-content" id="tab-skills">
-      <div class="skills-content">
-
-        <div>
-          <div class="skill-group-label">LANGUAGES</div>
-          <div class="skill-grid">
-            <div class="skill-item"><span class="skill-icon">🔵</span><span class="skill-name">C++</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">☕</span><span class="skill-name">Java</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🐍</span><span class="skill-name">Python</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🟨</span><span class="skill-name">JavaScript</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🗄️</span><span class="skill-name">SQL</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🌐</span><span class="skill-name">HTML/CSS</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="skill-group-label">FRAMEWORKS</div>
-          <div class="skill-grid">
-            <div class="skill-item"><span class="skill-icon">⚛️</span><span class="skill-name">React</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">▲</span><span class="skill-name">Next.js</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">⚡</span><span class="skill-name">FastAPI</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">📊</span><span class="skill-name">Streamlit</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="skill-group-label">TOOLS & TECHNOLOGIES</div>
-          <div class="skill-grid">
-            <div class="skill-item"><span class="skill-icon">🐙</span><span class="skill-name">Git</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🐧</span><span class="skill-name">Linux</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">☁️</span><span class="skill-name">AWS</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🔧</span><span class="skill-name">Jenkins</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🗺️</span><span class="skill-name">Supabase</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">📮</span><span class="skill-name">Postman</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🤖</span><span class="skill-name">Ollama</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div></div>
-            <div class="skill-item"><span class="skill-icon">🔬</span><span class="skill-name">REST APIs</span><div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- DETAIL OVERLAY -->
-  <div class="detail-overlay" id="detailOverlay">
-    <div class="detail-panel">
-
-      <div class="detail-header">
-        <div class="detail-header-icon" id="detailIcon"></div>
-        <div class="detail-header-info">
-          <div class="detail-header-name" id="detailName"></div>
-          <div class="detail-header-sub" id="detailSub"></div>
-        </div>
-        <div class="detail-header-close" onclick="closeDetail()">✕</div>
-      </div>
-
-      <div class="detail-body">
-        <div class="detail-left">
-          <div>
-            <div class="section-label">TECH STACK</div>
-            <div class="detail-stack" id="detailStack"></div>
-          </div>
-          <div>
-            <div class="section-label">WHAT I BUILT</div>
-            <ul class="detail-bullets" id="detailBullets"></ul>
-          </div>
-        </div>
-
-        <div class="detail-right">
-          <div class="section-label">SCREENSHOTS</div>
-          <div class="photo-main" id="photoMain">
-            <div class="photo-placeholder" id="photoPlaceholder">
-              <span>🖼️</span>
-              <span>NO SCREENSHOT YET</span>
-            </div>
-          </div>
-          <div class="photo-nav">
-            <button class="photo-prev" onclick="prevPhoto()">◄</button>
-            <div class="photo-thumbs" id="photoThumbs"></div>
-            <button class="photo-next" onclick="nextPhoto()">►</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="detail-footer">
-        <button class="detail-btn" onclick="closeDetail()">← Back</button>
-        <button class="detail-btn">GitHub →</button>
-        <button class="detail-btn">Play World ▶</button>
-      </div>
-
-    </div>
-  </div>
-
+<div class="modal" id="modal">
+	<div class="modal-card">
+		<div class="modal-header">
+			<div class="modal-image">
+				<img id="modalImg" src="" alt="">
+			</div>
+			<div>
+				<h2 class="modal-title" id="modalTitle"></h2>
+				<p class="modal-type" id="modalType"></p>
+				<p class="modal-desc" id="modalDesc"></p>
+			</div>
+			<button class="close-modal" onclick="closeModal()">Close</button>
+		</div>
+		<div class="modal-body">
+			<div class="detail-box">
+				<h3>What it does</h3>
+				<ul id="modalBullets"></ul>
+			</div>
+			<div class="detail-box">
+				<h3>System Flow</h3>
+				<div id="flowchart"></div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
-  const projects = [
-    {
-      icon: "🤖",
-      name: "Mini Me AI",
-      sub: "2026  ·  LOCAL AI AGENT  ·  EMBEDDED GPU",
-      stack: ["C++", "Python", "Ollama", "Piper", "Vosk", "Jetson GPU"],
-      bullets: [
-        "Built a personality-driven AI agent running fully locally using Ollama for LLM inference.",
-        "Set up a real-time text-to-speech pipeline with Piper for fast conversational responses.",
-        "Worked around memory limits on an embedded GPU (Jetson) to keep the model running smoothly."
-      ],
-      photos: [null, null, null]
-    },
-    {
-      icon: "🗺️",
-      name: "WasteLess AI",
-      sub: "2026  ·  FULL STACK WEB APP",
-      stack: ["Next.js", "React", "TypeScript", "Supabase", "Leaflet", "NVIDIA API"],
-      bullets: [
-        "Built a web platform that connects restaurants with surplus food to nearby shelters.",
-        "Developed a live map using Leaflet with filtering, availability tracking, and pickup constraints.",
-        "Integrated Supabase for backend data and used NVIDIA APIs to guide distribution decisions."
-      ],
-      photos: [null, null, null]
-    },
-    {
-      icon: "🎓",
-      name: "ProfessorMatch",
-      sub: "2026  ·  DATA + ML  ·  RECOMMENDATION SYSTEM",
-      stack: ["Python", "pandas", "Streamlit", "FastAPI"],
-      bullets: [
-        "Built a recommendation system that ranks professors based on custom scoring logic.",
-        "Combined data from RateMyProfessors, LinkedIn, and course info into a single dataset.",
-        "Created a Streamlit interface for searching and filtering results in real time."
-      ],
-      photos: [null, null, null]
-    }
-  ]
+	const graphStyle = `
+classDef start fill:#3f4f5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
+classDef process fill:#4f6d5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
+classDef decision fill:#6b5f4a,stroke:#f5d06f,color:#f8fafc,stroke-width:1.5px;
+classDef output fill:#5f4f63,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
+`;
 
-  // Tab switching
-  function switchTab(name) {
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', t.textContent.toLowerCase().includes(name))
-    })
-    document.querySelectorAll('.tab-content').forEach(c => {
-      c.classList.toggle('active', c.id === 'tab-' + name)
-    })
-  }
+	const projects = [
+		{
+			name: "Mini Me AI",
+			date: "2026",
+			type: "Local AI Systems",
+			image: "images/mini-me-ai.png",
+			desc: "A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
+			tags: ["C++", "Python", "Ollama", "Piper", "Vosk"],
+			bullets: [
+				"Runs local LLM inference through Ollama instead of depending fully on external APIs.",
+				"Uses voice input and text-to-speech to make the assistant feel more interactive.",
+				"Connects local AI, personality behavior, and system-level constraints into one project."
+			],
+			chart: `
+flowchart LR
+	A((User Input)) --> B[Speech / Text]
+	B --> C{Input Type}
+	C --> D[Local LLM]
+	C --> E[System Logic]
+	D --> F[Response]
+	E --> F
+	F --> G((Voice Output))
 
-  // Detail
-  let currentPhotoIndex = 0
-  let currentPhotos = []
+${graphStyle}
+	class A,G start;
+	class B,D,E,F process;
+	class C decision;
+`
+		},
+		{
+			name: "WasteLess AI",
+			date: "2026",
+			type: "Full Stack Web App",
+			image: "images/wasteless-ai.png",
+			desc: "A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
+			tags: ["Next.js", "React", "Supabase", "Leaflet", "NVIDIA API"],
+			bullets: [
+				"Restaurants submit extra food with location, availability, quantity, and pickup windows.",
+				"The app compares shelter needs, distance, urgency, and constraints before matching.",
+				"Map and backend data work together so the system feels practical instead of just visual."
+			],
+			chart: `
+flowchart LR
+	A((Restaurant)) --> B[Food Listing]
+	B --> C{Match Check}
+	C --> D[Location Data]
+	C --> E[Shelter Needs]
+	C --> F[Pickup Window]
+	D --> G[Matching Logic]
+	E --> G
+	F --> G
+	G --> H[Map View]
+	G --> I((Shelter))
 
-  function openDetail(i) {
-    const p = projects[i]
-    document.getElementById('detailIcon').textContent = p.icon
-    document.getElementById('detailName').textContent = p.name
-    document.getElementById('detailSub').textContent = p.sub
-    document.getElementById('detailStack').innerHTML = p.stack.map(s => `<span class="badge">${s}</span>`).join('')
-    document.getElementById('detailBullets').innerHTML = p.bullets.map(b => `<li>${b}</li>`).join('')
-    currentPhotos = p.photos
-    currentPhotoIndex = 0
-    buildPhotos()
-    document.getElementById('detailOverlay').classList.add('show')
-  }
+${graphStyle}
+	class A,I start;
+	class B,D,E,F,G,H process;
+	class C decision;
+`
+		},
+		{
+			name: "ProfessorMatch",
+			date: "2026",
+			type: "Recommendation System",
+			image: "images/professormatch.png",
+			desc: "A system that ranks professors using combined datasets and explains recommendations based on student goals.",
+			tags: ["Python", "pandas", "Streamlit", "FastAPI", "Data Cleaning"],
+			bullets: [
+				"Pulls together professor ratings, course data, and profile information.",
+				"Uses ranking logic to match professors to goals like GPA, learning depth, or career value.",
+				"Shows explainable results so students understand why each professor is recommended."
+			],
+			chart: `
+flowchart LR
+	A((Student Goal)) --> B{Goal Type}
+	B --> C[Ratings Data]
+	B --> D[Course Data]
+	B --> E[Profile Data]
+	C --> F[Data Cleaning]
+	D --> F
+	E --> F
+	F --> G[Ranking Logic]
+	G --> H[Streamlit UI]
+	H --> I((Recommendation))
 
-  function buildPhotos() {
-    const main = document.getElementById('photoMain')
-    const thumbsEl = document.getElementById('photoThumbs')
-    const placeholder = document.getElementById('photoPlaceholder')
-    main.querySelectorAll('img').forEach(el => el.remove())
-    thumbsEl.innerHTML = ''
-    const hasPhotos = currentPhotos.some(p => p !== null)
-    placeholder.style.display = hasPhotos ? 'none' : 'flex'
-    currentPhotos.forEach((src, idx) => {
-      if (src) {
-        const img = document.createElement('img')
-        img.src = src
-        img.classList.toggle('active', idx === currentPhotoIndex)
-        main.appendChild(img)
-      }
-      const thumb = document.createElement('div')
-      thumb.className = 'photo-thumb' + (idx === currentPhotoIndex ? ' active' : '')
-      thumb.onclick = () => setPhoto(idx)
-      if (src) {
-        const tImg = document.createElement('img')
-        tImg.src = src
-        thumb.appendChild(tImg)
-      } else {
-        thumb.textContent = '🖼️'
-        thumb.style.color = '#333'
-      }
-      thumbsEl.appendChild(thumb)
-    })
-  }
+${graphStyle}
+	class A,I start;
+	class C,D,E,F,G,H process;
+	class B decision;
+`
+		},
+		{
+			name: "Roguelike Maker",
+			date: "2026",
+			type: "Godot Game Generator",
+			image: "images/roguelike-maker.png",
+			desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
+			tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
+			bullets: [
+				"Split the project into two roles: one person handled Godot game systems while the other handled the AI generator.",
+				"Built a config pipeline where prompts changed player speed, enemy density, enemy types, weapon type, and room sequence.",
+				"Connected the generated JSON into Godot so changing the config directly changed gameplay.",
+				"Focused on a realistic 24-hour hackathon scope: one weapon, two enemy types, a few rooms, and a working demo."
+			],
+			chart: `
+flowchart LR
+	A((Prompt)) --> B{AI Interprets}
+	B --> C[Player Speed]
+	B --> D[Enemy Density]
+	B --> E[Room Sequence]
+	B --> F[Weapon Type]
+	C --> G[JSON Config]
+	D --> G
+	E --> G
+	F --> G
+	G --> H[Godot Config Loader]
+	H --> I[Game Systems]
+	I --> J((Playable Roguelike))
 
-  function setPhoto(idx) {
-    currentPhotoIndex = idx
-    document.getElementById('photoMain').querySelectorAll('img').forEach((img, i) => img.classList.toggle('active', i === idx))
-    document.querySelectorAll('.photo-thumb').forEach((t, i) => t.classList.toggle('active', i === idx))
-  }
+${graphStyle}
+	class A,J start;
+	class C,D,E,F,G,H,I process;
+	class B decision;
+`
+		}
+	];
 
-  function prevPhoto() { setPhoto((currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length) }
-  function nextPhoto() { setPhoto((currentPhotoIndex + 1) % currentPhotos.length) }
-  function closeDetail() { document.getElementById('detailOverlay').classList.remove('show') }
+	const projectList = document.getElementById("projectList");
 
-  function scaleScene() {
-    const scene = document.getElementById('scene')
-    const scaleX = window.innerWidth / 1400
-    const scaleY = window.innerHeight / 900
-    const scale = Math.min(scaleX, scaleY)
-    const offsetX = (window.innerWidth - 1400 * scale) / 2
-    const offsetY = (window.innerHeight - 900 * scale) / 2
-    scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
-  }
+	projects.forEach((p, index) => {
+		const card = document.createElement("article");
+		card.className = "project-bar";
+		card.onclick = () => openModal(index);
+		card.innerHTML = `
+			<div class="project-photo">
+				<img src="${p.image}" alt="${p.name}">
+			</div>
+			<div class="project-content">
+				<div class="project-top">
+					<div class="project-name">${p.name}</div>
+					<div class="project-date">${p.date}</div>
+				</div>
+				<div class="project-type">${p.type}</div>
+				<div class="project-desc">${p.desc}</div>
+				<div class="project-tags">
+					${p.tags.map(tag => `<span class="project-tag">${tag}</span>`).join("")}
+				</div>
+			</div>
+		`;
+		projectList.appendChild(card);
+	});
 
-  scaleScene()
-  window.addEventListener('resize', scaleScene)
+	async function openModal(index) {
+		const p = projects[index];
+		document.getElementById("modalImg").src = p.image;
+		document.getElementById("modalTitle").textContent = p.name;
+		document.getElementById("modalType").textContent = p.type;
+		document.getElementById("modalDesc").textContent = p.desc;
+		document.getElementById("modalBullets").innerHTML =
+			p.bullets.map(b => `<li>${b}</li>`).join("");
+		document.getElementById("modal").classList.add("show");
+		setTimeout(() => { window.renderMermaid(p.chart); }, 100);
+	}
+
+	function closeModal() {
+		document.getElementById("modal").classList.remove("show");
+		document.getElementById("flowchart").innerHTML = "";
+	}
+
+	document.getElementById("modal").addEventListener("click", e => {
+		if (e.target.id === "modal") closeModal();
+	});
 </script>
+
 </body>
 </html>

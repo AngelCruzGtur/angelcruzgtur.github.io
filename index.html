@@ -8,11 +8,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 	<style>
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
+		* { box-sizing: border-box; margin: 0; padding: 0; }
 
 		html, body {
 			width: 100%;
@@ -27,18 +23,15 @@
 
 		.bg-video {
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
 			object-fit: cover;
 			z-index: 0;
 		}
 
 		#scene {
 			position: fixed;
-			top: 0;
-			left: 0;
+			top: 0; left: 0;
 			width: 1920px;
 			height: 1080px;
 			transform-origin: top left;
@@ -104,9 +97,7 @@
 			cursor: pointer;
 		}
 
-		.menu button:hover {
-			background: #9b9b9b;
-		}
+		.menu button:hover { background: #9b9b9b; }
 
 		.new-tag {
 			position: absolute;
@@ -119,6 +110,31 @@
 			border: 2px solid #2f2f2f;
 			text-shadow: 2px 2px 0 #1d1d1d;
 		}
+
+		/* Popup — lives inside #scene so it scales with everything */
+		#downloadPopup {
+			position: absolute;
+			/* centered horizontally under the menu */
+			left: 50%;
+			top: 680px;
+			transform: translateX(-50%);
+			font-family: 'Press Start 2P', cursive;
+			font-size: 16px;
+			padding: 20px 30px;
+			background: #c6c6c6;
+			color: #3f3f3f;
+			border: 3px solid #1d1d1d;
+			box-shadow:
+				inset 2px 2px 0 #f3f3f3,
+				inset -2px -2px 0 #7a7a7a;
+			text-align: center;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.2s ease;
+		}
+
+		#downloadPopup.show { opacity: 1; }
 
 		.player-panel {
 			position: absolute;
@@ -133,7 +149,7 @@
 		.player-name {
 			font-size: 26px;
 			color: white;
-			background: rgba(0, 0, 0, 0.5);
+			background: rgba(0,0,0,0.5);
 			padding: 8px 12px;
 		}
 
@@ -169,16 +185,14 @@
 		.mc-modal {
 			position: fixed;
 			inset: 0;
-			background: rgba(0, 0, 0, 0.85);
+			background: rgba(0,0,0,0.85);
 			display: none;
 			justify-content: center;
 			align-items: center;
 			z-index: 999;
 		}
 
-		.mc-modal.show {
-			display: flex;
-		}
+		.mc-modal.show { display: flex; }
 
 		.mc-modal-box {
 			position: relative;
@@ -194,36 +208,14 @@
 			border: none;
 		}
 
-		.popup {
+		#slime-canvas {
 			position: fixed;
-			top: 70%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			display: none;
-			z-index: 999;
+			inset: 0;
+			width: 100vw;
+			height: 100vh;
+			pointer-events: none;
+			z-index: 9999;
 		}
-
-		.popup-box {
-			font-family: 'Press Start 2P', cursive;
-			font-size: 16px;
-			padding: 20px 30px;
-			background: #c6c6c6;
-			color: #3f3f3f;
-			border: 3px solid #1d1d1d;
-			box-shadow:
-				inset 2px 2px 0 #f3f3f3,
-				inset -2px -2px 0 #7a7a7a;
-			text-align: center;
-		}
-
-        #slime-canvas {
-        position: fixed;
-        inset: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none; /* lets you click through it */
-        z-index: 9999;
-}
 	</style>
 </head>
 
@@ -243,20 +235,19 @@
 			<div class="menu">
 				<button onclick="openExperience()">Experience</button>
 				<button onclick="openProjects()">Projects</button>
-				<button>About Me</button>
+				<button onclick="openAbout()">About Me</button>
 				<button onclick="downloadResume()">Resume</button>
 				<div class="new-tag">Updated</div>
 			</div>
+
+			<!-- Popup lives inside the scene so it scales correctly -->
+			<div id="downloadPopup">Resume Downloaded!</div>
 
 			<div class="player-panel">
 				<div class="player-name">Angel Cruz</div>
 			</div>
 
-			<iframe
-				id="characterFrame"
-				src="character.html"
-				class="character">
-			</iframe>
+			<iframe id="characterFrame" src="character.html" class="character"></iframe>
 
 			<div class="icon-row">
 				<img src="media/linkedin.png" alt="LinkedIn">
@@ -280,8 +271,11 @@
 		</div>
 	</div>
 
-	<div id="downloadPopup" class="popup">
-		<div class="popup-box">Resume Downloaded!</div>
+	<!-- About Me modal -->
+	<div id="aboutPopup" class="mc-modal">
+		<div class="mc-modal-box">
+			<iframe src="about.html"></iframe>
+		</div>
 	</div>
 
 	<script>
@@ -329,39 +323,34 @@
 		playRandomVideo();
 		video.addEventListener('ended', playRandomVideo);
 
-		// Experience modal
-		function openExperience() {
-			document.getElementById('experiencePopup').classList.add('show');
-		}
-
-		function closeExperience() {
-			document.getElementById('experiencePopup').classList.remove('show');
-		}
-
+		// Modals
+		function openExperience() { document.getElementById('experiencePopup').classList.add('show'); }
+		function closeExperience() { document.getElementById('experiencePopup').classList.remove('show'); }
 		document.getElementById('experiencePopup').addEventListener('click', e => {
 			if (e.target.id === 'experiencePopup') closeExperience();
 		});
 
-		// Projects modal
-		function openProjects() {
-			document.getElementById('projectsPopup').classList.add('show');
-		}
-
-		function closeProjects() {
-			document.getElementById('projectsPopup').classList.remove('show');
-		}
-
+		function openProjects() { document.getElementById('projectsPopup').classList.add('show'); }
+		function closeProjects() { document.getElementById('projectsPopup').classList.remove('show'); }
 		document.getElementById('projectsPopup').addEventListener('click', e => {
 			if (e.target.id === 'projectsPopup') closeProjects();
+		});
+
+		function openAbout() { document.getElementById('aboutPopup').classList.add('show'); }
+		function closeAbout() { document.getElementById('aboutPopup').classList.remove('show'); }
+		document.getElementById('aboutPopup').addEventListener('click', e => {
+			if (e.target.id === 'aboutPopup') closeAbout();
 		});
 
 		// Listen for close messages from iframes
 		window.addEventListener('message', e => {
 			if (e.data === 'closeExperience') closeExperience();
-			if (e.data === 'closeProjects') closeProjects();
+			if (e.data === 'closeProjects')   closeProjects();
+			if (e.data === 'closeAbout')      closeAbout();
 		});
 
 		// Resume download
+		let resumeTimer = null;
 		function downloadResume() {
 			const link = document.createElement('a');
 			link.href = 'resume.pdf';
@@ -371,15 +360,15 @@
 			document.body.removeChild(link);
 
 			const popup = document.getElementById('downloadPopup');
-			popup.style.display = 'block';
-			setTimeout(() => popup.style.display = 'none', 2000);
+			popup.classList.add('show');
+			clearTimeout(resumeTimer);
+			resumeTimer = setTimeout(() => popup.classList.remove('show'), 2200);
 		}
-</script>
+	</script>
 
-<canvas id="slime-canvas"></canvas>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
-<script src="slime.js"></script>
+	<canvas id="slime-canvas"></canvas>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
+	<script src="slime.js"></script>
 
 </body>
 </html>

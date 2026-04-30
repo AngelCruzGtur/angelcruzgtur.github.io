@@ -7,25 +7,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:       #2e2e2e;
-      --bg-mid:   #3a3a3a;
-      --deep:     #1a1a1a;
-      --accent:   #c8c8c8;
-      --gold:     #c9a84c;
-      --white:    #f2f2ee;
-      --muted:    rgba(242,242,238,0.5);
-      --card-bg:  rgba(255,255,255,0.04);
-      --border:   rgba(200,200,200,0.15);
+      --bg:      #2e2e2e;
+      --bg-mid:  #3a3a3a;
+      --deep:    #1a1a1a;
+      --accent:  #c8c8c8;
+      --gold:    #c9a84c;
+      --white:   #f2f2ee;
+      --muted:   rgba(242,242,238,0.5);
+      --card-bg: rgba(255,255,255,0.04);
+      --border:  rgba(200,200,200,0.15);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
+      width: 100%;
+      height: 100%;
       background: var(--bg);
       font-family: "Trebuchet MS", "Verdana", sans-serif;
       color: var(--white);
+      font-size: clamp(13px, 1.1vw, 16px);
     }
 
     body::before {
@@ -46,11 +47,11 @@
     /* ── CLOSE BTN ── */
     .close-btn {
       position: fixed;
-      top: 16px; right: 20px;
+      top: 1rem; right: 1.25rem;
       z-index: 100;
       font-family: 'Press Start 2P', cursive;
-      font-size: 13px;
-      padding: 10px 16px;
+      font-size: clamp(9px, 0.85vw, 13px);
+      padding: 0.6rem 1rem;
       background: #c6c6c6;
       color: #3f3f3f;
       border: 3px solid #1d1d1d;
@@ -63,13 +64,12 @@
     .page {
       position: relative; z-index: 1;
       display: grid;
-      grid-template-columns: 280px auto 1fr;
+      grid-template-columns: clamp(180px, 22vw, 300px) 1px 1fr;
       gap: 0;
       width: 100%;
-      height: 100vh;
-      padding: 48px 60px 60px;
+      min-height: 100vh;
+      padding: clamp(2rem, 4vh, 3.5rem) clamp(1.2rem, 4vw, 3.75rem) clamp(2rem, 5vh, 3.75rem);
       align-items: start;
-      overflow: hidden;
     }
 
     /* ── SIDEBAR ── */
@@ -77,66 +77,77 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 6px;
+      padding-top: 0.4rem;
       animation: fadeUp .8s ease both;
       overflow-y: auto;
-      height: calc(100vh - 108px);
-      padding-right: 8px;
+      max-height: calc(100vh - 7rem);
+      padding-right: 0.5rem;
+      position: sticky;
+      top: clamp(2rem, 4vh, 3.5rem);
     }
 
-    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar { width: 5px; }
     .sidebar::-webkit-scrollbar-track { background: transparent; }
     .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .avatar-placeholder {
-      width: 130px; height: 130px;
+      width: clamp(72px, 8vw, 130px);
+      height: clamp(72px, 8vw, 130px);
       border-radius: 50%;
       background: linear-gradient(135deg, #3a3a3a, #555);
       border: 3px solid #888;
       display: grid; place-items: center;
       font-family: Georgia, serif;
-      font-size: 44px;
+      font-size: clamp(1.5rem, 3vw, 2.75rem);
       color: #c8c8c8;
-      margin-bottom: 20px;
+      margin-bottom: 1.1rem;
       flex-shrink: 0;
     }
-
+  .avatar {
+    width: clamp(72px, 8vw, 130px);
+    height: clamp(72px, 8vw, 130px);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #888;
+    margin-bottom: 1.1rem;
+  }
     .name-en {
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: clamp(0.85rem, 1.1vw, 1.1rem);
       letter-spacing: .02em;
       text-align: center;
       color: var(--white);
     }
     .role-label {
-      font-size: .68rem;
+      font-size: clamp(0.55rem, 0.7vw, 0.68rem);
       color: var(--gold);
       letter-spacing: .14em;
       text-transform: uppercase;
-      margin: 7px 0 3px;
+      margin: 0.45rem 0 0.2rem;
       text-align: center;
     }
     .org {
-      font-size: .82rem;
+      font-size: clamp(0.68rem, 0.85vw, 0.82rem);
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 0.35rem;
       text-align: center;
     }
     .location {
-      font-size: .76rem;
+      font-size: clamp(0.62rem, 0.78vw, 0.76rem);
       color: var(--muted);
-      margin-bottom: 28px;
+      margin-bottom: 1.5rem;
       display: flex; align-items: center; gap: 5px;
     }
 
     /* socials */
     .socials {
-      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-      margin-bottom: 32px;
+      display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 1.8rem;
     }
     .socials a {
       display: grid; place-items: center;
-      width: 34px; height: 34px;
+      width: clamp(28px, 2.5vw, 34px);
+      height: clamp(28px, 2.5vw, 34px);
       border-radius: 50%;
       border: 1px solid var(--border);
       color: var(--muted);
@@ -152,22 +163,22 @@
     }
 
     .section-label {
-      font-size: .63rem;
+      font-size: clamp(0.55rem, 0.65vw, 0.63rem);
       letter-spacing: .16em;
       text-transform: uppercase;
       color: #888;
-      margin-bottom: 12px;
+      margin-bottom: 0.75rem;
       width: 100%;
       text-align: left;
     }
 
     /* stat bars */
-    .stat-row { margin-bottom: 10px; width: 100%; }
+    .stat-row { margin-bottom: 0.65rem; width: 100%; }
     .stat-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .stat-name { font-size: .72rem; color: rgba(242,242,238,0.75); }
-    .stat-val  { font-size: .68rem; color: #888; }
+    .stat-name { font-size: clamp(0.62rem, 0.75vw, 0.72rem); color: rgba(242,242,238,0.75); }
+    .stat-val  { font-size: clamp(0.58rem, 0.7vw, 0.68rem); color: #888; }
     .stat-bar-bg {
-      height: 8px;
+      height: 7px;
       background: rgba(255,255,255,0.08);
       border-radius: 4px;
       overflow: hidden;
@@ -180,85 +191,56 @@
 
     /* ── DIVIDER ── */
     .divider-v {
-      width: 1px;
       background: linear-gradient(to bottom, transparent, var(--border) 20%, var(--border) 80%, transparent);
-      margin: 0 48px;
+      margin: 0 clamp(1.5rem, 3.5vw, 3rem);
       align-self: stretch;
+      min-height: 100%;
     }
 
     /* ── CONTENT ── */
     .content {
       display: flex;
       flex-direction: column;
-      gap: 40px;
+      gap: clamp(1.5rem, 3vh, 2.5rem);
       animation: fadeUp .8s .15s ease both;
       min-width: 0;
       overflow-y: auto;
-      height: calc(100vh - 108px);
-      padding-right: 8px;
+      max-height: calc(100vh - 7rem);
+      padding-right: 0.5rem;
     }
 
-    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar { width: 5px; }
     .content::-webkit-scrollbar-track { background: transparent; }
     .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .page-title {
       font-family: Georgia, serif;
-      font-size: 2.4rem;
+      font-size: clamp(1.5rem, 2.8vw, 2.4rem);
       font-weight: 300;
       font-style: italic;
       line-height: 1.1;
       color: var(--white);
     }
 
-    /* write zone */
-    .write-zone { position: relative; }
-    .write-zone-inner {
-      min-height: 130px;
-      padding: 18px 20px;
-      border: 1px dashed rgba(200,200,200,0.25);
-      border-radius: 6px;
-      background: rgba(255,255,255,0.03);
-      font-size: .95rem;
+    /* bio */
+    .bio { display: flex; flex-direction: column; gap: 0.9rem; }
+    .bio p {
+      font-size: clamp(0.78rem, 0.92vw, 0.9rem);
       line-height: 1.85;
-      color: rgba(242,242,238,0.8);
-      outline: none;
-      cursor: text;
-      transition: border-color .2s, background .2s;
-      white-space: pre-wrap;
-      font-family: "Trebuchet MS", "Verdana", sans-serif;
+      color: rgba(242,242,238,0.78);
     }
-    .write-zone-inner:focus {
-      border-color: #888;
-      background: rgba(255,255,255,0.05);
-    }
-    .write-zone-inner:empty::before {
-      content: attr(data-placeholder);
-      color: rgba(242,242,238,0.2);
-      pointer-events: none;
-    }
-    .edit-hint {
-      position: absolute;
-      top: 10px; right: 14px;
-      font-size: .62rem;
-      letter-spacing: .1em;
-      color: rgba(200,200,200,0.35);
-      pointer-events: none;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .edit-hint svg { width: 11px; height: 11px; }
 
     /* two-col */
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 40px;
+      gap: clamp(1.5rem, 3vw, 2.5rem);
     }
 
-    .tag-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .tag-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
     .tag-list li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: .88rem;
+      display: flex; align-items: center; gap: 0.65rem;
+      font-size: clamp(0.75rem, 0.9vw, 0.88rem);
       color: rgba(242,242,238,0.75);
     }
     .tag-list li::before {
@@ -272,9 +254,9 @@
     /* education */
     .edu-card {
       border-left: 2px solid var(--border);
-      padding-left: 20px;
+      padding-left: 1.25rem;
       position: relative;
-      margin-bottom: 16px;
+      margin-bottom: 1rem;
     }
     .edu-card::before {
       content: '';
@@ -284,23 +266,109 @@
       background: #888;
       border: 2px solid var(--bg);
     }
-    .edu-degree { font-weight: 600; font-size: .95rem; color: var(--white); margin-bottom: 4px; }
-    .edu-school { font-size: .78rem; color: var(--muted); margin-bottom: 2px; }
-    .edu-date   { font-size: .72rem; color: rgba(201,168,76,0.7); }
+    .edu-degree { font-weight: 600; font-size: clamp(0.8rem, 0.95vw, 0.95rem); color: var(--white); margin-bottom: 0.25rem; }
+    .edu-school { font-size: clamp(0.65rem, 0.8vw, 0.78rem); color: var(--muted); margin-bottom: 0.15rem; }
+    .edu-date   { font-size: clamp(0.6rem, 0.75vw, 0.72rem); color: rgba(201,168,76,0.7); }
 
-    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip {
-      font-size: .7rem;
-      padding: 3px 10px;
+      font-size: clamp(0.58rem, 0.72vw, 0.7rem);
+      padding: 2px 9px;
       border-radius: 20px;
       border: 1px solid var(--border);
       color: rgba(242,242,238,0.6);
       background: var(--card-bg);
     }
 
+    /* clubs */
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: clamp(0.7rem, 1.5vw, 1rem);
+    }
+
+    .club-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: clamp(0.8rem, 1.5vw, 1.1rem) clamp(0.9rem, 1.5vw, 1.2rem);
+      transition: background .2s, border-color .2s;
+    }
+    .club-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(200,200,200,0.28);
+    }
+
+    .club-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .club-icon { font-size: clamp(1.2rem, 1.8vw, 1.5rem); flex-shrink: 0; }
+
+    .club-name {
+      font-weight: 600;
+      font-size: clamp(0.75rem, 0.9vw, 0.88rem);
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .club-role {
+      font-size: clamp(0.6rem, 0.72vw, 0.7rem);
+      color: var(--gold);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .club-desc {
+      font-size: clamp(0.68rem, 0.82vw, 0.8rem);
+      color: rgba(242,242,238,0.55);
+      line-height: 1.6;
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE: stack on small screens ── */
+    @media (max-width: 680px) {
+      html, body { height: auto; }
+
+      .page {
+        grid-template-columns: 1fr;
+        padding: 4.5rem 1.2rem 2rem;
+      }
+
+      .divider-v { display: none; }
+
+      .sidebar {
+        position: static;
+        max-height: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0.5rem 1rem;
+        padding: 0 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+      }
+
+      .avatar-placeholder {
+        width: 56px; height: 56px;
+        font-size: 1.4rem;
+        margin-bottom: 0;
+      }
+
+      .sidebar-identity { display: flex; flex-direction: column; justify-content: center; }
+      .name-en, .role-label, .org, .location { text-align: left; }
+      .location { margin-bottom: 0; }
+
+      .stat-block, .socials { width: 100%; justify-content: flex-start; }
+
+      .content { max-height: none; overflow: visible; }
+
+      .two-col { grid-template-columns: 1fr; gap: 1.5rem; }
     }
   </style>
 </head>
@@ -317,14 +385,17 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="avatar-placeholder">AC</div>
-    <p class="name-en">Angel Cruz</p>
-    <p class="role-label">Software Engineer</p>
-    <p class="org">CS @ San José State University</p>
-    <p class="location">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      San José, CA
-    </p>
+    <img src="images/AC.JPG" alt="Angel Cruz" class="avatar">
+
+    <div class="sidebar-identity">
+      <p class="name-en">Angel Cruz</p>
+      <p class="role-label">Software Engineer</p>
+      <p class="org">CS @ San José State University</p>
+      <p class="location">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        San José, CA
+      </p>
+    </div>
 
     <nav class="socials">
       <a href="mailto:angel.l.cruz@sjsu.edu" title="Email">
@@ -341,31 +412,32 @@
       </a>
     </nav>
 
-    <p class="section-label">Player Stats</p>
-
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">Problem Solving</span><span class="stat-val">90</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:90%"></div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">Backend Dev</span><span class="stat-val">85</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">Frontend Dev</span><span class="stat-val">78</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:78%"></div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">Systems / C++</span><span class="stat-val">85</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">ML / Data</span><span class="stat-val">75</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:75%"></div></div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-header"><span class="stat-name">Teamwork</span><span class="stat-val">95</span></div>
-      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:95%"></div></div>
+    <div class="stat-block" style="width:100%">
+      <p class="section-label">Player Stats</p>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">Problem Solving</span><span class="stat-val">90</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">Backend Dev</span><span class="stat-val">85</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">Frontend Dev</span><span class="stat-val">78</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:78%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">Systems / C++</span><span class="stat-val">85</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">ML / Data</span><span class="stat-val">75</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:75%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-header"><span class="stat-name">Teamwork</span><span class="stat-val">95</span></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:95%"></div></div>
+      </div>
     </div>
 
   </aside>
@@ -381,17 +453,9 @@
       <h1 class="page-title">Who I Am &amp;<br><em>What I Build</em></h1>
     </div>
 
-    <div class="write-zone">
-      <div
-        class="write-zone-inner"
-        contenteditable="true"
-        spellcheck="true"
-        data-placeholder="Write something about yourself here — your story, what drives you, what you're working on…"
-      ></div>
-      <span class="edit-hint">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        click to edit
-      </span>
+    <div class="bio">
+      <p>Hi! I'm Angel Cruz, an undergraduate Computer Science student at San José State University, pursuing a career in artificial intelligence, robotics, and large language models. I'm passionate about machine learning and how systems are structured, especially hierarchical models, and how they can be applied to real-world problems through intelligent, adaptive systems. I'm driven by how fast AI is evolving and how it's changing the way we build, think, and solve problems.</p>
+      <p>I'm currently most interested in LLMs, machine learning systems, and robotics, especially how software can interact with the physical world. I'm curious about how to make these systems more reliable, efficient, and aligned with human needs. As I keep building and learning, my goal is to create impactful technology that feels practical and grounded, while still pushing the boundaries of what AI can do.</p>
     </div>
 
     <div class="two-col">
@@ -424,19 +488,61 @@
       </section>
     </div>
 
+    <section>
+      <p class="section-label">Clubs & Involvement</p>
+      <div class="clubs-grid">
+
+        <div class="club-card">
+          <div class="club-header">
+            <span class="club-icon">🤖</span>
+            <div>
+              <p class="club-name">Formula</p>
+              <p class="club-role">Intern</p>
+            </div>
+          </div>
+          <p class="club-desc">Car goes br.</p>
+        </div>
+
+        <div class="club-card">
+          <div class="club-header">
+            <span class="club-icon">💡</span>
+            <div>
+              <p class="club-name">Software Engineering Club</p>
+              <p class="club-role">Member</p>
+            </div>
+          </div>
+          <p class="club-desc">Attend meetings, learn from team projects, and get exposure to real-world software development.</p>
+        </div>
+
+        <div class="club-card">
+          <div class="club-header">
+            <span class="club-icon">🌐</span>
+            <div>
+              <p class="club-name">ACM</p>
+              <p class="club-role">Member</p>
+            </div>
+          </div>
+         <p class="club-desc">Working with MCP to integrate LinkedIn data into AI-driven tools and workflows.</p>
+        </div>
+
+      </div>
+
+       <div class="club-card">
+          <div class="club-header">
+            <span class="club-icon">🌐</span>
+            <div>
+              <p class="club-name">Soles SJSU</p>
+              <p class="club-role">Member</p>
+            </div>
+          </div>
+         <p class="club-desc">Attended national conference in Philadelphia, participated in workshops, and networked with professionals from companies like Apple, Boeing, Microsoft, and Synopsys.</p>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 </div>
 
-<script>
-  const editor = document.querySelector('.write-zone-inner');
-  const KEY = 'angel_about_text';
-  try {
-    const saved = localStorage.getItem(KEY);
-    if (saved) editor.innerHTML = saved;
-  } catch(e) {}
-  editor.addEventListener('input', () => {
-    try { localStorage.setItem(KEY, editor.innerHTML); } catch(e) {}
-  });
-</script>
 </body>
 </html>

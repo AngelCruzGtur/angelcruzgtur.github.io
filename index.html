@@ -33,7 +33,7 @@
 			height: 100%;
 			object-fit: cover;
 			z-index: 0;
-			transition: opacity 0.8s ease;
+			transition: opacity 1.2s ease-in-out;
 		}
 
 		#scene {
@@ -316,71 +316,68 @@
 			}
 		});
 
-		// ── Video crossfade with blob preloading ─────────────────────
+		// ── Video crossfade ──────────────────────────────────────────
 		const videoPaths = [
 			'videos/bg1.MP4','videos/bg2.MP4','videos/bg3.MP4',
-			'videos/bg4.MP4','videos/bg5.MP4','videos/bg6.MP4','videos/bg7.MP4'
+			'videos/bg4.MP4','videos/bg5.MP4','videos/bg6.mp4','videos/bg7.mp4'
 		];
 
 		const vA = document.getElementById('bgVideo0');
 		const vB = document.getElementById('bgVideo1');
-
-		// Fetch all videos as blob URLs so they're fully in memory
-		// — no buffering stalls mid-playback ever
-		const blobURLs = new Array(videoPaths.length).fill(null);
-
-		videoPaths.forEach((path, i) => {
-			fetch(path)
-				.then(r => r.blob())
-				.then(blob => { blobURLs[i] = URL.createObjectURL(blob); })
-				.catch(() => { blobURLs[i] = path; }); // fallback to path if fetch fails
-		});
-
-		let lastIndex = -1;
+		let lastIdx = -1;
 
 		function pickNext() {
 			let i;
 			do { i = Math.floor(Math.random() * videoPaths.length); }
-			while (i === lastIndex && videoPaths.length > 1);
-			lastIndex = i;
+			while (i === lastIdx && videoPaths.length > 1);
+			lastIdx = i;
 			return i;
 		}
 
-		// Load src onto a player, wait for it to be ready, then play + fade in
-		function playOn(incoming, outgoing, index) {
-			const src = blobURLs[index] || videoPaths[index];
-			incoming.src = src;
-			incoming.load();
-
-			function go() {
-				incoming.play().catch(() => {});
+		function fadeIn(incoming, outgoing) {
+			incoming.play().catch(() => {});
+			requestAnimationFrame(() => requestAnimationFrame(() => {
 				incoming.style.opacity = '1';
 				outgoing.style.opacity = '0';
-			}
-
-			if (incoming.readyState >= 3) {
-				go();
-			} else {
-				incoming.addEventListener('canplaythrough', go, { once: true });
-				// Safety fallback — fade in after 1.5s no matter what
-				setTimeout(go, 1500);
-			}
+			}));
 		}
 
-		function setupEnded(current, other) {
-			current.addEventListener('ended', function handler() {
-				current.removeEventListener('ended', handler);
-				playOn(other, current, pickNext());
-				setupEnded(other, current);
+		function loadAndPlay(incoming, outgoing) {
+			incoming.src = videoPaths[pickNext()];
+			incoming.load();
+			incoming.addEventListener('canplay', function h() {
+				incoming.removeEventListener('canplay', h);
+				fadeIn(incoming, outgoing);
+				armSwitch(incoming, outgoing);
+			}, { once: true });
+		}
+
+		function armSwitch(current, other) {
+			let fired = false;
+			function trigger() {
+				if (fired) return;
+				fired = true;
+				loadAndPlay(other, current);
+			}
+			current.addEventListener('timeupdate', function tu() {
+				if (current.duration > 0 && current.currentTime >= current.duration - 1.3) {
+					current.removeEventListener('timeupdate', tu);
+					trigger();
+				}
 			});
+			current.addEventListener('ended', trigger, { once: true });
 		}
 
-		// Kick off — wait a tick so DOM is ready
-		setTimeout(() => {
-			const first = pickNext();
-			playOn(vA, vB, first);
-			setupEnded(vA, vB);
-		}, 0);
+		// Boot
+		vA.style.opacity = '0';
+		vB.style.opacity = '0';
+		vA.src = videoPaths[pickNext()];
+		vA.load();
+		vA.addEventListener('canplay', function boot() {
+			vA.removeEventListener('canplay', boot);
+			fadeIn(vA, vB);
+			armSwitch(vA, vB);
+		}, { once: true });
 		// ─────────────────────────────────────────────────────────────
 
 		// Experience modal

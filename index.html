@@ -103,6 +103,7 @@
 				inset 2px 2px 0 #f3f3f3,
 				inset -2px -2px 0 #7a7a7a;
 			cursor: pointer;
+			width: 100%;
 		}
 
 		.menu button:hover {
@@ -119,6 +120,38 @@
 			padding: 6px 8px;
 			border: 2px solid #2f2f2f;
 			text-shadow: 2px 2px 0 #1d1d1d;
+		}
+
+		.resume-wrap {
+			position: relative;
+		}
+
+		#toast {
+			position: absolute;
+			top: calc(100% + 8px);
+			left: 0;
+			width: 100%;
+			text-align: center;
+			z-index: 9999;
+			font-family: 'Press Start 2P', cursive;
+			font-size: 11px;
+			padding: 12px 18px;
+			background: #c6c6c6;
+			color: #3f3f3f;
+			border: 3px solid #1d1d1d;
+			box-shadow:
+				inset 2px 2px 0 #f3f3f3,
+				inset -2px -2px 0 #7a7a7a;
+			white-space: nowrap;
+			pointer-events: none;
+			opacity: 0;
+			transform: translateY(10px);
+			transition: opacity 0.2s ease, transform 0.2s ease;
+		}
+
+		#toast.show {
+			opacity: 1;
+			transform: translateY(0);
 		}
 
 		.player-panel {
@@ -195,32 +228,6 @@
 			border: none;
 		}
 
-		#toast {
-			position: fixed;
-			bottom: 24px;
-			right: 24px;
-			z-index: 9999;
-			font-family: 'Press Start 2P', cursive;
-			font-size: 11px;
-			padding: 12px 18px;
-			background: #c6c6c6;
-			color: #3f3f3f;
-			border: 3px solid #1d1d1d;
-			box-shadow:
-				inset 2px 2px 0 #f3f3f3,
-				inset -2px -2px 0 #7a7a7a;
-			white-space: nowrap;
-			pointer-events: none;
-			opacity: 0;
-			transform: translateY(10px);
-			transition: opacity 0.2s ease, transform 0.2s ease;
-		}
-
-		#toast.show {
-			opacity: 1;
-			transform: translateY(0);
-		}
-
 		#slime-canvas {
 			position: fixed;
 			inset: 0;
@@ -248,7 +255,10 @@
 				<button onclick="openExperience()">Experience</button>
 				<button onclick="openProjects()">Projects</button>
 				<button onclick="openAbout()">About Me</button>
-				<button onclick="downloadResume()">Resume</button>
+				<div class="resume-wrap">
+					<button onclick="downloadResume()">Resume</button>
+					<div id="toast">Resume Downloaded!</div>
+				</div>
 				<div class="new-tag">Updated</div>
 			</div>
 
@@ -261,7 +271,6 @@
 				src="character.html"
 				class="character">
 			</iframe>
-
 
 		</div>
 	</div>
@@ -286,8 +295,6 @@
 			<iframe src="about.html"></iframe>
 		</div>
 	</div>
-
-	<div id="toast">Resume Downloaded!</div>
 
 	<script>
 		// Scale scene

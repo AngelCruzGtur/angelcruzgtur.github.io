@@ -481,6 +481,56 @@ classDef output fill:#5f4f63,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 
   const projects = [
     {
+      name: "Forge",
+      date: "2026",
+      type: "Bioinformatics / ML Pipeline",
+      image: "images/forge.png",
+      desc: "A reference-free DNA analysis pipeline that detects cancer and antibiotic resistance from raw sequencing reads — no genome alignment required.",
+      tags: ["Python", "PyTorch", "NetworkX", "Claude API", "GNN"],
+      bullets: [
+        "Assembled raw reads into De Bruijn graphs and extracted 14 graph-level features for downstream classification.",
+        "Trained a GNN using GCN layers, Graph Attention, and global mean+max pooling to classify genomic patterns.",
+        "Replaced brute-force grid search with an LLM-driven parameter optimizer and added a natural language query interface that converts plain-English questions into executable NetworkX code."
+      ],
+      chart: `flowchart LR
+  A((Raw Reads)) --> B[De Bruijn Graph]
+  B --> C[Feature Extraction]
+  C --> D{GNN Classifier}
+  D --> E[GCN Layers]
+  D --> F[Graph Attention]
+  E --> G[Pooling]
+  F --> G
+  G --> H[LLM Optimizer]
+  H --> I((Prediction))
+${graphStyle}
+  class A,I start;class B,C,E,F,G,H process;class D decision;`
+    },
+    {
+      name: "Research Paper",
+      date: "2026",
+      type: "Academic Research",
+      image: "images/research-paper.png",
+      desc: "\"Rethinking Deep Self-Attention for Character-Level Language Modeling\" — a counterargument paper challenging the assumption that transformers fully replace RNNs.",
+      tags: ["Research", "Transformers", "RNNs", "NLP", "Academic Writing"],
+      bullets: [
+        "Challenged the prevailing claim that deep self-attention architectures supersede recurrent networks for character-level language modeling.",
+        "Analyzed trade-offs including fixed context windows, quadratic computational cost, and long-term dependency limitations in standard transformers.",
+        "Proposed hybrid and sequential architectures as a more practical direction, grounded in empirical and theoretical analysis."
+      ],
+      chart: `flowchart LR
+  A((Claim)) --> B{Evaluation}
+  B --> C[Context Windows]
+  B --> D[Compute Cost]
+  B --> E[Long-term Deps]
+  C --> F[Trade-off Analysis]
+  D --> F
+  E --> F
+  F --> G[Hybrid Proposal]
+  G --> H((Counterargument))
+${graphStyle}
+  class A,H start;class C,D,E,F,G process;class B decision;`
+    },
+    {
       name: "Mini Me AI",
       date: "2026",
       type: "Local AI Systems",
@@ -562,13 +612,13 @@ ${graphStyle}
       image: "images/roguelike-maker.png",
       desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
       tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
-    bullets: [
-      "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
-      "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
-      "Implemented live config reloading, allowing instant gameplay updates without restarting the game.",
-      "Enabled each prompt to generate a distinct run, increasing replayability and showcasing dynamic game generation.",
-      "Implemented a map generation system using a 40x40 sprite to define and spawn the game layout."
-    ],
+      bullets: [
+        "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
+        "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
+        "Implemented live config reloading, allowing instant gameplay updates without restarting the game.",
+        "Enabled each prompt to generate a distinct run, increasing replayability and showcasing dynamic game generation.",
+        "Implemented a map generation system using a 40x40 sprite to define and spawn the game layout."
+      ],
       chart: `flowchart LR
   A((Prompt)) --> B{AI Interprets}
   B --> C[Player Speed]
@@ -588,14 +638,6 @@ ${graphStyle}
   ];
 
   const wip = [
-    {
-      name: "Research Paper",
-      type: "Academic Writing",
-      status: "Writing",
-      progress: 35,
-      desc: "Developing a research paper titled “Rethinking Deep Self-Attention for Character-Level Language Modeling,” where I analyze and challenge the idea that transformer models fully replace recurrent neural networks. The paper explores limitations such as fixed context windows, computational cost, and reliance on auxiliary training techniques, while proposing hybrid or sequential approaches as a more practical direction.",
-      tags: ["Research", "Writing", "Self-directed"]
-    },
     {
       name: "3D Models In html using Three.js",
       type: "Dev Log",

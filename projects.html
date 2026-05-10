@@ -4,732 +4,371 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
     mermaid.initialize({
-      startOnLoad: false,
-      theme: "base",
-      securityLevel: "loose",
-      flowchart: { curve: "basis", nodeSpacing: 55, rankSpacing: 70, padding: 18 },
-      themeVariables: {
-        background: "#1f1f1f",
-        fontFamily: "Trebuchet MS, Verdana, sans-serif",
-        primaryColor: "#3f4f5f",
-        primaryTextColor: "#f8fafc",
-        primaryBorderColor: "#cbd5e1",
-        secondaryColor: "#4f6d5f",
-        secondaryTextColor: "#f8fafc",
-        secondaryBorderColor: "#cbd5e1",
-        tertiaryColor: "#6b5f4a",
-        tertiaryTextColor: "#f8fafc",
-        tertiaryBorderColor: "#f5d06f",
-        lineColor: "#c9a84c",
-        nodeBorder: "#cbd5e1",
-        clusterBkg: "#252525",
-        clusterBorder: "#444"
+      startOnLoad:false, theme:"base", securityLevel:"loose",
+      flowchart:{curve:"basis",nodeSpacing:50,rankSpacing:60,padding:16},
+      themeVariables:{
+        background:"transparent",fontFamily:"Inter,sans-serif",
+        primaryColor:"#2a3a4a",primaryTextColor:"#e8eaed",primaryBorderColor:"#4a5568",
+        secondaryColor:"#2d4a3a",secondaryTextColor:"#e8eaed",secondaryBorderColor:"#4a5568",
+        tertiaryColor:"#4a3a28",tertiaryTextColor:"#e8eaed",tertiaryBorderColor:"#c9a84c",
+        lineColor:"#6b7280",nodeBorder:"#4a5568",clusterBkg:"#1a1a1a",clusterBorder:"#333"
       }
     });
-    window.renderMermaid = async function(code, containerId) {
-      const target = document.getElementById(containerId);
-      if (!target) return;
-      target.innerHTML = "";
-      const id = "fc-" + Date.now();
-      const { svg } = await mermaid.render(id, code);
-      target.innerHTML = svg;
+    window.renderMermaid = async function(code,id){
+      const el=document.getElementById(id); if(!el)return;
+      try{const r=await mermaid.render("fc-"+Date.now(),code);el.innerHTML=r.svg;}
+      catch(e){el.innerHTML='<p style="color:#999;font-size:12px;text-align:center">Chart unavailable</p>';}
     };
   </script>
-
   <style>
-    :root {
-      --bg:     #2e2e2e;
-      --white:  #f2f2ee;
-      --muted:  rgba(242,242,238,0.62);
-      --border: rgba(200,200,200,0.15);
-      --gold:   #c9a84c;
-      --active: #4a7c59;
-      --active-glow: rgba(74,124,89,0.25);
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+    :root{
+      --bg:#e8e8e8;
+      --card:#f5f5f5;
+      --border:rgba(0,0,0,0.08);
+      --text:#18150f;
+      --sub:rgba(24,21,15,0.58);
+      --muted:rgba(24,21,15,0.35);
+      --amber:#a85c0a;
+      --green:#276840;
+      --tag-bg:rgba(0,0,0,0.05);
+      --tag-border:rgba(0,0,0,0.09);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html,body{width:100%;min-height:100%;background:var(--bg);font-family:"Inter",sans-serif;color:var(--text);overflow-x:hidden;}
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      background: var(--bg);
-      font-family: "Trebuchet MS", "Verdana", sans-serif;
-      color: var(--white);
-      font-size: clamp(13px, 1.1vw, 16px);
-    }
-
-    body::before {
-      content: "";
-      position: fixed; inset: 0; z-index: 0;
+    body::before{
+      content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 110%, rgba(90,90,90,0.38) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% -10%, rgba(20,20,20,0.85) 0%, transparent 70%),
-        radial-gradient(ellipse 100% 80% at 50% 50%, #1a1a1a 0%, #2e2e2e 100%);
-      pointer-events: none;
+        radial-gradient(circle,rgba(0,0,0,0.07) 1.2px,transparent 1.2px),
+        radial-gradient(ellipse 75% 50% at 5% 95%,rgba(180,130,50,0.14) 0%,transparent 55%),
+        radial-gradient(ellipse 55% 40% at 95% 5%,rgba(160,110,40,0.11) 0%,transparent 55%);
+      background-size:18px 18px,100% 100%,100% 100%;
+      background-color:var(--bg);
     }
 
-    .close-btn {
-      position: fixed;
-      top: 1rem; right: 1.25rem;
-      z-index: 100;
-      font-family: 'Press Start 2P', cursive;
-      font-size: clamp(9px, 0.85vw, 13px);
-      padding: 0.6rem 1rem;
-      background: #c6c6c6;
-      color: #3f3f3f;
-      border: 3px solid #1d1d1d;
-      box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
-      cursor: pointer;
-      letter-spacing: .05em;
+    /* ── CLOSE ── */
+    .close-btn{
+      position:fixed;top:1rem;right:1.25rem;z-index:300;
+      font-family:'Press Start 2P',cursive;
+      font-size:clamp(9px,0.85vw,12px);
+      padding:0.55rem 1rem;
+      background:#d4d0c8;color:#2a2620;
+      border:3px solid #1a1714;
+      box-shadow:inset 2px 2px 0 #eceae4,inset -2px -2px 0 #8a8880;
+      cursor:pointer;letter-spacing:.05em;
     }
-    .close-btn:hover { background: #9b9b9b; }
+    .close-btn:hover{background:#bfbcb5;}
 
-    /* ── SPLIT LAYOUT ── */
-    .layout {
-      position: relative; z-index: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 100vh;
+    /* ── PAGE ── */
+    .page{
+      position:relative;z-index:1;
+      max-width:1160px;margin:0 auto;
+      padding:clamp(3.5rem,7vh,5rem) clamp(1.5rem,4vw,3rem) 4rem;
     }
 
-    .col {
-      padding: clamp(3.5rem, 6vh, 5rem) clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vh, 3rem);
-      overflow-y: auto;
+    /* ── SEARCH ── */
+    .search-wrap{position:relative;max-width:400px;margin:0 auto clamp(2.5rem,5vh,3.5rem);}
+    .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none;}
+    .search-input{
+      width:100%;padding:11px 14px 11px 38px;
+      background:rgba(255,255,255,0.75);border:1px solid var(--border);
+      border-radius:12px;font:500 14px/1 "Inter",sans-serif;color:var(--text);outline:none;
+      transition:background .2s,border-color .2s;
     }
+    .search-input::placeholder{color:var(--muted);}
+    .search-input:focus{background:#fff;border-color:rgba(0,0,0,0.16);}
 
-    .col-built {
-      border-right: 1px solid var(--border);
-    }
+    /* ── COLUMNS ── */
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:0 3rem;align-items:start;}
+    .col-left{border-right:1px solid rgba(0,0,0,0.07);padding-right:3rem;display:flex;flex-direction:column;gap:2.5rem;}
+    .col-right{display:flex;flex-direction:column;gap:2.5rem;}
 
-    .col-wip {
-      background: rgba(0,0,0,0.12);
-    }
+    /* ── SECTION HEADER ── */
+    .sec-head{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;}
+    .sec-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+    .sec-line{flex:1;height:1px;background:rgba(0,0,0,0.08);}
 
-    .section-label {
-      font-size: clamp(0.52rem, 0.65vw, 0.68rem);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #9b9b9b;
-      margin-bottom: 0.45rem;
-    }
+    /* ── PROJECT CARD ── */
+    .card-list{display:flex;flex-direction:column;gap:0.75rem;}
 
-    .page-title {
-      font-family: Georgia, serif;
-      font-size: clamp(1.3rem, 2.2vw, 2rem);
-      font-style: italic;
-      font-weight: 300;
-      margin-bottom: clamp(1.2rem, 3vh, 2rem);
-      letter-spacing: -0.02em;
+    .card{
+      background:var(--card);border:1px solid var(--border);border-radius:14px;
+      overflow:hidden;cursor:pointer;
+      display:grid;grid-template-columns:100px 1fr;
+      transition:box-shadow .22s,transform .22s,border-color .22s;
     }
+    .card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.1);transform:translateY(-2px);border-color:rgba(0,0,0,0.13);}
 
-    .col-wip .page-title {
-      color: #a8c9a0;
+    .card-thumb{
+      display:flex;align-items:center;justify-content:center;
+      padding:10px;min-height:88px;
     }
+    .card-thumb img{width:100%;max-height:66px;object-fit:contain;object-position:center;display:block;border-radius:5px;}
+    .card-thumb img.hidden{display:none;}
+    .card-thumb .fallback{font-size:30px;line-height:1;}
 
-    /* ── DIVIDER LINE ── */
-    .col-built .page-title::after {
-      content: '';
-      display: block;
-      width: 2rem;
-      height: 2px;
-      background: var(--gold);
-      margin-top: 0.6rem;
+    .card-body{padding:12px 13px 12px 10px;display:flex;flex-direction:column;gap:4px;min-width:0;}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+    .card-name{font-size:13.5px;font-weight:650;line-height:1.3;min-width:0;}
+    .card-date{font-size:10.5px;font-weight:600;color:var(--amber);white-space:nowrap;flex-shrink:0;}
+    .card-type{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .card-hackathon{
+      display:inline-flex;align-items:center;gap:4px;align-self:flex-start;
+      font-size:9.5px;font-weight:700;color:var(--amber);
+      background:rgba(168,92,10,0.07);border:1px solid rgba(168,92,10,0.17);
+      border-radius:20px;padding:2px 7px;
     }
+    .card-desc{
+      font-size:12px;line-height:1.55;color:var(--sub);
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;}
+    .card-tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;background:var(--tag-bg);border:1px solid var(--tag-border);color:var(--sub);}
 
-    .col-wip .page-title::after {
-      content: '';
-      display: block;
-      width: 2rem;
-      height: 2px;
-      background: var(--active);
-      margin-top: 0.6rem;
+    /* ── WIP CARD ── */
+    .wip-card{
+      background:var(--card);border:1px solid rgba(39,104,64,0.18);
+      border-radius:14px;padding:13px 15px;
+      transition:box-shadow .22s,transform .22s;
     }
+    .wip-card:hover{box-shadow:0 6px 22px rgba(0,0,0,0.07);transform:translateY(-1px);}
+    .wip-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;}
+    .wip-name{font-size:13px;font-weight:650;}
+    .wip-badge{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--green);}
+    .wip-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .wip-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(39,104,64,0.65);margin-bottom:4px;}
+    .wip-desc{font-size:11.5px;line-height:1.55;color:var(--sub);margin-bottom:7px;}
+    .wip-prog-row{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-bottom:3px;}
+    .wip-bar{height:3px;background:rgba(0,0,0,0.07);border-radius:2px;overflow:hidden;margin-bottom:7px;}
+    .wip-fill{height:100%;background:linear-gradient(90deg,#276840,#52b878);border-radius:2px;}
+    .wip-tags{display:flex;flex-wrap:wrap;gap:3px;}
+    .wip-tag{font-size:9.5px;font-weight:500;padding:2px 6px;border-radius:20px;background:rgba(39,104,64,0.06);border:1px solid rgba(39,104,64,0.18);color:rgba(39,104,64,0.85);}
 
-    /* ── PROJECT LIST ── */
-    .project-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
+    /* ── NO RESULTS ── */
+    .no-results{text-align:center;padding:3rem 0;color:var(--muted);font-size:14px;}
 
-    .project-wrap {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: clamp(0.6rem, 1.2vh, 0.85rem);
-      transition: border-color .25s;
-    }
-    .project-wrap.open {
-      border-color: rgba(200,200,200,0.3);
-    }
+    /* ── OVERLAY ── */
+    .overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;transition:opacity .3s;}
+    .overlay.show{opacity:1;pointer-events:all;}
 
-    .project-bar {
-      display: grid;
-      grid-template-columns: clamp(80px, 10vw, 130px) 1fr;
-      background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
-      cursor: pointer;
-      transition: background .22s;
-      position: relative;
+    /* ── SHEET ── */
+    .sheet{
+      position:fixed;bottom:0;left:0;right:0;z-index:500;max-height:88vh;
+      background:#fffdf8;border-radius:20px 20px 0 0;
+      border-top:1px solid rgba(0,0,0,0.07);
+      box-shadow:0 -8px 40px rgba(0,0,0,0.1);
+      display:flex;flex-direction:column;
+      transform:translateY(100%);transition:transform .4s cubic-bezier(0.32,0.72,0,1);
     }
-    .project-bar:hover,
-    .project-wrap.open .project-bar {
-      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
-    }
+    .sheet.show{transform:translateY(0);}
+    .sheet-handle{width:36px;height:4px;background:rgba(0,0,0,0.1);border-radius:2px;margin:10px auto 0;flex-shrink:0;}
+    .sheet-scroll{overflow-y:auto;padding:1.1rem 1.6rem 2.5rem;flex:1;}
+    .sheet-scroll::-webkit-scrollbar{display:none;}
 
-    .project-bar::after {
-      content: '▾';
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%) rotate(0deg);
-      font-size: 0.85rem;
-      color: rgba(200,200,200,0.45);
-      transition: transform .35s ease, color .2s;
-    }
-    .project-wrap.open .project-bar::after {
-      transform: translateY(-50%) rotate(180deg);
-      color: var(--gold);
-    }
+    .sheet-header{display:flex;align-items:center;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(0,0,0,0.07);}
+    .sheet-thumb{width:56px;height:56px;border-radius:13px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .sheet-thumb img{width:90%;height:90%;object-fit:contain;}
+    .sheet-thumb img.hidden{display:none;}
+    .sheet-meta{flex:1;min-width:0;}
+    .sheet-name{font-size:18px;font-weight:700;margin-bottom:2px;}
+    .sheet-type{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);}
+    .sheet-date{font-size:12px;font-weight:600;color:var(--amber);flex-shrink:0;}
 
-    .project-photo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: clamp(0.6rem, 1.2vw, 0.9rem);
-      min-height: clamp(65px, 8vw, 90px);
-    }
-    .project-photo img {
-      max-width: 75%;
-      max-height: clamp(50px, 6vw, 75px);
-      object-fit: contain;
-      transition: transform .22s, opacity .22s;
-    }
-    .project-bar:hover .project-photo img { transform: scale(1.04); opacity: 0.9; }
+    .sheet-desc{font-size:14px;line-height:1.65;color:var(--sub);margin-bottom:1rem;}
+    .sheet-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;}
+    .sheet-tag{font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--tag-bg);border:1px solid var(--tag-border);color:var(--sub);}
 
-    .project-content {
-      padding: clamp(0.8rem, 1.5vw, 1.1rem) clamp(0.8rem, 1.5vw, 1.1rem) clamp(0.8rem, 1.5vw, 1.1rem) 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding-right: 2rem;
-    }
+    .detail-sec{margin-bottom:1.2rem;}
+    .detail-sec h3{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.6rem;}
+    .detail-list{list-style:none;display:flex;flex-direction:column;gap:9px;}
+    .detail-list li{font-size:13.5px;line-height:1.6;color:var(--sub);padding-left:1.1rem;position:relative;}
+    .detail-list li::before{content:"▸";position:absolute;left:0;top:3px;color:var(--amber);font-size:10px;}
 
-    .project-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.25rem;
-      gap: 0.5rem;
-    }
+    .chart-sec h3{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.6rem;}
+    .chart-box{background:rgba(0,0,0,0.025);border:1px solid rgba(0,0,0,0.06);border-radius:12px;padding:1rem;min-height:130px;display:flex;align-items:center;justify-content:center;overflow:auto;}
+    .chart-box svg{width:100%;height:auto;background:transparent;}
 
-    .project-name {
-      font-size: clamp(0.8rem, 0.95vw, 1rem);
-      font-weight: 700;
-    }
-
-    .project-date {
-      font-size: clamp(0.6rem, 0.72vw, 0.72rem);
-      color: var(--gold);
-      white-space: nowrap;
-    }
-
-    .project-type {
-      font-size: clamp(0.58rem, 0.7vw, 0.7rem);
-      color: #b3b3b3;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.4rem;
-    }
-
-    .project-desc {
-      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 0.6rem;
-    }
-
-    .project-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .project-tag {
-      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
-      padding: 2px 7px;
-      border-radius: 20px;
-      border: 1px solid rgba(200,200,200,0.18);
-      background: rgba(255,255,255,0.055);
-      color: rgba(242,242,238,0.72);
-    }
-
-    /* ── DRAWER ── */
-    .project-drawer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .5s cubic-bezier(0.4,0,0.2,1);
-      background: rgba(0,0,0,0.18);
-    }
-    .project-wrap.open .project-drawer {
-      max-height: 600px;
-      border-top: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .drawer-inner {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.75rem, 1.5vw, 1.1rem);
-      padding: clamp(0.85rem, 1.5vw, 1.2rem);
-    }
-
-    .detail-box {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: clamp(0.75rem, 1.2vw, 1rem);
-    }
-
-    .detail-box h3 {
-      font-size: clamp(0.7rem, 0.82vw, 0.85rem);
-      margin-bottom: 0.75rem;
-      color: var(--white);
-      letter-spacing: 0.02em;
-    }
-
-    .detail-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-    .detail-box li {
-      color: var(--muted);
-      font-size: clamp(0.68rem, 0.8vw, 0.8rem);
-      line-height: 1.6;
-      padding-left: 1rem;
-      position: relative;
-    }
-    .detail-box li::before {
-      content: "▸";
-      position: absolute; left: 0;
-      color: var(--gold);
-    }
-
-    .flowchart-box {
-      background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
-                  rgba(0,0,0,0.2);
-      background-size: 24px 24px;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: clamp(0.6rem, 1.2vw, 0.9rem);
-      overflow: auto;
-      min-height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .flowchart-box svg { width: 100%; height: auto; background: transparent; }
-
-    .flowchart-wrap h3 {
-      font-size: clamp(0.7rem, 0.82vw, 0.85rem);
-      margin-bottom: 0.75rem;
-      color: var(--white);
-      letter-spacing: 0.02em;
-    }
-
-    /* ── WIP CARDS ── */
-    .wip-list {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.6rem, 1.2vh, 0.85rem);
-    }
-
-    .wip-card {
-      border: 1px solid rgba(74,124,89,0.3);
-      border-radius: 14px;
-      overflow: hidden;
-      background: linear-gradient(145deg, rgba(74,124,89,0.06), rgba(255,255,255,0.02));
-      transition: border-color .25s, background .25s;
-    }
-    .wip-card:hover {
-      border-color: rgba(74,124,89,0.55);
-      background: linear-gradient(145deg, rgba(74,124,89,0.1), rgba(255,255,255,0.03));
-    }
-
-    .wip-inner {
-      padding: clamp(0.9rem, 1.6vw, 1.2rem);
-    }
-
-    .wip-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .wip-name {
-      font-size: clamp(0.82rem, 0.98vw, 1rem);
-      font-weight: 700;
-    }
-
-    .wip-status {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
-      color: #7ec896;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .wip-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #7ec896;
-      animation: blink 1.6s infinite ease-in-out;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.25; }
-    }
-
-    .wip-type {
-      font-size: clamp(0.58rem, 0.7vw, 0.7rem);
-      color: #8ab898;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
-    }
-
-    .wip-desc {
-      font-size: clamp(0.72rem, 0.85vw, 0.85rem);
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 0.65rem;
-    }
-
-    .wip-progress-wrap {
-      margin-bottom: 0.65rem;
-    }
-
-    .wip-progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
-      color: #7b8c80;
-      margin-bottom: 0.3rem;
-    }
-
-    .wip-bar {
-      height: 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .wip-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4a7c59, #7ec896);
-      border-radius: 2px;
-      transition: width 0.6s ease;
-    }
-
-    .wip-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .wip-tag {
-      font-size: clamp(0.55rem, 0.65vw, 0.65rem);
-      padding: 2px 7px;
-      border-radius: 20px;
-      border: 1px solid rgba(74,124,89,0.35);
-      background: rgba(74,124,89,0.1);
-      color: #a8c9a0;
-    }
-
-    @media (max-width: 760px) {
-      .layout { grid-template-columns: 1fr; }
-      .col-built { border-right: none; border-bottom: 1px solid var(--border); }
-      .drawer-inner { grid-template-columns: 1fr; }
+    @media(max-width:720px){
+      .columns{grid-template-columns:1fr;}
+      .col-left{border-right:none;padding-right:0;border-bottom:1px solid rgba(0,0,0,0.07);padding-bottom:2rem;}
+      .card{grid-template-columns:80px 1fr;}
     }
   </style>
 </head>
-
 <body>
 
-<button class="close-btn" onclick="window.parent.postMessage('closeProjects', '*')">✕ Close</button>
+<button class="close-btn" onclick="window.parent.postMessage('closeProjects','*')">✕ Close</button>
 
-<div class="layout">
-
-  <!-- LEFT: BUILT -->
-  <div class="col col-built">
-    <p class="section-label">Completed</p>
-    <h1 class="page-title">What I've Built</h1>
-    <section class="project-list" id="projectList"></section>
+<div class="page">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="searchInput" placeholder="Search projects…" autocomplete="off">
   </div>
 
-  <!-- RIGHT: WIP -->
-  <div class="col col-wip">
-    <p class="section-label">In Progress</p>
-    <h1 class="page-title">Currently Working On</h1>
-    <section class="wip-list" id="wipList"></section>
+  <div class="columns">
+    <div class="col-left">
+      <div>
+        <div class="sec-head"><p class="sec-label">Projects</p><div class="sec-line"></div></div>
+        <div class="card-list" id="projectList"></div>
+      </div>
+      <div>
+        <div class="sec-head"><p class="sec-label">Research</p><div class="sec-line"></div></div>
+        <div class="card-list" id="researchList"></div>
+      </div>
+      <div>
+        <div class="sec-head"><p class="sec-label">In Progress</p><div class="sec-line"></div></div>
+        <div class="card-list" id="wipList"></div>
+      </div>
+    </div>
+    <div class="col-right">
+      <div>
+        <div class="sec-head"><p class="sec-label">Hackathons</p><div class="sec-line"></div></div>
+        <div class="card-list" id="hackList"></div>
+      </div>
+    </div>
   </div>
 
+  <p class="no-results" id="noResults" style="display:none">No projects found.</p>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-scroll" id="sheetScroll"></div>
 </div>
 
 <script>
-  const graphStyle = `
+const G=`
 classDef start fill:#3f4f5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 classDef process fill:#4f6d5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 classDef decision fill:#6b5f4a,stroke:#f5d06f,color:#f8fafc,stroke-width:1.5px;
-classDef output fill:#5f4f63,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 `;
 
-  const projects = [
-    {
-      name: "Forge",
-      date: "2026",
-      type: "Bioinformatics / ML Pipeline",
-      image: "images/forge.png",
-      desc: "A reference-free DNA analysis pipeline that detects cancer and antibiotic resistance from raw sequencing reads — no genome alignment required.",
-      tags: ["Python", "PyTorch", "NetworkX", "Claude API", "GNN"],
-      bullets: [
-        "Assembled raw reads into De Bruijn graphs and extracted 14 graph-level features for downstream classification.",
-        "Trained a GNN using GCN layers, Graph Attention, and global mean+max pooling to classify genomic patterns.",
-        "Replaced brute-force grid search with an LLM-driven parameter optimizer and added a natural language query interface that converts plain-English questions into executable NetworkX code."
-      ],
-      chart: `flowchart LR
-  A((Raw Reads)) --> B[De Bruijn Graph]
-  B --> C[Feature Extraction]
-  C --> D{GNN Classifier}
-  D --> E[GCN Layers]
-  D --> F[Graph Attention]
-  E --> G[Pooling]
-  F --> G
-  G --> H[LLM Optimizer]
-  H --> I((Prediction))
-${graphStyle}
-  class A,I start;class B,C,E,F,G,H process;class D decision;`
-    },
-    {
-      name: "Research Paper",
-      date: "2026",
-      type: "Academic Research",
-      image: "images/research-paper.png",
-      desc: "\"Rethinking Deep Self-Attention for Character-Level Language Modeling\" — a counterargument paper challenging the assumption that transformers fully replace RNNs.",
-      tags: ["Research", "Transformers", "RNNs", "NLP", "Academic Writing"],
-      bullets: [
-        "Challenged the prevailing claim that deep self-attention architectures supersede recurrent networks for character-level language modeling.",
-        "Analyzed trade-offs including fixed context windows, quadratic computational cost, and long-term dependency limitations in standard transformers.",
-        "Proposed hybrid and sequential architectures as a more practical direction, grounded in empirical and theoretical analysis."
-      ],
-      chart: `flowchart LR
-  A((Claim)) --> B{Evaluation}
-  B --> C[Context Windows]
-  B --> D[Compute Cost]
-  B --> E[Long-term Deps]
-  C --> F[Trade-off Analysis]
-  D --> F
-  E --> F
-  F --> G[Hybrid Proposal]
-  G --> H((Counterargument))
-${graphStyle}
-  class A,H start;class C,D,E,F,G process;class B decision;`
-    },
-    {
-      name: "Mini Me AI",
-      date: "2026",
-      type: "Local AI Systems",
-      image: "images/mini-me-ai.png",
-      desc: "A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
-      tags: ["C++", "Python", "Ollama", "Piper", "Vosk"],
-      bullets: [
-        "Runs local LLM inference through Ollama instead of depending fully on external APIs.",
-        "Uses voice input and text-to-speech to make the assistant feel more interactive.",
-        "Connects local AI, personality behavior, and system-level constraints into one project."
-      ],
-      chart: `flowchart LR
-  A((User Input)) --> B[Speech / Text]
-  B --> C{Input Type}
-  C --> D[Local LLM]
-  C --> E[System Logic]
-  D --> F[Response]
-  E --> F
-  F --> G((Voice Output))
-${graphStyle}
-  class A,G start;class B,D,E,F process;class C decision;`
-    },
-    {
-      name: "WasteLess AI",
-      date: "2026",
-      type: "Full Stack Web App",
-      image: "images/wasteless-ai.png",
-      desc: "A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
-      tags: ["Next.js", "React", "Supabase", "Leaflet", "NVIDIA API"],
-      bullets: [
-        "Restaurants submit extra food with location, availability, quantity, and pickup windows.",
-        "The app compares shelter needs, distance, urgency, and constraints before matching.",
-        "Map and backend data work together so the system feels practical instead of just visual."
-      ],
-      chart: `flowchart LR
-  A((Restaurant)) --> B[Food Listing]
-  B --> C{Match Check}
-  C --> D[Location Data]
-  C --> E[Shelter Needs]
-  C --> F[Pickup Window]
-  D --> G[Matching Logic]
-  E --> G
-  F --> G
-  G --> H[Map View]
-  G --> I((Shelter))
-${graphStyle}
-  class A,I start;class B,D,E,F,G,H process;class C decision;`
-    },
-    {
-      name: "ProfessorMatch",
-      date: "2026",
-      type: "Recommendation System",
-      image: "images/professormatch.png",
-      desc: "A system that ranks professors using combined datasets and explains recommendations based on student goals.",
-      tags: ["Python", "pandas", "Streamlit", "FastAPI", "Data Cleaning"],
-      bullets: [
-        "Pulls together professor ratings, course data, and profile information.",
-        "Uses ranking logic to match professors to goals like GPA, learning depth, or career value.",
-        "Shows explainable results so students understand why each professor is recommended."
-      ],
-      chart: `flowchart LR
-  A((Student Goal)) --> B{Goal Type}
-  B --> C[Ratings Data]
-  B --> D[Course Data]
-  B --> E[Profile Data]
-  C --> F[Data Cleaning]
-  D --> F
-  E --> F
-  F --> G[Ranking Logic]
-  G --> H[Streamlit UI]
-  H --> I((Recommendation))
-${graphStyle}
-  class A,I start;class C,D,E,F,G,H process;class B decision;`
-    },
-    {
-      name: "Roguelike Maker",
-      date: "2026",
-      type: "Godot Game Generator",
-      image: "images/roguelike-maker.png",
-      desc: "A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
-      tags: ["Godot", "GDScript", "JSON", "Game Systems", "AI Generator"],
-      bullets: [
-        "Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.",
-        "Connected the generated JSON into Godot so changing the config directly changed gameplay.",
-        "Implemented live config reloading, allowing instant gameplay updates without restarting the game.",
-        "Enabled each prompt to generate a distinct run, increasing replayability and showcasing dynamic game generation.",
-        "Implemented a map generation system using a 40x40 sprite to define and spawn the game layout."
-      ],
-      chart: `flowchart LR
-  A((Prompt)) --> B{AI Interprets}
-  B --> C[Player Speed]
-  B --> D[Enemy Density]
-  B --> E[Room Sequence]
-  B --> F[Weapon Type]
-  C --> G[JSON Config]
-  D --> G
-  E --> G
-  F --> G
-  G --> H[Godot Config Loader]
-  H --> I[Game Systems]
-  I --> J((Playable Roguelike))
-${graphStyle}
-  class A,J start;class C,D,E,F,G,H,I process;class B decision;`
-    }
-  ];
+const projects=[
+  {name:"Forge",date:"2026",type:"Bioinformatics / ML Pipeline",emoji:"🧬",image:"images/forge.png",color:"linear-gradient(145deg,#1e3a5f,#2a5298)",
+   desc:"A reference-free DNA analysis pipeline that detects cancer and antibiotic resistance from raw sequencing reads — no genome alignment required.",
+   tags:["Python","PyTorch","NetworkX","Claude API","GNN"],
+   bullets:["Assembled raw reads into De Bruijn graphs and extracted 14 graph-level features for downstream classification.","Trained a GNN using GCN layers, Graph Attention, and global mean+max pooling to classify genomic patterns.","Replaced brute-force grid search with an LLM-driven parameter optimizer and added a natural language query interface."],
+   chart:`flowchart LR\n  A((Raw Reads))-->B[De Bruijn Graph]\n  B-->C[Feature Extraction]\n  C-->D{GNN Classifier}\n  D-->E[GCN Layers]\n  D-->F[Graph Attention]\n  E-->G[Pooling]\n  F-->G\n  G-->H[LLM Optimizer]\n  H-->I((Prediction))\n${G}\n  class A,I start;class B,C,E,F,G,H process;class D decision;`},
+  {name:"Mini Me AI",date:"2026",type:"Local AI Systems",emoji:"🤖",image:"images/mini-me-ai.png",color:"linear-gradient(145deg,#1a3a3a,#2a7a7a)",
+   desc:"A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
+   tags:["C++","Python","Ollama","Piper","Vosk"],
+   bullets:["Runs local LLM inference through Ollama instead of depending fully on external APIs.","Uses voice input and text-to-speech to make the assistant feel more interactive.","Connects local AI, personality behavior, and system-level constraints into one project."],
+   chart:`flowchart LR\n  A((User Input))-->B[Speech / Text]\n  B-->C{Input Type}\n  C-->D[Local LLM]\n  C-->E[System Logic]\n  D-->F[Response]\n  E-->F\n  F-->G((Voice Output))\n${G}\n  class A,G start;class B,D,E,F process;class C decision;`}
+];
 
-  const wip = [
-    {
-      name: "3D Models In html using Three.js",
-      type: "Dev Log",
-      status: "Ongoing",
-      progress: 20,
-      desc: "Dev log: converting images to Base64, slicing them with canvas, and mapping textures onto a Three.js slime.",
-      tags: ["Three.js", "JavaScript", "Canvas"]
-    },
-    {
-      name: "...",
-      type: "TBD",
-      status: "Thinking",
-      progress: 0,
-      desc: "Give me a problem to solve or an idea to build!",
-      tags: ["???"]
-    }
-  ];
+const research=[
+  {name:"Research Paper",date:"2026",type:"Academic Research",emoji:"📄",image:"images/research-paper.png",color:"linear-gradient(145deg,#4a3520,#8b5e3c)",
+   desc:'"Rethinking Deep Self-Attention for Character-Level Language Modeling" — a counterargument paper challenging the assumption that transformers fully replace RNNs.',
+   tags:["Research","Transformers","RNNs","NLP","Academic Writing"],
+   bullets:["Challenged the prevailing claim that deep self-attention architectures supersede recurrent networks for character-level language modeling.","Analyzed trade-offs including fixed context windows, quadratic computational cost, and long-term dependency limitations.","Proposed hybrid and sequential architectures as a more practical direction, grounded in empirical and theoretical analysis."],
+   chart:`flowchart LR\n  A((Claim))-->B{Evaluation}\n  B-->C[Context Windows]\n  B-->D[Compute Cost]\n  B-->E[Long-term Deps]\n  C-->F[Trade-off Analysis]\n  D-->F\n  E-->F\n  F-->G[Hybrid Proposal]\n  G-->H((Counterargument))\n${G}\n  class A,H start;class C,D,E,F,G process;class B decision;`}
+];
 
-  // ── Render built projects ──
-  const list = document.getElementById("projectList");
+const hackathons=[
+  {name:"WasteLess AI",date:"2026",type:"Full Stack Web App",emoji:"🗺️",hackathon:"NVIDIA GTC 2026",image:"images/wasteless-ai.png",color:"linear-gradient(145deg,#1a3a20,#2d6a35)",
+   desc:"A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
+   tags:["Next.js","React","Supabase","Leaflet","NVIDIA API"],
+   bullets:["Restaurants submit extra food with location, availability, quantity, and pickup windows.","The app compares shelter needs, distance, urgency, and constraints before matching.","Map and backend data work together so the system feels practical instead of just visual."],
+   chart:`flowchart LR\n  A((Restaurant))-->B[Food Listing]\n  B-->C{Match Check}\n  C-->D[Location Data]\n  C-->E[Shelter Needs]\n  C-->F[Pickup Window]\n  D-->G[Matching Logic]\n  E-->G\n  F-->G\n  G-->H[Map View]\n  G-->I((Shelter))\n${G}\n  class A,I start;class B,D,E,F,G,H process;class C decision;`},
+  {name:"ProfessorMatch",date:"2026",type:"Recommendation System",emoji:"🎓",hackathon:"HackHayward 2026",image:"images/professormatch.png",color:"linear-gradient(145deg,#3a1a4a,#7a3a9a)",
+   desc:"A system that ranks professors using combined datasets and explains recommendations based on student goals.",
+   tags:["Python","pandas","Streamlit","FastAPI","Data Cleaning"],
+   bullets:["Pulls together professor ratings, course data, and profile information.","Uses ranking logic to match professors to goals like GPA, learning depth, or career value.","Shows explainable results so students understand why each professor is recommended."],
+   chart:`flowchart LR\n  A((Student Goal))-->B{Goal Type}\n  B-->C[Ratings Data]\n  B-->D[Course Data]\n  B-->E[Profile Data]\n  C-->F[Data Cleaning]\n  D-->F\n  E-->F\n  F-->G[Ranking Logic]\n  G-->H[Streamlit UI]\n  H-->I((Recommendation))\n${G}\n  class A,I start;class C,D,E,F,G,H process;class B decision;`},
+  {name:"Roguelike Maker",date:"2026",type:"Godot Game Generator",emoji:"🎮",hackathon:"SJSU Hackathon 2026",image:"images/roguelike-maker.png",color:"linear-gradient(145deg,#4a1a1a,#9a3a2a)",
+   desc:"A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
+   tags:["Godot","GDScript","JSON","Game Systems","AI Generator"],
+   bullets:["Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.","Connected the generated JSON into Godot so changing the config directly changed gameplay.","Implemented live config reloading — instant gameplay updates without restarting.","Implemented a map generation system using a 40×40 sprite to define and spawn the game layout."],
+   chart:`flowchart LR\n  A((Prompt))-->B{AI Interprets}\n  B-->C[Player Speed]\n  B-->D[Enemy Density]\n  B-->E[Room Sequence]\n  C-->G[JSON Config]\n  D-->G\n  E-->G\n  G-->H[Godot Loader]\n  H-->I((Playable Game))\n${G}\n  class A,I start;class C,D,E,G,H process;class B decision;`}
+];
 
-  projects.forEach((p, i) => {
-    const chartId = `chart-${i}`;
-    const wrap = document.createElement("div");
-    wrap.className = "project-wrap";
+const wip=[
+  {name:"3D Models in HTML",type:"Dev Log",status:"Ongoing",progress:20,desc:"Converting images to Base64, slicing them with canvas, and mapping textures onto a Three.js slime.",tags:["Three.js","JavaScript","Canvas"]},
+  {name:"…",type:"TBD",status:"Thinking",progress:0,desc:"Give me a problem to solve or an idea to build!",tags:["???"]}
+];
 
-    wrap.innerHTML = `
-      <div class="project-bar" onclick="toggleProject(${i})">
-        <div class="project-photo">
-          <img src="${p.image}" alt="${p.name}">
-        </div>
-        <div class="project-content">
-          <div class="project-top">
-            <div class="project-name">${p.name}</div>
-            <div class="project-date">${p.date}</div>
-          </div>
-          <div class="project-type">${p.type}</div>
-          <div class="project-desc">${p.desc}</div>
-          <div class="project-tags">${p.tags.map(t => `<span class="project-tag">${t}</span>`).join("")}</div>
-        </div>
-      </div>
-      <div class="project-drawer">
-        <div class="drawer-inner">
-          <div class="detail-box">
-            <h3>What it does</h3>
-            <ul>${p.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
-          </div>
-          <div class="flowchart-wrap">
-            <h3>System Flow</h3>
-            <div class="flowchart-box" id="${chartId}"></div>
-          </div>
-        </div>
-      </div>
-    `;
+const allProjects=[...projects,...research,...hackathons];
 
-    list.appendChild(wrap);
+function card(p,idx){
+  return `<div class="card" data-name="${p.name.toLowerCase()}" onclick="openProject(${idx})">
+    <div class="card-thumb" style="background:${p.color}">
+      <img src="${p.image}" alt="${p.name}" onerror="this.classList.add('hidden');this.nextElementSibling.style.display='block'">
+      <span class="fallback" style="display:none">${p.emoji}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-top"><span class="card-name">${p.name}</span><span class="card-date">${p.date}</span></div>
+      <div class="card-type">${p.type}</div>
+      ${p.hackathon?`<span class="card-hackathon">🏆 ${p.hackathon}</span>`:''}
+      <p class="card-desc">${p.desc}</p>
+      <div class="card-tags">${p.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+document.getElementById('projectList').innerHTML =projects.map((p,i)=>card(p,i)).join('');
+document.getElementById('researchList').innerHTML=research.map((p,i)=>card(p,projects.length+i)).join('');
+document.getElementById('hackList').innerHTML    =hackathons.map((p,i)=>card(p,projects.length+research.length+i)).join('');
+
+document.getElementById('wipList').innerHTML=wip.map(w=>`
+  <div class="wip-card">
+    <div class="wip-top"><span class="wip-name">${w.name}</span><span class="wip-badge"><span class="wip-dot"></span>${w.status}</span></div>
+    <div class="wip-type">${w.type}</div>
+    <p class="wip-desc">${w.desc}</p>
+    <div class="wip-prog-row"><span>Progress</span><span>${w.progress}%</span></div>
+    <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
+    <div class="wip-tags">${w.tags.map(t=>`<span class="wip-tag">${t}</span>`).join('')}</div>
+  </div>`).join('');
+
+// Search
+document.getElementById('searchInput').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  let any=false;
+  document.querySelectorAll('.card').forEach(el=>{
+    const show=!q||el.dataset.name.includes(q);
+    el.style.display=show?'':'none';
+    if(show)any=true;
   });
+  document.getElementById('noResults').style.display=(!any&&q)?'block':'none';
+});
 
-  function toggleProject(i) {
-    const wraps = document.querySelectorAll(".project-wrap");
-    const isOpen = wraps[i].classList.contains("open");
-    wraps.forEach(w => w.classList.remove("open"));
-    if (!isOpen) {
-      wraps[i].classList.add("open");
-      setTimeout(() => window.renderMermaid(projects[i].chart, `chart-${i}`), 80);
-    }
-  }
-
-  // ── Render WIP cards ──
-  const wipList = document.getElementById("wipList");
-
-  wip.forEach(w => {
-    const card = document.createElement("div");
-    card.className = "wip-card";
-    card.innerHTML = `
-      <div class="wip-inner">
-        <div class="wip-top">
-          <div class="wip-name">${w.name}</div>
-          <div class="wip-status"><span class="wip-dot"></span>${w.status}</div>
-        </div>
-        <div class="wip-type">${w.type}</div>
-        <div class="wip-desc">${w.desc}</div>
-        <div class="wip-progress-wrap">
-          <div class="wip-progress-label"><span>Progress</span><span>${w.progress}%</span></div>
-          <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
-        </div>
-        <div class="wip-tags">${w.tags.map(t => `<span class="wip-tag">${t}</span>`).join("")}</div>
+// Sheet
+let rendered={};
+function openProject(i){
+  const p=allProjects[i];const cid=`cs-${i}`;
+  document.getElementById('sheetScroll').innerHTML=`
+    <div class="sheet-header">
+      <div class="sheet-thumb" style="background:${p.color}">
+        <img src="${p.image}" alt="${p.name}" onerror="this.classList.add('hidden');this.nextElementSibling.style.display='block'">
+        <span style="display:none;font-size:24px">${p.emoji}</span>
       </div>
-    `;
-    wipList.appendChild(card);
-  });
+      <div class="sheet-meta">
+        <div class="sheet-name">${p.name}</div>
+        <div class="sheet-type">${p.hackathon?`${p.type} · <span style="color:var(--amber)">${p.hackathon}</span>`:p.type}</div>
+      </div>
+      <div class="sheet-date">${p.date}</div>
+    </div>
+    <p class="sheet-desc">${p.desc}</p>
+    <div class="sheet-tags">${p.tags.map(t=>`<span class="sheet-tag">${t}</span>`).join('')}</div>
+    <div class="detail-sec"><h3>What it does</h3><ul class="detail-list">${p.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>
+    <div class="chart-sec"><h3>System Flow</h3><div class="chart-box" id="${cid}">Loading…</div></div>`;
+  show();
+  setTimeout(()=>{if(!rendered[i]){window.renderMermaid(p.chart,cid);rendered[i]=true;}},100);
+}
+
+function show(){document.getElementById('overlay').classList.add('show');document.getElementById('sheet').classList.add('show');document.body.style.overflow='hidden';}
+function closeSheet(){document.getElementById('overlay').classList.remove('show');document.getElementById('sheet').classList.remove('show');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+let ty=0;
+document.getElementById('sheet').addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+document.getElementById('sheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>80)closeSheet();},{passive:true});
 </script>
-
 </body>
 </html>

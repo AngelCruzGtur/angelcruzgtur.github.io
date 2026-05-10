@@ -45,9 +45,9 @@
     body::before{
       content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
       background:
-        radial-gradient(circle,rgba(0,0,0,0.07) 1.2px,transparent 1.2px),
-        radial-gradient(ellipse 75% 50% at 5% 95%,rgba(180,130,50,0.14) 0%,transparent 55%),
-        radial-gradient(ellipse 55% 40% at 95% 5%,rgba(160,110,40,0.11) 0%,transparent 55%);
+        radial-gradient(circle,rgba(0,0,0,0.06) 1.2px,transparent 1.2px),
+        radial-gradient(ellipse 75% 50% at 5% 95%,rgba(150,150,160,0.2) 0%,transparent 55%),
+        radial-gradient(ellipse 55% 40% at 95% 5%,rgba(130,130,145,0.15) 0%,transparent 55%);
       background-size:18px 18px,100% 100%,100% 100%;
       background-color:var(--bg);
     }
@@ -251,52 +251,6 @@ classDef process fill:#4f6d5f,stroke:#cbd5e1,color:#f8fafc,stroke-width:1.5px;
 classDef decision fill:#6b5f4a,stroke:#f5d06f,color:#f8fafc,stroke-width:1.5px;
 `;
 
-const projects=[
-  {name:"Forge",date:"2026",type:"Bioinformatics / ML Pipeline",emoji:"🧬",image:"images/forge.png",color:"linear-gradient(145deg,#1e3a5f,#2a5298)",
-   desc:"A reference-free DNA analysis pipeline that detects cancer and antibiotic resistance from raw sequencing reads — no genome alignment required.",
-   tags:["Python","PyTorch","NetworkX","Claude API","GNN"],
-   bullets:["Assembled raw reads into De Bruijn graphs and extracted 14 graph-level features for downstream classification.","Trained a GNN using GCN layers, Graph Attention, and global mean+max pooling to classify genomic patterns.","Replaced brute-force grid search with an LLM-driven parameter optimizer and added a natural language query interface."],
-   chart:`flowchart LR\n  A((Raw Reads))-->B[De Bruijn Graph]\n  B-->C[Feature Extraction]\n  C-->D{GNN Classifier}\n  D-->E[GCN Layers]\n  D-->F[Graph Attention]\n  E-->G[Pooling]\n  F-->G\n  G-->H[LLM Optimizer]\n  H-->I((Prediction))\n${G}\n  class A,I start;class B,C,E,F,G,H process;class D decision;`},
-  {name:"Mini Me AI",date:"2026",type:"Local AI Systems",emoji:"🤖",image:"images/mini-me-ai.png",color:"linear-gradient(145deg,#1a3a3a,#2a7a7a)",
-   desc:"A local AI assistant focused on running LLMs without relying on cloud APIs, integrating voice and real-time interaction.",
-   tags:["C++","Python","Ollama","Piper","Vosk"],
-   bullets:["Runs local LLM inference through Ollama instead of depending fully on external APIs.","Uses voice input and text-to-speech to make the assistant feel more interactive.","Connects local AI, personality behavior, and system-level constraints into one project."],
-   chart:`flowchart LR\n  A((User Input))-->B[Speech / Text]\n  B-->C{Input Type}\n  C-->D[Local LLM]\n  C-->E[System Logic]\n  D-->F[Response]\n  E-->F\n  F-->G((Voice Output))\n${G}\n  class A,G start;class B,D,E,F process;class C decision;`}
-];
-
-const research=[
-  {name:"Research Paper",date:"2026",type:"Academic Research",emoji:"📄",image:"images/research-paper.png",color:"linear-gradient(145deg,#4a3520,#8b5e3c)",
-   desc:'"Rethinking Deep Self-Attention for Character-Level Language Modeling" — a counterargument paper challenging the assumption that transformers fully replace RNNs.',
-   tags:["Research","Transformers","RNNs","NLP","Academic Writing"],
-   bullets:["Challenged the prevailing claim that deep self-attention architectures supersede recurrent networks for character-level language modeling.","Analyzed trade-offs including fixed context windows, quadratic computational cost, and long-term dependency limitations.","Proposed hybrid and sequential architectures as a more practical direction, grounded in empirical and theoretical analysis."],
-   chart:`flowchart LR\n  A((Claim))-->B{Evaluation}\n  B-->C[Context Windows]\n  B-->D[Compute Cost]\n  B-->E[Long-term Deps]\n  C-->F[Trade-off Analysis]\n  D-->F\n  E-->F\n  F-->G[Hybrid Proposal]\n  G-->H((Counterargument))\n${G}\n  class A,H start;class C,D,E,F,G process;class B decision;`}
-];
-
-const hackathons=[
-  {name:"WasteLess AI",date:"2026",type:"Full Stack Web App",emoji:"🗺️",hackathon:"NVIDIA GTC 2026",image:"images/wasteless-ai.png",color:"linear-gradient(145deg,#1a3a20,#2d6a35)",
-   desc:"A food redistribution platform connecting restaurants with surplus food to nearby shelters using location-based matching.",
-   tags:["Next.js","React","Supabase","Leaflet","NVIDIA API"],
-   bullets:["Restaurants submit extra food with location, availability, quantity, and pickup windows.","The app compares shelter needs, distance, urgency, and constraints before matching.","Map and backend data work together so the system feels practical instead of just visual."],
-   chart:`flowchart LR\n  A((Restaurant))-->B[Food Listing]\n  B-->C{Match Check}\n  C-->D[Location Data]\n  C-->E[Shelter Needs]\n  C-->F[Pickup Window]\n  D-->G[Matching Logic]\n  E-->G\n  F-->G\n  G-->H[Map View]\n  G-->I((Shelter))\n${G}\n  class A,I start;class B,D,E,F,G,H process;class C decision;`},
-  {name:"ProfessorMatch",date:"2026",type:"Recommendation System",emoji:"🎓",hackathon:"HackHayward 2026",image:"images/professormatch.png",color:"linear-gradient(145deg,#3a1a4a,#7a3a9a)",
-   desc:"A system that ranks professors using combined datasets and explains recommendations based on student goals.",
-   tags:["Python","pandas","Streamlit","FastAPI","Data Cleaning"],
-   bullets:["Pulls together professor ratings, course data, and profile information.","Uses ranking logic to match professors to goals like GPA, learning depth, or career value.","Shows explainable results so students understand why each professor is recommended."],
-   chart:`flowchart LR\n  A((Student Goal))-->B{Goal Type}\n  B-->C[Ratings Data]\n  B-->D[Course Data]\n  B-->E[Profile Data]\n  C-->F[Data Cleaning]\n  D-->F\n  E-->F\n  F-->G[Ranking Logic]\n  G-->H[Streamlit UI]\n  H-->I((Recommendation))\n${G}\n  class A,I start;class C,D,E,F,G,H process;class B decision;`},
-  {name:"Roguelike Maker",date:"2026",type:"Godot Game Generator",emoji:"🎮",hackathon:"SJSU Hackathon 2026",image:"images/roguelike-maker.png",color:"linear-gradient(145deg,#4a1a1a,#9a3a2a)",
-   desc:"A prompt-to-playable-game system where an AI generator creates JSON settings that directly change a Godot roguelike prototype.",
-   tags:["Godot","GDScript","JSON","Game Systems","AI Generator"],
-   bullets:["Built a config pipeline where prompts changed player speed, enemy density, weapon type, and room sequence.","Connected the generated JSON into Godot so changing the config directly changed gameplay.","Implemented live config reloading — instant gameplay updates without restarting.","Implemented a map generation system using a 40×40 sprite to define and spawn the game layout."],
-   chart:`flowchart LR\n  A((Prompt))-->B{AI Interprets}\n  B-->C[Player Speed]\n  B-->D[Enemy Density]\n  B-->E[Room Sequence]\n  C-->G[JSON Config]\n  D-->G\n  E-->G\n  G-->H[Godot Loader]\n  H-->I((Playable Game))\n${G}\n  class A,I start;class C,D,E,G,H process;class B decision;`}
-];
-
-const wip=[
-  {name:"3D Models in HTML",type:"Dev Log",status:"Ongoing",progress:20,desc:"Converting images to Base64, slicing them with canvas, and mapping textures onto a Three.js slime.",tags:["Three.js","JavaScript","Canvas"]},
-  {name:"…",type:"TBD",status:"Thinking",progress:0,desc:"Give me a problem to solve or an idea to build!",tags:["???"]}
-];
-
-const allProjects=[...projects,...research,...hackathons];
-
 function card(p,idx){
   return `<div class="card" data-name="${p.name.toLowerCase()}" onclick="openProject(${idx})">
     <div class="card-thumb" style="background:${p.color}">
@@ -313,19 +267,35 @@ function card(p,idx){
   </div>`;
 }
 
-document.getElementById('projectList').innerHTML =projects.map((p,i)=>card(p,i)).join('');
-document.getElementById('researchList').innerHTML=research.map((p,i)=>card(p,projects.length+i)).join('');
-document.getElementById('hackList').innerHTML    =hackathons.map((p,i)=>card(p,projects.length+research.length+i)).join('');
+function buildChart(raw){ return raw + '\n' + G + '\n  class A start;class I,H,G start;'; }
 
-document.getElementById('wipList').innerHTML=wip.map(w=>`
-  <div class="wip-card">
-    <div class="wip-top"><span class="wip-name">${w.name}</span><span class="wip-badge"><span class="wip-dot"></span>${w.status}</span></div>
-    <div class="wip-type">${w.type}</div>
-    <p class="wip-desc">${w.desc}</p>
-    <div class="wip-prog-row"><span>Progress</span><span>${w.progress}%</span></div>
-    <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
-    <div class="wip-tags">${w.tags.map(t=>`<span class="wip-tag">${t}</span>`).join('')}</div>
-  </div>`).join('');
+let allProjects=[];
+let rendered={};
+
+fetch('projectsdata.json')
+  .then(r=>r.json())
+  .then(data=>{
+    const {projects,research,hackathons,wip}=data;
+    allProjects=[...projects,...research,...hackathons];
+
+    // add chart classDefs
+    allProjects.forEach(p=>{ p.chart = p.chart+'\n'+G; });
+
+    document.getElementById('projectList').innerHTML =projects.map((p,i)=>card(p,i)).join('');
+    document.getElementById('researchList').innerHTML=research.map((p,i)=>card(p,projects.length+i)).join('');
+    document.getElementById('hackList').innerHTML    =hackathons.map((p,i)=>card(p,projects.length+research.length+i)).join('');
+
+    document.getElementById('wipList').innerHTML=wip.map(w=>`
+      <div class="wip-card">
+        <div class="wip-top"><span class="wip-name">${w.name}</span><span class="wip-badge"><span class="wip-dot"></span>${w.status}</span></div>
+        <div class="wip-type">${w.type}</div>
+        <p class="wip-desc">${w.desc}</p>
+        <div class="wip-prog-row"><span>Progress</span><span>${w.progress}%</span></div>
+        <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
+        <div class="wip-tags">${w.tags.map(t=>`<span class="wip-tag">${t}</span>`).join('')}</div>
+      </div>`).join('');
+  })
+  .catch(err=>console.error('Could not load projectsdata.json',err));
 
 // Search
 document.getElementById('searchInput').addEventListener('input',function(){
@@ -340,7 +310,6 @@ document.getElementById('searchInput').addEventListener('input',function(){
 });
 
 // Sheet
-let rendered={};
 function openProject(i){
   const p=allProjects[i];const cid=`cs-${i}`;
   document.getElementById('sheetScroll').innerHTML=`

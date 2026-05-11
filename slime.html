@@ -29,7 +29,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r122/three.min.js"></script>
 
 	<script>
-		const canvas = document.getElementById("slime-canvas")
+		const canvas = document.getElementById("c")
 
 		const scene = new THREE.Scene()
 
@@ -157,8 +157,9 @@
 
 			const gravity = -0.055
 			const hopPower = 0.48
-			const chaseStrength = 0.0028
+			const chaseStrength = 0.168  // was 0.0028 — scaled up to compensate for /b.width normalisation (0.0028 * 60)
 			const friction = 0.965
+			const maxSpeed = 0.55        // FIX: hard cap so it can never go arbitrarily fast
 
 			let grounded = true
 			let cooldown = 0
@@ -192,14 +193,19 @@
 
 				const dx = target - x
 
-				vx += dx * chaseStrength
+				// FIX: normalise dx by world width so acceleration is screen-size-independent
+				vx += (dx / b.width) * chaseStrength
 				vx *= friction
+
+				// FIX: hard speed cap
+				vx = Math.max(-maxSpeed, Math.min(maxSpeed, vx))
 
 				if (cooldown > 0) {
 					cooldown--
 				}
 
-				if (grounded && Math.abs(dx) > 6 && Math.abs(vx) > 0.055 && cooldown === 0) {
+				// FIX: hop threshold normalised by world width (was a raw world-unit value of 6)
+				if (grounded && Math.abs(dx) / b.width > 0.08 && Math.abs(vx) > 0.055 && cooldown === 0) {
 					vy = hopPower
 					grounded = false
 					cooldown = 210
@@ -210,28 +216,27 @@
 				x += vx
 				y += vy
 
-			const bounce = 0.65 // how bouncy it is
+				const bounce = 0.65
 
-			if (x < b.left + halfWidth) {
-				x = b.left + halfWidth
-				vx = -vx * bounce
+				if (x < b.left + halfWidth) {
+					x = b.left + halfWidth
+					vx = -vx * bounce
 
-				// add a tiny hop when it hits wall
-				if (grounded) {
-					vy = hopPower * 0.6
-					grounded = false
+					if (grounded) {
+						vy = hopPower * 0.6
+						grounded = false
+					}
 				}
-			}
 
-			if (x > b.right - halfWidth) {
-				x = b.right - halfWidth
-				vx = -vx * bounce
+				if (x > b.right - halfWidth) {
+					x = b.right - halfWidth
+					vx = -vx * bounce
 
-				if (grounded) {
-					vy = hopPower * 0.6
-					grounded = false
+					if (grounded) {
+						vy = hopPower * 0.6
+						grounded = false
+					}
 				}
-			}
 
 				if (y <= floor) {
 					y = floor

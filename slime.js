@@ -8,7 +8,7 @@ camera.position.set(0, 5.8, 48)
 camera.lookAt(0, 0, 0)
 
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false })
-renderer.setPixelRatio(window.devicePixelRatio || 1)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)) // cap at 2x — no need for 4K overhead
 renderer.setSize(innerWidth, innerHeight)
 renderer.setClearColor(0x000000, 0)
 
@@ -17,46 +17,79 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 0.68)
 dirLight.position.set(8, 12, 10)
 scene.add(dirLight)
 
-// ── Slider UI ───────────────────────────────────────────────────────────────
+// ── Bounds helper ────────────────────────────────────────────────────────────
+function getBounds() {
+  const d = camera.position.z
+  const h = 2 * Math.tan(camera.fov * Math.PI / 360) * d
+  return { halfW: (h * camera.aspect) / 2, halfH: h / 2, bottom: -h / 2 }
+}
+
+// ── Viewport scale — keeps slimes the same visual size on any screen ──────────
+function viewScale() {
+  return Math.min(innerWidth, innerHeight) / 900
+}
+
+// ── Slider / controls UI (responsive) ───────────────────────────────────────
+const isMobile = () => innerWidth < 600
+
 const sliderWrap = document.createElement("div")
 sliderWrap.id = "slime-slider-wrap"
-sliderWrap.style.cssText = `
-  position: fixed;
-  left: 4vw;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1vh;
-  padding: 1.5vh 0.8vw;
-  background: #c6c6c6;
-  border: 3px solid #1d1d1d;
-  box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 10px;
-  color: #3f3f3f;
-  pointer-events: all;
-  user-select: none;
-`
+
+function applyWrapStyle() {
+  if (isMobile()) {
+    sliderWrap.style.cssText = `
+      position: fixed;
+      left: 12px;
+      bottom: 20px;
+      top: auto;
+      transform: none;
+      z-index: 10;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 8px;
+      background: #c6c6c6;
+      border: 3px solid #1d1d1d;
+      box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+      font-family: 'Press Start 2P', cursive;
+      color: #3f3f3f;
+      pointer-events: all;
+      user-select: none;
+    `
+  } else {
+    sliderWrap.style.cssText = `
+      position: fixed;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 10px;
+      background: #c6c6c6;
+      border: 3px solid #1d1d1d;
+      box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+      font-family: 'Press Start 2P', cursive;
+      color: #3f3f3f;
+      pointer-events: all;
+      user-select: none;
+    `
+  }
+}
 
 const label = document.createElement("span")
 label.textContent = "SLIMES"
-label.style.cssText = `
-  font-size: 7px;
-  letter-spacing: 0.05em;
-  text-align: center;
-`
+label.style.cssText = `font-size: 7px; letter-spacing: 0.05em; text-align: center;`
 
 const countDisplay = document.createElement("span")
 countDisplay.id = "slime-count-display"
 countDisplay.textContent = "1"
-countDisplay.style.cssText = `
-  min-width: 16px;
-  text-align: center;
-`
+countDisplay.style.cssText = `font-size: 11px; text-align: center; min-width: 18px;`
 
+// Desktop: vertical slider
 const slider = document.createElement("input")
 slider.type = "range"
 slider.min = "1"
@@ -66,39 +99,74 @@ slider.orient = "vertical"
 slider.style.cssText = `
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 2vw;
-  height: 15vh;
+  width: 24px;
+  height: 130px;
   accent-color: #3f3f3f;
   cursor: pointer;
   appearance: slider-vertical;
   -webkit-appearance: slider-vertical;
 `
 
-sliderWrap.appendChild(label)
-sliderWrap.appendChild(countDisplay)
-sliderWrap.appendChild(slider)
+// Mobile: +/- buttons
+function makePxBtn(text, onClick) {
+  const btn = document.createElement("button")
+  btn.textContent = text
+  btn.style.cssText = `
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    width: 32px;
+    height: 32px;
+    background: #c6c6c6;
+    color: #3f3f3f;
+    border: 3px solid #1d1d1d;
+    box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  `
+  btn.addEventListener("mouseenter",  () => { btn.style.background = "#9b9b9b" })
+  btn.addEventListener("mouseleave",  () => { btn.style.background = "#c6c6c6" })
+  btn.addEventListener("touchstart",  () => { btn.style.background = "#9b9b9b" }, { passive: true })
+  btn.addEventListener("touchend",    () => { btn.style.background = "#c6c6c6" }, { passive: true })
+  btn.addEventListener("click", onClick)
+  return btn
+}
+
+let mobileCount = 1
+const subBtn = makePxBtn("−", () => { mobileCount = Math.max(1, mobileCount - 1); setSlimeCount(mobileCount) })
+const addBtn = makePxBtn("+", () => { mobileCount++; setSlimeCount(mobileCount) })
+
+function rebuildWidget() {
+  sliderWrap.innerHTML = ""
+  applyWrapStyle()
+
+  if (isMobile()) {
+    sliderWrap.appendChild(subBtn)
+    sliderWrap.appendChild(countDisplay)
+    sliderWrap.appendChild(addBtn)
+  } else {
+    sliderWrap.appendChild(label)
+    sliderWrap.appendChild(countDisplay)
+    sliderWrap.appendChild(slider)
+  }
+}
+
+rebuildWidget()
 document.body.appendChild(sliderWrap)
 
-// ── Slime sprite sheet ───────────────────────────────────────────────────────
+// ── Sprite sheet ─────────────────────────────────────────────────────────────
 const SPRITE_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAFABAMAAADe49A5AAAAJFBMVEVHcExzwmJitkp7ymJaqkN7zmpocwpRoD5+v24WKBB1uWQKCgpRuk/sAAAAB3RSTlMAtLS0tLQI7015YAAAAuhJREFUeNrt3MFtgzAYgFFWYIWs0BW6QlfoCl2hK3SFrJDlKnzAimVTA67A5H2nRvjQPOVi2fzDUNk49TEXPr5NjXPvU7XrhtX9ZBr6CSBAgAABAgQIECBAgBu6TcXvn5jEatcBBAgQIECAAAECBAgQYOVWLiEKOnEDV6TMrdvD1iUlQIAAAQIECBAgQIAAtwLe5nJicdtWsW4j4GMKIECAAAECBAgQIECArweYYIUtWniQAC6vW/8fXOFQCSBAgAABAgQIECBAgOtKiJKzo3hiVLsOIECAAAECBAgQIECAAP8uXlG7PRd3bOEd/9p1e9i6pAQIECBAgAABAgQIEOCGchfYxlIV69YDFm+2AQQIECBAgAABAgQIsDvA1uON/2Vc8mPupL8sgAABAgQIECBAgAABrqv1eOPW6x6ZAAIECBAgQIAAAQIE2Dtg6/HGR41LBggQIECAAAECBAgQYHeADccbt173OQUQIECAAAECBAgQIMDLArYZb3z8uGSAAAECBAgQIECAAAGeH7D1eOPjxyUDBAgQIECAAAECBAjw/ICtxxsfNS4ZIECAAAECBAgQIECAPQHmLpyNpQ5YBxAgQIAAAQIECBAgwCsCLve1o0EAAQIECBAgQIAAAQLcDvg9d5+LTuFjsgQgQIAAAQogQIAAAQJsDBj+KgLGp/QAAgQIECBAgAABAgS4A/D+XA4wUQQIECBAgAIIECBAgACbbOUSxQiY7OIcKgEECBAgQIAAAQIUwCaAXrQBCBAgQIAAAQIECBDgiYjwAgQIECBAgAABAgQIcAdgckUt91J/7gJb7Ws4l778BhAgQIAAAQIECBAgwK2AyfevHS9W8bTICxAgQIAAAQIECBAgQICLr9IUx4tVPC2OUAYIECBAgAABAgQIECDA52+YQ1g+VKo4crrqQACAAAECBAgQIECAAAFuBfSiDUCAAAECBAgQIECAACVJkiRJkiRJkiRJkiRJkiRJkqS1/QLuvlkT9WDO3gAAAABJRU5ErkJggg=="
 
-// ── Slime colors (inner cube tints) ─────────────────────────────────────────
 const TINTS = [
-  0x4fc54a, // classic green
-  0x4a8ef5, // blue
-  0xe05a5a, // red
-  0xd4a017, // yellow
-  0xb04ae0, // purple
-  0xe07a2a, // orange
-  0x2ad4c8, // cyan
-  0xe04aa0, // pink
-  0xffffff, // white
-  0x888888, // grey
-  0x5a3a1a, // brown
-  0x1a3a5a, // dark blue
+  0x4fc54a, 0x4a8ef5, 0xe05a5a, 0xd4a017, 0xb04ae0,
+  0xe07a2a, 0x2ad4c8, 0xe04aa0, 0xffffff, 0x888888,
+  0x5a3a1a, 0x1a3a5a,
 ]
 
-// ── Shared texture builder ───────────────────────────────────────────────────
+// ── Shared texture loader ────────────────────────────────────────────────────
 let sharedSource = null
 let sourceReady = false
 const pendingCallbacks = []
@@ -133,23 +201,22 @@ function cropTexture(source, x, y, w, h, outSize = 64) {
 function makeMaterial(source, x, y, w, h, opacity = 0.72) {
   return new THREE.MeshLambertMaterial({
     map: cropTexture(source, x, y, w, h),
-    transparent: true, alphaTest: 0.01, opacity,
-    side: THREE.DoubleSide
+    transparent: true, alphaTest: 0.01, opacity, side: THREE.DoubleSide
   })
 }
 
-// ── Slime factory ────────────────────────────────────────────────────────────
+// ── Slime mesh builder ───────────────────────────────────────────────────────
 function createSlime(source, tintColor, size) {
   const group = new THREE.Group()
 
   const outerCube = new THREE.Mesh(
     new THREE.BoxGeometry(size, size, size),
     [
-      makeMaterial(source, 0, 8, 8, 8),
+      makeMaterial(source,  0, 8, 8, 8),
       makeMaterial(source, 16, 8, 8, 8),
-      makeMaterial(source, 8, 0, 8, 8),
+      makeMaterial(source,  8, 0, 8, 8),
       makeMaterial(source, 16, 0, 8, 8),
-      makeMaterial(source, 8, 8, 8, 8),
+      makeMaterial(source,  8, 8, 8, 8),
       makeMaterial(source, 24, 8, 8, 8),
     ]
   )
@@ -161,7 +228,6 @@ function createSlime(source, tintColor, size) {
   innerCube.position.y = -0.08
 
   const faceMat = new THREE.MeshBasicMaterial({ color: 0x315927, transparent: true, opacity: 0.62 })
-
   function faceBlock(w, h, fx, fy) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.14), faceMat)
     m.position.set(fx, fy, size / 2 + 0.1)
@@ -169,27 +235,34 @@ function createSlime(source, tintColor, size) {
   }
 
   const s = size / 4.7
-  group.add(outerCube, innerCube, faceBlock(0.9 * s, 1.05 * s, -0.9 * s, 0.45 * s), faceBlock(0.9 * s, 1.05 * s, 0.9 * s, 0.45 * s), faceBlock(0.56 * s, 0.56 * s, 0, -1.0 * s))
+  group.add(
+    outerCube, innerCube,
+    faceBlock(0.9 * s, 1.05 * s, -0.9 * s,  0.45 * s),
+    faceBlock(0.9 * s, 1.05 * s,  0.9 * s,  0.45 * s),
+    faceBlock(0.56 * s, 0.56 * s, 0,        -1.0 * s)
+  )
   scene.add(group)
   return group
 }
 
-// ── Physics state per slime ──────────────────────────────────────────────────
+// ── SlimeEntity ──────────────────────────────────────────────────────────────
 class SlimeEntity {
-  constructor(source, index, total) {
-    this.size = 3.5 + Math.random() * 3.5
+  constructor(source, index) {
+    // Scale size to viewport so slimes look consistent on any screen
+    const vs = viewScale()
+    this.size   = (4.7 + Math.random() * 2.0) * vs
     this.radius = this.size * 0.52
-    this.tint = TINTS[index % TINTS.length]
-    this.mesh = createSlime(source, this.tint, this.size)
+    this.tint   = TINTS[index % TINTS.length]
+    this.mesh   = createSlime(source, this.tint, this.size)
 
-    const spread = 30
-    this.x = (Math.random() - 0.5) * spread
-    this.y = 0
+    const b = getBounds()
+    this.x  = (Math.random() - 0.5) * b.halfW * 1.2
+    this.y  = b.bottom + this.radius
     this.vx = (Math.random() - 0.5) * 0.4
     this.vy = Math.random() * 0.3
 
-    this.grounded = false
-    this.cooldown = Math.floor(Math.random() * 120)
+    this.grounded     = false
+    this.cooldown     = Math.floor(Math.random() * 120)
     this.wobbleOffset = Math.random() * Math.PI * 2
   }
 
@@ -205,7 +278,7 @@ class SlimeEntity {
   }
 }
 
-// ── Active slimes ────────────────────────────────────────────────────────────
+// ── State ────────────────────────────────────────────────────────────────────
 let slimes = []
 let mouseX = 0
 
@@ -213,38 +286,26 @@ window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
 })
 
-// ── Bounds helper ────────────────────────────────────────────────────────────
-function getBounds() {
-  const d = camera.position.z
-  const h = 2 * Math.tan(camera.fov * Math.PI / 360) * d
-  return { halfW: (h * camera.aspect) / 2, bottom: -h / 2 }
-}
-
 // ── Physics constants ────────────────────────────────────────────────────────
-const GRAVITY       = -0.055
-const HOP_POWER     = 0.48
-const CHASE         = 0.0022
-const FRICTION      = 0.965
-const BOUNCE        = 0.55
-const SLIME_BOUNCE  = 0.45
+const GRAVITY      = -0.055
+const HOP_POWER    = 0.48
+const CHASE        = 0.0022
+const FRICTION     = 0.965
+const BOUNCE       = 0.55
+const SLIME_BOUNCE = 0.45
 
 // ── Spawn / despawn ──────────────────────────────────────────────────────────
 function setSlimeCount(n) {
-  while (slimes.length > n) {
-    slimes.pop().dispose()
-  }
+  while (slimes.length > n) slimes.pop().dispose()
   if (slimes.length < n) {
     withSource(source => {
-      while (slimes.length < n) {
-        slimes.push(new SlimeEntity(source, slimes.length, n))
-      }
+      while (slimes.length < n) slimes.push(new SlimeEntity(source, slimes.length))
     })
   }
   countDisplay.textContent = n
 }
 
 slider.addEventListener("input", () => setSlimeCount(parseInt(slider.value)))
-
 setSlimeCount(1)
 
 // ── Animation loop ───────────────────────────────────────────────────────────
@@ -257,6 +318,7 @@ function animate() {
 
   slimes.forEach((s, i) => {
     const floor = b.bottom + s.radius
+    const right = b.halfW - s.radius
 
     const dx = targetX - s.x
     s.vx += dx * CHASE
@@ -270,35 +332,28 @@ function animate() {
     }
 
     s.vy += GRAVITY
-    s.x += s.vx
-    s.y += s.vy
+    s.x  += s.vx
+    s.y  += s.vy
 
-    const right = b.halfW - s.radius
-    if (s.x < -right) { s.x = -right; s.vx = Math.abs(s.vx) * BOUNCE }
+    if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
     if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
+    if (s.y <= floor)  { s.y = floor;  s.vy = 0; s.grounded = true }
 
-    if (s.y <= floor) {
-      s.y = floor
-      s.vy = 0
-      s.grounded = true
-    }
-
+    // Slime-slime collisions
     for (let j = i + 1; j < slimes.length; j++) {
       const o = slimes[j]
       const minDist = s.radius + o.radius
-      const diffX = s.x - o.x
-      const diffY = s.y - o.y
-      const dist = Math.sqrt(diffX * diffX + diffY * diffY) || 0.001
+      const diffX   = s.x - o.x
+      const diffY   = s.y - o.y
+      const dist    = Math.sqrt(diffX * diffX + diffY * diffY) || 0.001
 
       if (dist < minDist) {
         const overlap = (minDist - dist) / 2
         const nx = diffX / dist
         const ny = diffY / dist
 
-        s.x += nx * overlap
-        s.y += ny * overlap
-        o.x -= nx * overlap
-        o.y -= ny * overlap
+        s.x += nx * overlap; s.y += ny * overlap
+        o.x -= nx * overlap; o.y -= ny * overlap
 
         const dvx = s.vx - o.vx
         const dvy = s.vy - o.vy
@@ -316,11 +371,8 @@ function animate() {
     }
 
     const wobble = Math.sin(t * 1.1 + s.wobbleOffset)
-    const scaleY = 1 + wobble * 0.03
-    const scaleX = 1 - wobble * 0.03
-
     s.mesh.position.set(s.x, s.y, 0)
-    s.mesh.scale.set(scaleX, scaleY, scaleX)
+    s.mesh.scale.set(1 - wobble * 0.03, 1 + wobble * 0.03, 1 - wobble * 0.03)
   })
 
   renderer.render(scene, camera)
@@ -328,20 +380,28 @@ function animate() {
 
 animate()
 
-function resizeSlider() {
-  const s = Math.min(innerWidth, innerHeight) / 900
-  sliderWrap.style.fontSize = `${Math.round(7 * s)}px`
-  slider.style.height = `${Math.round(140 * s)}px`
-  slider.style.width = `${Math.round(20 * s)}px`
-  sliderWrap.style.padding = `${Math.round(10 * s)}px ${Math.round(6 * s)}px`
-  sliderWrap.style.gap = `${Math.round(8 * s)}px`
-}
-
-resizeSlider()
+// ── Resize ───────────────────────────────────────────────────────────────────
+let lastMobile = isMobile()
 
 window.addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(innerWidth, innerHeight)
-  resizeSlider()
+
+  // Rebuild widget if mobile/desktop breakpoint crossed
+  const nowMobile = isMobile()
+  if (nowMobile !== lastMobile) {
+    lastMobile = nowMobile
+    rebuildWidget()
+  }
+
+  // Clamp slimes back inside new bounds
+  const b = getBounds()
+  slimes.forEach(s => {
+    const right = b.halfW - s.radius
+    const floor = b.bottom + s.radius
+    if (s.x < -right) s.x = -right
+    if (s.x >  right) s.x =  right
+    if (s.y <  floor) { s.y = floor; s.vy = 0; s.grounded = true }
+  })
 })

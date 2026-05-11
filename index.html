@@ -228,6 +228,14 @@
 			border: none;
 		}
 
+		/* Full-screen modals on mobile */
+		@media (max-width: 767px) {
+			.mc-modal-box {
+				width: 100vw;
+				height: 100vh;
+			}
+		}
+
 		#slime-canvas {
 			position: fixed;
 			inset: 0;
@@ -297,21 +305,32 @@
 	</div>
 
 	<script>
-		// Scale scene
+		// ── Scale scene ──────────────────────────────────────────────
 		function scaleScene() {
 			const scene = document.getElementById('scene');
-			const scaleX = window.innerWidth / 1920;
-			const scaleY = window.innerHeight / 1080;
-			const scale = Math.min(scaleX, scaleY);
-			const offsetX = (window.innerWidth - 1920 * scale) / 2;
-			const offsetY = (window.innerHeight - 1080 * scale) / 2;
+			const W = window.innerWidth;
+			const H = window.innerHeight;
+			let scale, offsetX, offsetY;
+
+			if (W < 768) {
+				// Mobile: scale so the menu fills ~88% of screen width,
+				// then center the scene so the menu (at x=960) is in the middle
+				scale = (W * 0.88) / 520;
+				offsetX = W / 2 - 960 * scale;
+				offsetY = 16;
+			} else {
+				scale = Math.min(W / 1920, H / 1080);
+				offsetX = (W - 1920 * scale) / 2;
+				offsetY = (H - 1080 * scale) / 2;
+			}
+
 			scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 		}
 
 		scaleScene();
 		window.addEventListener('resize', scaleScene);
 
-		// Forward mouse to character iframe
+		// ── Forward mouse to character iframe ──
 		window.addEventListener('mousemove', e => {
 			const iframe = document.getElementById('characterFrame');
 			if (iframe && iframe.contentWindow) {
@@ -371,7 +390,6 @@
 			current.addEventListener('ended', trigger, { once: true });
 		}
 
-		// Boot
 		vA.style.opacity = '0';
 		vB.style.opacity = '0';
 		vA.src = videoPaths[pickNext()];
@@ -383,47 +401,32 @@
 		}, { once: true });
 		// ─────────────────────────────────────────────────────────────
 
-		// Experience modal
-		function openExperience() {
-			document.getElementById('experiencePopup').classList.add('show');
-		}
-		function closeExperience() {
-			document.getElementById('experiencePopup').classList.remove('show');
-		}
+		// ── Modals ──
+		function openExperience() { document.getElementById('experiencePopup').classList.add('show'); }
+		function closeExperience() { document.getElementById('experiencePopup').classList.remove('show'); }
 		document.getElementById('experiencePopup').addEventListener('click', e => {
 			if (e.target.id === 'experiencePopup') closeExperience();
 		});
 
-		// Projects modal
-		function openProjects() {
-			document.getElementById('projectsPopup').classList.add('show');
-		}
-		function closeProjects() {
-			document.getElementById('projectsPopup').classList.remove('show');
-		}
+		function openProjects() { document.getElementById('projectsPopup').classList.add('show'); }
+		function closeProjects() { document.getElementById('projectsPopup').classList.remove('show'); }
 		document.getElementById('projectsPopup').addEventListener('click', e => {
 			if (e.target.id === 'projectsPopup') closeProjects();
 		});
 
-		// About Me modal
-		function openAbout() {
-			document.getElementById('aboutPopup').classList.add('show');
-		}
-		function closeAbout() {
-			document.getElementById('aboutPopup').classList.remove('show');
-		}
+		function openAbout() { document.getElementById('aboutPopup').classList.add('show'); }
+		function closeAbout() { document.getElementById('aboutPopup').classList.remove('show'); }
 		document.getElementById('aboutPopup').addEventListener('click', e => {
 			if (e.target.id === 'aboutPopup') closeAbout();
 		});
 
-		// Listen for close messages from iframes
 		window.addEventListener('message', e => {
 			if (e.data === 'closeExperience') closeExperience();
 			if (e.data === 'closeProjects')   closeProjects();
 			if (e.data === 'closeAbout')      closeAbout();
 		});
 
-		// Resume download
+		// ── Resume download ──
 		let toastTimer = null;
 		function downloadResume() {
 			const link = document.createElement('a');

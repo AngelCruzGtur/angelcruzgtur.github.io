@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Offline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #5f6368;
+      --text-dark: #3c4043;
+      --line: #d6d6d6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .close-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 20;
+      font-family: "Press Start 2P", cursive;
+      font-size: clamp(8px, 0.78vw, 11px);
+      padding: 0.7rem 0.9rem;
+      background: #fff;
+      color: #8a8a8a;
+      border: 2px solid #dcdcdc;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+    }
+
+    .close-btn:hover {
+      background: #f7f7f7;
+      color: #666;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+    }
+
+    .wrap {
+      width: min(960px, 100%);
+    }
+
+    .top {
+      max-width: 760px;
+      margin-bottom: 1.4rem;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 3vw, 2.2rem);
+      line-height: 1.15;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    p {
+      font-size: clamp(0.96rem, 1.2vw, 1.06rem);
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 0.85rem;
+    }
+
+    .controls {
+      color: #7a7a7a;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      font-family: "Press Start 2P", cursive;
+      font-size: clamp(12px, 1vw, 14px);
+      color: #7c7c7c;
+    }
+
+    .game-wrap {
+      position: relative;
+      width: 100%;
+      height: min(42vw, 330px);
+      min-height: 250px;
+      border-bottom: 2px solid var(--line);
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #fff;
+    }
+
+    .slime-frame {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 84px;
+      height: 84px;
+      border: 0;
+      background: transparent;
+      filter: grayscale(1) brightness(3.6) contrast(0.55);
+      opacity: 0.92;
+      pointer-events: none;
+      z-index: 2;
+      transform-origin: center bottom;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+      padding: 1rem;
+      z-index: 3;
+    }
+
+    .overlay-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #ececec;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .overlay-title {
+      font-family: "Press Start 2P", cursive;
+      font-size: clamp(11px, 0.9vw, 14px);
+      color: var(--text-dark);
+      margin-bottom: 0.65rem;
+      line-height: 1.7;
+    }
+
+    .overlay-copy {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .foot {
+      margin-top: 1.4rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ececec;
+      font-size: 0.92rem;
+      color: #a3a3a3;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        overflow: auto;
+      }
+
+      .page {
+        align-items: flex-start;
+        padding-top: 5rem;
+      }
+
+      .game-wrap {
+        height: 260px;
+      }
+
+      .hud {
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 11px;
+      }
+
+      .slime-frame {
+        width: 72px;
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="close-btn" onclick="window.parent.postMessage('closeProjects','*')">Close</button>
+
+  <main class="page">
+    <section class="wrap">
+      <div class="top">
+        <h1>Projects are under maintenance.</h1>
+        <p>This section is getting rebuilt and cleaned up, but the slime still wanted something to do.</p>
+        <p class="controls">Press <strong>space</strong> or <strong>up</strong> to jump. Press <strong>down</strong> to fall faster. Press <strong>R</strong> to restart.</p>
+      </div>
+
+      <div class="hud">
+        <div>HI <span id="highScore">00000</span></div>
+        <div><span id="score">00000</span></div>
+      </div>
+
+      <div class="game-wrap" id="gameWrap">
+        <canvas id="gameCanvas" width="1000" height="320" aria-label="Offline slime runner game"></canvas>
+        <iframe class="slime-frame" id="slimeFrame" src="slime.html?mode=runner" title="Offline slime mascot" aria-hidden="true"></iframe>
+
+        <div class="overlay" id="overlay">
+          <div class="overlay-card">
+            <div class="overlay-title" id="overlayTitle">SLIME RUNNER OFFLINE</div>
+            <div class="overlay-copy" id="overlayCopy">Press space to start.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">Maintenance in progress. </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const slimeFrame = document.getElementById("slimeFrame");
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highScore");
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayCopy = document.getElementById("overlayCopy");
+
+    const DPR = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+    const STORAGE_KEY = "portfolio-slime-runner-high-score";
+    let highScore = Number(localStorage.getItem(STORAGE_KEY) || 0);
+    let lastTime = 0;
+
+    const state = {
+      running: false,
+      gameOver: false,
+      speed: 340,
+      score: 0,
+      spawnTimer: 0,
+      cloudTimer: 0,
+      groundOffset: 0,
+      slime: {
+        x: 120,
+        y: 0,
+        width: 84,
+        height: 84,
+        vy: 0,
+        airborne: false,
+        squishTimer: 0,
+        flipActive: false,
+        flipProgress: 0
+      },
+      obstacles: [],
+      clouds: []
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * DPR);
+      canvas.height = Math.round(rect.height * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function world() {
+      return {
+        width: canvas.width / DPR,
+        height: canvas.height / DPR,
+        groundY: canvas.height / DPR - 42
+      };
+    }
+
+    function updateHud() {
+      scoreEl.textContent = String(Math.floor(state.score)).padStart(5, "0");
+      highScoreEl.textContent = String(Math.floor(highScore)).padStart(5, "0");
+    }
+
+    function showOverlay(title, copy) {
+      overlay.hidden = false;
+      overlay.style.display = "flex";
+      overlayTitle.textContent = title;
+      overlayCopy.textContent = copy;
+    }
+
+    function hideOverlay() {
+      overlay.hidden = true;
+      overlay.style.display = "none";
+    }
+
+    function resetGame(startRunning = false) {
+      state.running = startRunning;
+      state.gameOver = false;
+      state.speed = 340;
+      state.score = 0;
+      state.spawnTimer = 0.85;
+      state.cloudTimer = 0.2;
+      state.groundOffset = 0;
+      state.obstacles = [];
+      state.clouds = [];
+      state.slime.vy = 0;
+      state.slime.airborne = false;
+      state.slime.squishTimer = 0;
+      state.slime.flipActive = false;
+      state.slime.flipProgress = 0;
+      const w = world();
+      state.slime.y = w.groundY - state.slime.height + 22;
+      updateHud();
+      if (startRunning) {
+        hideOverlay();
+      } else {
+        showOverlay("SLIME RUNNER OFFLINE", "Press space to start.");
+      }
+      syncSlimeFrame();
+    }
+
+    function jump() {
+      if (!state.running && !state.gameOver) {
+        state.running = true;
+        hideOverlay();
+      }
+      if (state.gameOver) {
+        resetGame(true);
+      }
+      if (!state.slime.airborne) {
+        state.slime.airborne = true;
+        state.slime.vy = -620;
+        state.slime.flipActive = Math.random() < 0.2;
+        state.slime.flipProgress = 0;
+      }
+    }
+
+    function dropFaster() {
+      if (state.slime.airborne && state.slime.vy < 260) {
+        state.slime.vy += 55;
+      }
+    }
+
+    function spawnObstacle() {
+      const w = world();
+      const cactusModels = [
+        {
+          width: 22,
+          height: 54,
+          hitboxes: [
+            { x: 8, y: 4, width: 6, height: 50 },
+            { x: 3, y: 20, width: 5, height: 13 },
+            { x: 14, y: 28, width: 5, height: 12 }
+          ],
+          renderRects: [
+            { x: 9, y: 0, width: 4, height: 4 },
+            { x: 8, y: 4, width: 6, height: 50 },
+            { x: 3, y: 20, width: 5, height: 5 },
+            { x: 2, y: 25, width: 4, height: 8 },
+            { x: 14, y: 28, width: 5, height: 5 },
+            { x: 16, y: 20, width: 4, height: 8 }
+          ],
+          spines: [
+            { x: 10, y: 10 }, { x: 11, y: 18 }, { x: 10, y: 27 }, { x: 11, y: 37 },
+            { x: 5, y: 23 }, { x: 17, y: 31 }
+          ]
+        },
+        {
+          width: 28,
+          height: 62,
+          hitboxes: [
+            { x: 10, y: 4, width: 7, height: 58 },
+            { x: 4, y: 19, width: 6, height: 16 },
+            { x: 17, y: 24, width: 6, height: 15 }
+          ],
+          renderRects: [
+            { x: 11, y: 0, width: 5, height: 4 },
+            { x: 10, y: 4, width: 7, height: 58 },
+            { x: 4, y: 19, width: 6, height: 6 },
+            { x: 3, y: 25, width: 5, height: 10 },
+            { x: 17, y: 24, width: 6, height: 6 },
+            { x: 19, y: 14, width: 4, height: 10 }
+          ],
+          spines: [
+            { x: 12, y: 12 }, { x: 13, y: 22 }, { x: 12, y: 32 }, { x: 13, y: 45 },
+            { x: 6, y: 27 }, { x: 20, y: 19 }, { x: 20, y: 29 }
+          ]
+        },
+        {
+          width: 20,
+          height: 46,
+          hitboxes: [
+            { x: 7, y: 4, width: 6, height: 42 },
+            { x: 2, y: 23, width: 5, height: 9 },
+            { x: 13, y: 15, width: 4, height: 9 }
+          ],
+          renderRects: [
+            { x: 8, y: 0, width: 4, height: 4 },
+            { x: 7, y: 4, width: 6, height: 42 },
+            { x: 2, y: 23, width: 5, height: 4 },
+            { x: 1, y: 27, width: 4, height: 5 },
+            { x: 13, y: 15, width: 4, height: 4 },
+            { x: 15, y: 9, width: 3, height: 6 }
+          ],
+          spines: [
+            { x: 9, y: 10 }, { x: 10, y: 19 }, { x: 9, y: 29 }, { x: 10, y: 38 },
+            { x: 4, y: 26 }, { x: 15, y: 18 }
+          ]
+        },
+        {
+          width: 34,
+          height: 58,
+          hitboxes: [
+            { x: 13, y: 4, width: 7, height: 54 },
+            { x: 7, y: 17, width: 6, height: 15 },
+            { x: 1, y: 24, width: 6, height: 8 },
+            { x: 20, y: 20, width: 6, height: 14 }
+          ],
+          renderRects: [
+            { x: 14, y: 0, width: 5, height: 4 },
+            { x: 13, y: 4, width: 7, height: 54 },
+            { x: 7, y: 17, width: 6, height: 5 },
+            { x: 6, y: 22, width: 5, height: 10 },
+            { x: 1, y: 24, width: 6, height: 4 },
+            { x: 0, y: 28, width: 4, height: 4 },
+            { x: 20, y: 20, width: 6, height: 5 },
+            { x: 22, y: 11, width: 4, height: 9 }
+          ],
+          spines: [
+            { x: 15, y: 11 }, { x: 16, y: 20 }, { x: 15, y: 31 }, { x: 16, y: 43 },
+            { x: 9, y: 22 }, { x: 3, y: 27 }, { x: 23, y: 18 }
+          ]
+        },
+        {
+          width: 30,
+          height: 50,
+          hitboxes: [
+            { x: 5, y: 10, width: 6, height: 40 },
+            { x: 18, y: 6, width: 6, height: 44 }
+          ],
+          renderRects: [
+            { x: 6, y: 6, width: 4, height: 4 },
+            { x: 19, y: 2, width: 4, height: 4 },
+            { x: 5, y: 10, width: 6, height: 40 },
+            { x: 18, y: 6, width: 6, height: 44 }
+          ],
+          spines: [
+            { x: 7, y: 18 }, { x: 8, y: 28 }, { x: 7, y: 39 },
+            { x: 20, y: 14 }, { x: 21, y: 24 }, { x: 20, y: 36 }
+          ]
+        }
+      ];
+      const model = cactusModels[Math.floor(Math.random() * cactusModels.length)];
+      state.obstacles.push({
+        x: w.width + 18,
+        y: w.groundY - model.height,
+        width: model.width,
+        height: model.height,
+        hitboxes: model.hitboxes,
+        renderRects: model.renderRects,
+        spines: model.spines
+      });
+    }
+
+    function spawnCloud() {
+      const w = world();
+      state.clouds.push({ x: w.width + 20, y: 45 + Math.random() * 90, width: 46 + Math.random() * 30, speed: 30 + Math.random() * 18 });
+    }
+
+    function slimeHitbox() {
+      return {
+        x: state.slime.x + 20,
+        y: state.slime.y + 34,
+        width: state.slime.width - 40,
+        height: state.slime.height - 42
+      };
+    }
+
+    function obstacleHitboxes(obstacle) {
+      return obstacle.hitboxes.map((box) => ({
+        x: obstacle.x + box.x,
+        y: obstacle.y + box.y,
+        width: box.width,
+        height: box.height
+      }));
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+    }
+
+    function hitsObstacle(slimeBox, obstacle) {
+      return obstacleHitboxes(obstacle).some((box) => intersects(slimeBox, box));
+    }
+
+    function collisionPushback(slimeBox, obstacle) {
+      let maxPush = 0;
+      for (const box of obstacleHitboxes(obstacle)) {
+        if (!intersects(slimeBox, box)) continue;
+        const push = slimeBox.x + slimeBox.width - box.x;
+        if (push > maxPush) maxPush = push;
+      }
+      return maxPush;
+    }
+
+    function update(dt) {
+      const w = world();
+      const gravity = 1700;
+
+      if (state.running && !state.gameOver) {
+        state.speed += dt * 6;
+        state.score += dt * 18;
+        state.groundOffset = (state.groundOffset + state.speed * dt) % 36;
+        state.spawnTimer -= dt;
+        state.cloudTimer -= dt;
+        if (state.spawnTimer <= 0) {
+          spawnObstacle();
+          state.spawnTimer = Math.max(0.48, 1.05 - state.speed / 900) + Math.random() * 0.55;
+        }
+        if (state.cloudTimer <= 0) {
+          spawnCloud();
+          state.cloudTimer = 1.6 + Math.random() * 1.7;
+        }
+      }
+
+      state.slime.vy += gravity * dt;
+      state.slime.y += state.slime.vy * dt;
+
+      const floorY = w.groundY - state.slime.height + 22;
+      if (state.slime.y >= floorY) {
+        if (state.slime.airborne) state.slime.squishTimer = 0.28;
+        state.slime.y = floorY;
+        state.slime.vy = 0;
+        state.slime.airborne = false;
+        state.slime.flipActive = false;
+        state.slime.flipProgress = 0;
+      }
+
+      if (state.slime.squishTimer > 0) state.slime.squishTimer = Math.max(0, state.slime.squishTimer - dt);
+      if (state.slime.airborne && state.slime.flipActive) state.slime.flipProgress = Math.min(1, state.slime.flipProgress + dt / 0.72);
+
+      for (const obstacle of state.obstacles) obstacle.x -= state.speed * dt;
+      state.obstacles = state.obstacles.filter((obstacle) => obstacle.x + obstacle.width > -20);
+
+      for (const cloud of state.clouds) cloud.x -= cloud.speed * dt;
+      state.clouds = state.clouds.filter((cloud) => cloud.x + cloud.width > -30);
+
+      if (state.running && !state.gameOver) {
+        const slimeBox = slimeHitbox();
+        for (const obstacle of state.obstacles) {
+          if (hitsObstacle(slimeBox, obstacle)) {
+            obstacle.x += collisionPushback(slimeBox, obstacle);
+            state.running = false;
+            state.gameOver = true;
+            state.speed = 0;
+            state.slime.vy = 0;
+            state.slime.airborne = false;
+            state.slime.squishTimer = 0;
+            state.slime.flipActive = false;
+            state.slime.flipProgress = 0;
+            showOverlay("GAME OVER", "Press space or R to try again.");
+            break;
+          }
+        }
+      }
+
+      if (state.score > highScore) {
+        highScore = Math.floor(state.score);
+        localStorage.setItem(STORAGE_KEY, String(highScore));
+      }
+
+      updateHud();
+      syncSlimeFrame();
+    }
+
+    function drawCloud(x, y, width) {
+      ctx.strokeStyle = "#d9d9d9";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y + 10);
+      ctx.quadraticCurveTo(x + width * 0.15, y - 2, x + width * 0.3, y + 8);
+      ctx.quadraticCurveTo(x + width * 0.5, y - 8, x + width * 0.68, y + 8);
+      ctx.quadraticCurveTo(x + width * 0.84, y, x + width, y + 10);
+      ctx.stroke();
+    }
+
+    function drawGround(w) {
+      ctx.strokeStyle = "#7f7f7f";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, w.groundY + 0.5);
+      ctx.lineTo(w.width, w.groundY + 0.5);
+      ctx.stroke();
+      ctx.fillStyle = "#8a8a8a";
+      for (let x = -state.groundOffset; x < w.width; x += 36) {
+        ctx.fillRect(x + 2, w.groundY + 10, 4, 2);
+        ctx.fillRect(x + 14, w.groundY + 14, 3, 2);
+        ctx.fillRect(x + 26, w.groundY + 8, 5, 2);
+      }
+    }
+
+    function drawObstacle(obstacle) {
+      const renderRects = (obstacle.renderRects || obstacle.hitboxes).map((box) => ({
+        x: obstacle.x + box.x,
+        y: obstacle.y + box.y,
+        width: box.width,
+        height: box.height
+      }));
+
+      ctx.fillStyle = "#727272";
+      renderRects.forEach((box) => {
+        ctx.fillRect(box.x, box.y, box.width, box.height);
+      });
+
+      ctx.fillStyle = "#8d8d8d";
+      renderRects.forEach((box) => {
+        const highlight = Math.max(1, Math.floor(box.width * 0.32));
+        ctx.fillRect(box.x, box.y, highlight, box.height);
+      });
+
+      ctx.fillStyle = "#5c5c5c";
+      renderRects.forEach((box) => {
+        const shadow = Math.max(1, Math.floor(box.width * 0.22));
+        ctx.fillRect(box.x + box.width - shadow, box.y, shadow, box.height);
+      });
+
+      ctx.fillStyle = "#9c9c9c";
+      renderRects.forEach((box) => {
+        if (box.width > 2) {
+          ctx.fillRect(box.x + 1, box.y + 1, box.width - 2, 1);
+        }
+      });
+
+      ctx.fillStyle = "#595959";
+      (obstacle.spines || []).forEach((spine) => {
+        ctx.fillRect(obstacle.x + spine.x, obstacle.y + spine.y, 1, 2);
+        ctx.fillRect(obstacle.x + spine.x - 1, obstacle.y + spine.y + 1, 3, 1);
+      });
+    }
+
+    function squishAmount() {
+      return Math.max(0, Math.min(1, state.slime.squishTimer / 0.28));
+    }
+
+    function syncSlimeFrame() {
+      const s = state.slime;
+      slimeFrame.style.left = `${s.x}px`;
+      slimeFrame.style.top = `${s.y}px`;
+      slimeFrame.contentWindow?.postMessage({
+        type: "runnerState",
+        vx: state.speed,
+        airborne: s.airborne,
+        squish: squishAmount(),
+        gameOver: state.gameOver,
+        flipping: s.flipActive,
+        flipProgress: s.flipProgress
+      }, "*");
+    }
+
+    function draw() {
+      const w = world();
+      ctx.clearRect(0, 0, w.width, w.height);
+      for (const cloud of state.clouds) drawCloud(cloud.x, cloud.y, cloud.width);
+      drawGround(w);
+      for (const obstacle of state.obstacles) drawObstacle(obstacle);
+    }
+
+    function tick(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = Math.min((timestamp - lastTime) / 1000, 0.032);
+      lastTime = timestamp;
+      update(dt);
+      draw();
+      requestAnimationFrame(tick);
+    }
+
+    function onKeyDown(event) {
+      if (event.code === "Space" || event.code === "ArrowUp") {
+        event.preventDefault();
+        jump();
+      }
+      if (event.code === "ArrowDown") {
+        event.preventDefault();
+        dropFaster();
+      }
+      if (event.code === "KeyR") {
+        event.preventDefault();
+        resetGame(true);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      if (!state.slime.airborne) {
+        const w = world();
+        state.slime.y = w.groundY - state.slime.height + 22;
+      }
+      draw();
+      syncSlimeFrame();
+    });
+
+    resizeCanvas();
+    resetGame(false);
+    draw();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

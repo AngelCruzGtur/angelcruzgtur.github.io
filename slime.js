@@ -281,10 +281,79 @@ class SlimeEntity {
 // ── State ────────────────────────────────────────────────────────────────────
 let slimes = []
 let mouseX = 0
+let tilt = { x: 0, y: -1, active: false, permissionRequested: false }
+let screenAngle = 0
 
 window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
 })
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
+
+function updateScreenAngle() {
+  if (screen.orientation && typeof screen.orientation.angle === "number") {
+    screenAngle = screen.orientation.angle
+    return
+  }
+  if (typeof window.orientation === "number") {
+    screenAngle = window.orientation
+    return
+  }
+  screenAngle = 0
+}
+
+function rotateByScreen(x, y, angle) {
+  const normalized = ((angle % 360) + 360) % 360
+  if (normalized === 90) return { x: -y, y: x }
+  if (normalized === 180) return { x: -x, y: -y }
+  if (normalized === 270) return { x: y, y: -x }
+  return { x, y }
+}
+
+function handleOrientation(event) {
+  if (typeof event.beta !== "number" || typeof event.gamma !== "number") return
+  updateScreenAngle()
+
+  const sx = clamp(event.gamma / 35, -1.35, 1.35)
+  const sy = clamp(event.beta / 35, -1.35, 1.35)
+  const rotated = rotateByScreen(sx, sy, screenAngle)
+
+  tilt.x = rotated.x
+  tilt.y = -rotated.y
+  tilt.active = true
+}
+
+function enableTiltControls() {
+  if (!isMobile() || tilt.permissionRequested) return
+  tilt.permissionRequested = true
+  updateScreenAngle()
+
+  const needsPermission =
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+
+  if (needsPermission) {
+    DeviceOrientationEvent.requestPermission()
+      .then(result => {
+        if (result === "granted") {
+          window.addEventListener("deviceorientation", handleOrientation)
+        }
+      })
+      .catch(() => {})
+    return
+  }
+
+  if ("DeviceOrientationEvent" in window) {
+    window.addEventListener("deviceorientation", handleOrientation)
+  }
+}
+
+window.addEventListener("orientationchange", updateScreenAngle)
+window.addEventListener("touchstart", enableTiltControls, { passive: true, once: true })
+window.addEventListener("pointerdown", enableTiltControls, { passive: true, once: true })
+if (isMobile()) enableTiltControls()
 
 // ── Physics constants ────────────────────────────────────────────────────────
 const GRAVITY      = -0.055
@@ -293,6 +362,8 @@ const CHASE        = 0.0022
 const FRICTION     = 0.965
 const BOUNCE       = 0.55
 const SLIME_BOUNCE = 0.45
+const MOBILE_GRAVITY = 0.06
+const MOBILE_DRAG    = 0.992
 
 // ── Spawn / despawn ──────────────────────────────────────────────────────────
 function setSlimeCount(n) {
@@ -315,29 +386,46 @@ function animate() {
   const b = getBounds()
   const t = performance.now() * 0.002
   const targetX = mouseX * (b.halfW - 2)
+  const mobileTiltMode = isMobile() && tilt.active
 
   slimes.forEach((s, i) => {
     const floor = b.bottom + s.radius
     const right = b.halfW - s.radius
+    const ceiling = b.halfH - s.radius
 
-    const dx = targetX - s.x
-    s.vx += dx * CHASE
-    s.vx *= FRICTION
-
-    if (s.cooldown > 0) s.cooldown--
-    if (s.grounded && Math.abs(dx) > 5 + s.size && s.cooldown === 0) {
-      s.vy = HOP_POWER * (s.size / 4.7)
+    if (mobileTiltMode) {
       s.grounded = false
-      s.cooldown = 180 + Math.floor(Math.random() * 120)
+      s.vx += tilt.x * MOBILE_GRAVITY
+      s.vy += tilt.y * MOBILE_GRAVITY
+      s.vx *= MOBILE_DRAG
+      s.vy *= MOBILE_DRAG
+      s.x += s.vx
+      s.y += s.vy
+
+      if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
+      if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
+      if (s.y < floor) { s.y = floor; s.vy = Math.abs(s.vy) * BOUNCE }
+      if (s.y > ceiling) { s.y = ceiling; s.vy = -Math.abs(s.vy) * BOUNCE }
+    } else {
+      const dx = targetX - s.x
+      s.vx += dx * CHASE
+      s.vx *= FRICTION
+
+      if (s.cooldown > 0) s.cooldown--
+      if (s.grounded && Math.abs(dx) > 5 + s.size && s.cooldown === 0) {
+        s.vy = HOP_POWER * (s.size / 4.7)
+        s.grounded = false
+        s.cooldown = 180 + Math.floor(Math.random() * 120)
+      }
+
+      s.vy += GRAVITY
+      s.x += s.vx
+      s.y += s.vy
+
+      if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
+      if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
+      if (s.y <= floor)  { s.y = floor;  s.vy = 0; s.grounded = true }
     }
-
-    s.vy += GRAVITY
-    s.x  += s.vx
-    s.y  += s.vy
-
-    if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
-    if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
-    if (s.y <= floor)  { s.y = floor;  s.vy = 0; s.grounded = true }
 
     // Slime-slime collisions
     for (let j = i + 1; j < slimes.length; j++) {
@@ -365,14 +453,25 @@ function animate() {
           o.vx += imp * nx; o.vy += imp * ny
         }
 
-        if (s.y <= b.bottom + s.radius) { s.y = b.bottom + s.radius; s.vy = 0; s.grounded = true }
-        if (o.y <= b.bottom + o.radius) { o.y = b.bottom + o.radius; o.vy = 0; o.grounded = true }
+        if (!mobileTiltMode) {
+          if (s.y <= b.bottom + s.radius) { s.y = b.bottom + s.radius; s.vy = 0; s.grounded = true }
+          if (o.y <= b.bottom + o.radius) { o.y = b.bottom + o.radius; o.vy = 0; o.grounded = true }
+        }
       }
     }
 
     const wobble = Math.sin(t * 1.1 + s.wobbleOffset)
     s.mesh.position.set(s.x, s.y, 0)
     s.mesh.scale.set(1 - wobble * 0.03, 1 + wobble * 0.03, 1 - wobble * 0.03)
+    if (mobileTiltMode) {
+      s.mesh.rotation.x = clamp(-tilt.y * 0.28 + s.vy * 0.08, -0.8, 0.8)
+      s.mesh.rotation.y = clamp(tilt.x * 0.32 + s.vx * 0.08, -0.9, 0.9)
+      s.mesh.rotation.z += (s.vx * 0.02 - s.vy * 0.015) - s.mesh.rotation.z * 0.08
+    } else {
+      s.mesh.rotation.x *= 0.85
+      s.mesh.rotation.y *= 0.85
+      s.mesh.rotation.z *= 0.82
+    }
   })
 
   renderer.render(scene, camera)
@@ -400,8 +499,10 @@ window.addEventListener("resize", () => {
   slimes.forEach(s => {
     const right = b.halfW - s.radius
     const floor = b.bottom + s.radius
+    const ceiling = b.halfH - s.radius
     if (s.x < -right) s.x = -right
     if (s.x >  right) s.x =  right
-    if (s.y <  floor) { s.y = floor; s.vy = 0; s.grounded = true }
+    if (s.y < floor) { s.y = floor; s.vy = 0; s.grounded = true }
+    if (s.y > ceiling) { s.y = ceiling; s.vy = 0 }
   })
 })

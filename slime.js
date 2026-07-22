@@ -34,6 +34,76 @@ const isMobile = () => innerWidth < 600
 
 const sliderWrap = document.createElement("div")
 sliderWrap.id = "slime-slider-wrap"
+const motionOverlay = document.createElement("div")
+motionOverlay.id = "slime-motion-overlay"
+motionOverlay.innerHTML = `
+  <div class="slime-motion-card">
+    <div class="slime-motion-title">Tilt The Slimes</div>
+    <div class="slime-motion-copy">Allow motion to move them with your phone.</div>
+    <button type="button" class="slime-motion-btn">Continue</button>
+  </div>
+`
+const motionButton = motionOverlay.querySelector(".slime-motion-btn")
+
+function applyMotionOverlayStyle() {
+  motionOverlay.style.cssText = `
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  `
+
+  const card = motionOverlay.querySelector(".slime-motion-card")
+  card.style.cssText = `
+    width: min(320px, 100%);
+    padding: 18px 16px;
+    background: #c6c6c6;
+    color: #3f3f3f;
+    border: 3px solid #1d1d1d;
+    box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+  `
+
+  motionOverlay.querySelector(".slime-motion-title").style.cssText = `
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  `
+
+  motionOverlay.querySelector(".slime-motion-copy").style.cssText = `
+    font-size: 9px;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  `
+
+  motionButton.style.cssText = `
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 12px 14px;
+    width: 100%;
+    background: #c6c6c6;
+    color: #3f3f3f;
+    border: 3px solid #1d1d1d;
+    box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
+    cursor: pointer;
+    touch-action: manipulation;
+  `
+}
+
+function showMotionOverlay() {
+  motionOverlay.style.display = isMobile() ? "flex" : "none"
+}
+
+function hideMotionOverlay() {
+  motionOverlay.style.display = "none"
+}
 
 function applyWrapStyle() {
   if (isMobile()) {
@@ -156,6 +226,8 @@ function rebuildWidget() {
 
 rebuildWidget()
 document.body.appendChild(sliderWrap)
+applyMotionOverlayStyle()
+document.body.appendChild(motionOverlay)
 
 // ── Sprite sheet ─────────────────────────────────────────────────────────────
 const SPRITE_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAFABAMAAADe49A5AAAAJFBMVEVHcExzwmJitkp7ymJaqkN7zmpocwpRoD5+v24WKBB1uWQKCgpRuk/sAAAAB3RSTlMAtLS0tLQI7015YAAAAuhJREFUeNrt3MFtgzAYgFFWYIWs0BW6QlfoCl2hK3SFrJDlKnzAimVTA67A5H2nRvjQPOVi2fzDUNk49TEXPr5NjXPvU7XrhtX9ZBr6CSBAgAABAgQIECBAgBu6TcXvn5jEatcBBAgQIECAAAECBAgQYOVWLiEKOnEDV6TMrdvD1iUlQIAAAQIECBAgQIAAtwLe5nJicdtWsW4j4GMKIECAAAECBAgQIECArweYYIUtWniQAC6vW/8fXOFQCSBAgAABAgQIECBAgOtKiJKzo3hiVLsOIECAAAECBAgQIECAAP8uXlG7PRd3bOEd/9p1e9i6pAQIECBAgAABAgQIEOCGchfYxlIV69YDFm+2AQQIECBAgAABAgQIsDvA1uON/2Vc8mPupL8sgAABAgQIECBAgAABrqv1eOPW6x6ZAAIECBAgQIAAAQIE2Dtg6/HGR41LBggQIECAAAECBAgQYHeADccbt173OQUQIECAAAECBAgQIMDLArYZb3z8uGSAAAECBAgQIECAAAGeH7D1eOPjxyUDBAgQIECAAAECBAjw/ICtxxsfNS4ZIECAAAECBAgQIECAPQHmLpyNpQ5YBxAgQIAAAQIECBAgwCsCLve1o0EAAQIECBAgQIAAAQLcDvg9d5+LTuFjsgQgQIAAAQogQIAAAQJsDBj+KgLGp/QAAgQIECBAgAABAgS4A/D+XA4wUQQIECBAgAIIECBAgACbbOUSxQiY7OIcKgEECBAgQIAAAQIUwCaAXrQBCBAgQIAAAQIECBDgiYjwAgQIECBAgAABAgQIcAdgckUt91J/7gJb7Ws4l778BhAgQIAAAQIECBAgwK2AyfevHS9W8bTICxAgQIAAAQIECBAgQICLr9IUx4tVPC2OUAYIECBAgAABAgQIECDA52+YQ1g+VKo4crrqQACAAAECBAgQIECAAAFuBfSiDUCAAAECBAgQIECAACVJkiRJkiRJkiRJkiRJkiRJkqS1/QLuvlkT9WDO3gAAAABJRU5ErkJggg=="
@@ -284,7 +356,7 @@ let mouseX = 0
 let tilt = { x: 0, y: -1, active: false, permissionRequested: false }
 let screenAngle = 0
 let motionListenersAttached = false
-let tiltNeutral = null
+let lastMotionUpdate = 0
 
 window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
@@ -314,48 +386,45 @@ function rotateByScreen(x, y, angle) {
   return { x, y }
 }
 
-function applyDeadzone(value, threshold = 0.12) {
+function applyDeadzone(value, threshold = 0.08) {
   if (Math.abs(value) <= threshold) return 0
   const sign = Math.sign(value)
   return sign * ((Math.abs(value) - threshold) / (1 - threshold))
 }
 
-function updateTiltState(rawX, rawY) {
-  if (!tiltNeutral) {
-    tiltNeutral = { x: rawX, y: rawY }
-  }
+function updateTiltState(rawX, rawY, smoothing = 0.24) {
+  const nextX = applyDeadzone(clamp(rawX, -1, 1))
+  const nextY = applyDeadzone(clamp(rawY, -1, 1))
 
-  const normalizedX = clamp(rawX - tiltNeutral.x, -1.35, 1.35) / 1.35
-  const normalizedY = clamp(rawY - tiltNeutral.y, -1.35, 1.35) / 1.35
-  const nextX = applyDeadzone(normalizedX)
-  const nextY = applyDeadzone(normalizedY)
-
-  tilt.x += (nextX - tilt.x) * 0.18
-  tilt.y += (nextY - tilt.y) * 0.18
+  tilt.x += (nextX - tilt.x) * smoothing
+  tilt.y += (nextY - tilt.y) * smoothing
   tilt.active = true
+  hideMotionOverlay()
 }
 
 function handleOrientation(event) {
   if (typeof event.beta !== "number" || typeof event.gamma !== "number") return
+  if (performance.now() - lastMotionUpdate < 160) return
   updateScreenAngle()
 
-  const sx = clamp(event.gamma / 35, -1.35, 1.35)
-  const sy = clamp(event.beta / 35, -1.35, 1.35)
+  const sx = clamp(event.gamma / 45, -1, 1)
+  const sy = clamp((event.beta - 65) / 45, -1, 1)
   const rotated = rotateByScreen(sx, sy, screenAngle)
 
-  updateTiltState(rotated.x, -rotated.y)
+  updateTiltState(rotated.x, -rotated.y, 0.18)
 }
 
 function handleMotion(event) {
   const accel = event.accelerationIncludingGravity
   if (!accel || typeof accel.x !== "number" || typeof accel.y !== "number") return
+  lastMotionUpdate = performance.now()
   updateScreenAngle()
 
-  const sx = clamp(accel.x / 7.5, -1.35, 1.35)
-  const sy = clamp(accel.y / 7.5, -1.35, 1.35)
+  const sx = clamp(accel.x / 6.5, -1, 1)
+  const sy = clamp(accel.y / 6.5, -1, 1)
   const rotated = rotateByScreen(sx, -sy, screenAngle)
 
-  updateTiltState(rotated.x, rotated.y)
+  updateTiltState(rotated.x, rotated.y, 0.3)
 }
 
 function attachMotionListeners() {
@@ -379,6 +448,7 @@ function enableTiltControls() {
       .then(result => {
         if (result === "granted") {
           attachMotionListeners()
+          hideMotionOverlay()
         } else {
           tilt.permissionRequested = false
         }
@@ -391,18 +461,20 @@ function enableTiltControls() {
 
   if ("DeviceOrientationEvent" in window || "DeviceMotionEvent" in window) {
     attachMotionListeners()
+    hideMotionOverlay()
     return
   }
 }
 
 window.addEventListener("orientationchange", updateScreenAngle)
-window.addEventListener("orientationchange", () => {
-  tiltNeutral = null
-})
 window.addEventListener("touchend", enableTiltControls, { passive: true })
 window.addEventListener("pointerup", enableTiltControls, { passive: true })
 window.addEventListener("click", enableTiltControls)
+motionButton?.addEventListener("click", enableTiltControls)
 if (isMobile()) enableTiltControls()
+if (isMobile() && typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+  showMotionOverlay()
+}
 
 // ── Physics constants ────────────────────────────────────────────────────────
 const GRAVITY      = -0.055
@@ -541,6 +613,7 @@ window.addEventListener("resize", () => {
   if (nowMobile !== lastMobile) {
     lastMobile = nowMobile
     rebuildWidget()
+    if (!nowMobile) hideMotionOverlay()
   }
 
   // Clamp slimes back inside new bounds

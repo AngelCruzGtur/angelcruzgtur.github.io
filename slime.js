@@ -284,6 +284,7 @@ let mouseX = 0
 let tilt = { x: 0, y: -1, active: false, permissionRequested: false }
 let screenAngle = 0
 let motionListenersAttached = false
+let tiltNeutral = null
 
 window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
@@ -313,6 +314,27 @@ function rotateByScreen(x, y, angle) {
   return { x, y }
 }
 
+function applyDeadzone(value, threshold = 0.12) {
+  if (Math.abs(value) <= threshold) return 0
+  const sign = Math.sign(value)
+  return sign * ((Math.abs(value) - threshold) / (1 - threshold))
+}
+
+function updateTiltState(rawX, rawY) {
+  if (!tiltNeutral) {
+    tiltNeutral = { x: rawX, y: rawY }
+  }
+
+  const normalizedX = clamp(rawX - tiltNeutral.x, -1.35, 1.35) / 1.35
+  const normalizedY = clamp(rawY - tiltNeutral.y, -1.35, 1.35) / 1.35
+  const nextX = applyDeadzone(normalizedX)
+  const nextY = applyDeadzone(normalizedY)
+
+  tilt.x += (nextX - tilt.x) * 0.18
+  tilt.y += (nextY - tilt.y) * 0.18
+  tilt.active = true
+}
+
 function handleOrientation(event) {
   if (typeof event.beta !== "number" || typeof event.gamma !== "number") return
   updateScreenAngle()
@@ -321,9 +343,7 @@ function handleOrientation(event) {
   const sy = clamp(event.beta / 35, -1.35, 1.35)
   const rotated = rotateByScreen(sx, sy, screenAngle)
 
-  tilt.x = rotated.x
-  tilt.y = -rotated.y
-  tilt.active = true
+  updateTiltState(rotated.x, -rotated.y)
 }
 
 function handleMotion(event) {
@@ -335,9 +355,7 @@ function handleMotion(event) {
   const sy = clamp(accel.y / 7.5, -1.35, 1.35)
   const rotated = rotateByScreen(sx, -sy, screenAngle)
 
-  tilt.x = rotated.x
-  tilt.y = rotated.y
-  tilt.active = true
+  updateTiltState(rotated.x, rotated.y)
 }
 
 function attachMotionListeners() {
@@ -378,6 +396,9 @@ function enableTiltControls() {
 }
 
 window.addEventListener("orientationchange", updateScreenAngle)
+window.addEventListener("orientationchange", () => {
+  tiltNeutral = null
+})
 window.addEventListener("touchend", enableTiltControls, { passive: true })
 window.addEventListener("pointerup", enableTiltControls, { passive: true })
 window.addEventListener("click", enableTiltControls)

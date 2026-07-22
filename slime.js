@@ -408,7 +408,7 @@ function handleOrientation(event) {
   updateScreenAngle()
 
   const sx = clamp(event.gamma / 45, -1, 1)
-  const sy = clamp((event.beta - 65) / 45, -1, 1)
+  const sy = clamp(event.beta / 90, -1, 1)
   const rotated = rotateByScreen(sx, sy, screenAngle)
 
   updateTiltState(rotated.x, -rotated.y, 0.18)

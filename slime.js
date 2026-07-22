@@ -332,6 +332,9 @@ class SlimeEntity {
     this.y  = b.bottom + this.radius
     this.vx = (Math.random() - 0.5) * 0.4
     this.vy = Math.random() * 0.3
+    this.spinX = 0
+    this.spinY = 0
+    this.spinZ = 0
 
     this.grounded     = false
     this.cooldown     = Math.floor(Math.random() * 120)
@@ -486,6 +489,8 @@ const SLIME_BOUNCE = 0.45
 const MOBILE_GRAVITY = 0.06
 const MOBILE_DRAG    = 0.992
 const MOBILE_SETTLE  = 0.035
+const SPIN_DAMPING   = 0.92
+const IMPACT_SPIN    = 0.045
 
 // ── Spawn / despawn ──────────────────────────────────────────────────────────
 function setSlimeCount(n) {
@@ -527,18 +532,24 @@ function animate() {
       if (s.x < -right) {
         s.x = -right
         s.vx = tilt.x < 0 && Math.abs(s.vx) < MOBILE_SETTLE ? 0 : Math.abs(s.vx) * BOUNCE
+        s.spinY += Math.abs(s.vx) * 0.025
+        s.spinZ -= Math.abs(s.vx) * 0.02
       }
       if (s.x > right) {
         s.x = right
         s.vx = tilt.x > 0 && Math.abs(s.vx) < MOBILE_SETTLE ? 0 : -Math.abs(s.vx) * BOUNCE
+        s.spinY -= Math.abs(s.vx) * 0.025
+        s.spinZ += Math.abs(s.vx) * 0.02
       }
       if (s.y < floor) {
         s.y = floor
         s.vy = tilt.y < 0 && Math.abs(s.vy) < MOBILE_SETTLE ? 0 : Math.abs(s.vy) * BOUNCE
+        s.spinX -= Math.abs(s.vy) * 0.03
       }
       if (s.y > ceiling) {
         s.y = ceiling
         s.vy = tilt.y > 0 && Math.abs(s.vy) < MOBILE_SETTLE ? 0 : -Math.abs(s.vy) * BOUNCE
+        s.spinX += Math.abs(s.vy) * 0.03
       }
     } else {
       const dx = targetX - s.x
@@ -556,9 +567,9 @@ function animate() {
       s.x += s.vx
       s.y += s.vy
 
-      if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
-      if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
-      if (s.y <= floor)  { s.y = floor;  s.vy = 0; s.grounded = true }
+      if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE; s.spinY += Math.abs(s.vx) * 0.02 }
+      if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE; s.spinY -= Math.abs(s.vx) * 0.02 }
+      if (s.y <= floor)  { s.y = floor;  s.vy = 0; s.grounded = true; s.spinX *= 0.75 }
     }
 
     // Slime-slime collisions
@@ -585,6 +596,17 @@ function animate() {
           const imp = dot * SLIME_BOUNCE
           s.vx -= imp * nx; s.vy -= imp * ny
           o.vx += imp * nx; o.vy += imp * ny
+
+          const tangentX = -ny
+          const tangentY = nx
+          const tangential = dvx * tangentX + dvy * tangentY
+          const spinImpulse = tangential * IMPACT_SPIN
+          s.spinZ += spinImpulse
+          o.spinZ -= spinImpulse
+          s.spinX += dvy * 0.01
+          o.spinX -= dvy * 0.01
+          s.spinY -= dvx * 0.01
+          o.spinY += dvx * 0.01
         }
 
         if (!mobileTiltMode) {
@@ -595,16 +617,19 @@ function animate() {
     }
 
     const wobble = Math.sin(t * 1.1 + s.wobbleOffset)
+    s.spinX *= SPIN_DAMPING
+    s.spinY *= SPIN_DAMPING
+    s.spinZ *= SPIN_DAMPING
     s.mesh.position.set(s.x, s.y, 0)
     s.mesh.scale.set(1 - wobble * 0.03, 1 + wobble * 0.03, 1 - wobble * 0.03)
     if (mobileTiltMode) {
-      s.mesh.rotation.x = clamp(-tilt.y * 0.28 + s.vy * 0.08, -0.8, 0.8)
-      s.mesh.rotation.y = clamp(tilt.x * 0.32 + s.vx * 0.08, -0.9, 0.9)
-      s.mesh.rotation.z += (s.vx * 0.02 - s.vy * 0.015) - s.mesh.rotation.z * 0.08
+      s.mesh.rotation.x = clamp(-tilt.y * 0.28 + s.vy * 0.08 + s.spinX, -1.1, 1.1)
+      s.mesh.rotation.y = clamp(tilt.x * 0.32 + s.vx * 0.08 + s.spinY, -1.1, 1.1)
+      s.mesh.rotation.z += (s.vx * 0.02 - s.vy * 0.015 + s.spinZ) - s.mesh.rotation.z * 0.08
     } else {
-      s.mesh.rotation.x *= 0.85
-      s.mesh.rotation.y *= 0.85
-      s.mesh.rotation.z *= 0.82
+      s.mesh.rotation.x += s.spinX - s.mesh.rotation.x * 0.15
+      s.mesh.rotation.y += s.spinY - s.mesh.rotation.y * 0.15
+      s.mesh.rotation.z += s.spinZ - s.mesh.rotation.z * 0.18
     }
   })
 

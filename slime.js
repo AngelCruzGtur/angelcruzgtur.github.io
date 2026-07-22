@@ -356,7 +356,7 @@ let mouseX = 0
 let tilt = { x: 0, y: -1, active: false, permissionRequested: false }
 let screenAngle = 0
 let motionListenersAttached = false
-let lastMotionUpdate = 0
+let lastOrientationUpdate = 0
 
 window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
@@ -404,7 +404,7 @@ function updateTiltState(rawX, rawY, smoothing = 0.24) {
 
 function handleOrientation(event) {
   if (typeof event.beta !== "number" || typeof event.gamma !== "number") return
-  if (performance.now() - lastMotionUpdate < 160) return
+  lastOrientationUpdate = performance.now()
   updateScreenAngle()
 
   const sx = clamp(event.gamma / 45, -1, 1)
@@ -417,7 +417,7 @@ function handleOrientation(event) {
 function handleMotion(event) {
   const accel = event.accelerationIncludingGravity
   if (!accel || typeof accel.x !== "number" || typeof accel.y !== "number") return
-  lastMotionUpdate = performance.now()
+  if (performance.now() - lastOrientationUpdate < 500) return
   updateScreenAngle()
 
   const sx = clamp(accel.x / 6.5, -1, 1)

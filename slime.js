@@ -411,7 +411,7 @@ function handleOrientation(event) {
   const sy = clamp(event.beta / 90, -1, 1)
   const rotated = rotateByScreen(sx, sy, screenAngle)
 
-  updateTiltState(rotated.x, rotated.y, 0.18)
+  updateTiltState(rotated.x, -rotated.y, 0.18)
 }
 
 function handleMotion(event) {
@@ -424,7 +424,7 @@ function handleMotion(event) {
   const sy = clamp(accel.y / 6.5, -1, 1)
   const rotated = rotateByScreen(sx, -sy, screenAngle)
 
-  updateTiltState(rotated.x, rotated.y, 0.3)
+  updateTiltState(rotated.x, -rotated.y, 0.3)
 }
 
 function attachMotionListeners() {

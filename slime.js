@@ -411,7 +411,7 @@ function handleOrientation(event) {
   const sy = clamp(event.beta / 90, -1, 1)
   const rotated = rotateByScreen(sx, sy, screenAngle)
 
-  updateTiltState(rotated.x, -rotated.y, 0.18)
+  updateTiltState(rotated.x, rotated.y, 0.18)
 }
 
 function handleMotion(event) {
@@ -485,6 +485,7 @@ const BOUNCE       = 0.55
 const SLIME_BOUNCE = 0.45
 const MOBILE_GRAVITY = 0.06
 const MOBILE_DRAG    = 0.992
+const MOBILE_SETTLE  = 0.035
 
 // ── Spawn / despawn ──────────────────────────────────────────────────────────
 function setSlimeCount(n) {
@@ -523,10 +524,22 @@ function animate() {
       s.x += s.vx
       s.y += s.vy
 
-      if (s.x < -right) { s.x = -right; s.vx =  Math.abs(s.vx) * BOUNCE }
-      if (s.x >  right) { s.x =  right; s.vx = -Math.abs(s.vx) * BOUNCE }
-      if (s.y < floor) { s.y = floor; s.vy = Math.abs(s.vy) * BOUNCE }
-      if (s.y > ceiling) { s.y = ceiling; s.vy = -Math.abs(s.vy) * BOUNCE }
+      if (s.x < -right) {
+        s.x = -right
+        s.vx = tilt.x < 0 && Math.abs(s.vx) < MOBILE_SETTLE ? 0 : Math.abs(s.vx) * BOUNCE
+      }
+      if (s.x > right) {
+        s.x = right
+        s.vx = tilt.x > 0 && Math.abs(s.vx) < MOBILE_SETTLE ? 0 : -Math.abs(s.vx) * BOUNCE
+      }
+      if (s.y < floor) {
+        s.y = floor
+        s.vy = tilt.y < 0 && Math.abs(s.vy) < MOBILE_SETTLE ? 0 : Math.abs(s.vy) * BOUNCE
+      }
+      if (s.y > ceiling) {
+        s.y = ceiling
+        s.vy = tilt.y > 0 && Math.abs(s.vy) < MOBILE_SETTLE ? 0 : -Math.abs(s.vy) * BOUNCE
+      }
     } else {
       const dx = targetX - s.x
       s.vx += dx * CHASE

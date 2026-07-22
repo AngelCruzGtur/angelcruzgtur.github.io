@@ -422,7 +422,7 @@ function handleMotion(event) {
 
   const sx = clamp(accel.x / 6.5, -1, 1)
   const sy = clamp(accel.y / 6.5, -1, 1)
-  const rotated = rotateByScreen(sx, -sy, screenAngle)
+  const rotated = rotateByScreen(sx, sy, screenAngle)
 
   updateTiltState(rotated.x, -rotated.y, 0.3)
 }

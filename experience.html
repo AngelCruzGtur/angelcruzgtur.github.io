@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Experience — Angel Cruz</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
@@ -27,6 +27,8 @@
       font-family: "Trebuchet MS", "Verdana", sans-serif;
       color: var(--white);
       font-size: clamp(13px, 1.1vw, 16px);
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
     }
 
     body::before {
@@ -58,6 +60,7 @@
       box-shadow: inset 2px 2px 0 #f3f3f3, inset -2px -2px 0 #7a7a7a;
       cursor: pointer;
       letter-spacing: .05em;
+      touch-action: manipulation;
     }
     .close-btn:hover { background: #9b9b9b; }
 

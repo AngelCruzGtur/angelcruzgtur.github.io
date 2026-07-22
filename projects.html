@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Projects</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script type="module">
@@ -40,7 +40,7 @@
       --tag-border:rgba(0,0,0,0.09);
     }
 
-    html,body{width:100%;min-height:100%;background:var(--bg);font-family:"Inter",sans-serif;color:var(--text);overflow-x:hidden;}
+    html,body{width:100%;min-height:100%;background:var(--bg);font-family:"Inter",sans-serif;color:var(--text);overflow-x:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;}
 
     body::before{
       content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -61,7 +61,7 @@
       background:#d4d0c8;color:#2a2620;
       border:3px solid #1a1714;
       box-shadow:inset 2px 2px 0 #eceae4,inset -2px -2px 0 #8a8880;
-      cursor:pointer;letter-spacing:.05em;
+      cursor:pointer;letter-spacing:.05em;touch-action:manipulation;
     }
     .close-btn:hover{background:#bfbcb5;}
 

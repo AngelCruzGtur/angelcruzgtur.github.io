@@ -283,6 +283,7 @@ let slimes = []
 let mouseX = 0
 let tilt = { x: 0, y: -1, active: false, permissionRequested: false }
 let screenAngle = 0
+let motionListenersAttached = false
 
 window.addEventListener("mousemove", e => {
   mouseX = (e.clientX / innerWidth) * 2 - 1
@@ -325,8 +326,29 @@ function handleOrientation(event) {
   tilt.active = true
 }
 
+function handleMotion(event) {
+  const accel = event.accelerationIncludingGravity
+  if (!accel || typeof accel.x !== "number" || typeof accel.y !== "number") return
+  updateScreenAngle()
+
+  const sx = clamp(accel.x / 7.5, -1.35, 1.35)
+  const sy = clamp(accel.y / 7.5, -1.35, 1.35)
+  const rotated = rotateByScreen(sx, -sy, screenAngle)
+
+  tilt.x = rotated.x
+  tilt.y = rotated.y
+  tilt.active = true
+}
+
+function attachMotionListeners() {
+  if (motionListenersAttached) return
+  motionListenersAttached = true
+  window.addEventListener("deviceorientation", handleOrientation)
+  window.addEventListener("devicemotion", handleMotion)
+}
+
 function enableTiltControls() {
-  if (!isMobile() || tilt.permissionRequested) return
+  if (!isMobile() || tilt.active || tilt.permissionRequested) return
   tilt.permissionRequested = true
   updateScreenAngle()
 
@@ -338,21 +360,27 @@ function enableTiltControls() {
     DeviceOrientationEvent.requestPermission()
       .then(result => {
         if (result === "granted") {
-          window.addEventListener("deviceorientation", handleOrientation)
+          attachMotionListeners()
+        } else {
+          tilt.permissionRequested = false
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        tilt.permissionRequested = false
+      })
     return
   }
 
-  if ("DeviceOrientationEvent" in window) {
-    window.addEventListener("deviceorientation", handleOrientation)
+  if ("DeviceOrientationEvent" in window || "DeviceMotionEvent" in window) {
+    attachMotionListeners()
+    return
   }
 }
 
 window.addEventListener("orientationchange", updateScreenAngle)
-window.addEventListener("touchstart", enableTiltControls, { passive: true, once: true })
-window.addEventListener("pointerdown", enableTiltControls, { passive: true, once: true })
+window.addEventListener("touchend", enableTiltControls, { passive: true })
+window.addEventListener("pointerup", enableTiltControls, { passive: true })
+window.addEventListener("click", enableTiltControls)
 if (isMobile()) enableTiltControls()
 
 // ── Physics constants ────────────────────────────────────────────────────────

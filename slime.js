@@ -507,8 +507,8 @@ slider.addEventListener("input", () => setSlimeCount(parseInt(slider.value)))
 setSlimeCount(1)
 
 // ── Animation loop ───────────────────────────────────────────────────────────
-// The physics constants are calibrated for 60 updates per second. Keeping the
-// simulation fixed prevents high-refresh monitors from speeding everything up.
+// The existing physics values are calibrated for 60 updates per second.
+// Decouple them from rendering so 60, 144, and 240 Hz displays behave alike.
 const PHYSICS_STEP = 1 / 60
 const MAX_FRAME_TIME = 0.1
 let previousFrameTime = performance.now() / 1000

@@ -31,6 +31,22 @@
         "Connects local AI, personality behavior, and system-level constraints into one project."
       ],
       "chart": "flowchart LR\n  A((User Input))-->B[Speech / Text]\n  B-->C{Input Type}\n  C-->D[Local LLM]\n  C-->E[System Logic]\n  D-->F[Response]\n  E-->F\n  F-->G((Voice Output))"
+    },
+    {
+      "name": "Autonomous Roblox AI Agent",
+      "date": "Mar 2026",
+      "type": "Autonomous Vision AI Agent",
+      "emoji": "🕹️",
+      "image": "images/autonomous-agent.png",
+      "color": "linear-gradient(145deg,#1a1a4a,#3a3a9a)",
+      "desc": "An autonomous vision-based AI agent that independently controls a Roblox character, navigating environments and completing multi-step tasks without continuous user input.",
+      "tags": ["Python", "Gemini API", "Computer Vision", "Discord.py", "Automation"],
+      "bullets": [
+        "Built an autonomous vision-based AI agent capable of independently controlling a Roblox character, navigating environments, and completing multi-step tasks without continuous user input.",
+        "Integrated Gemini vision models to interpret live gameplay frames and make real-time decisions for navigation, object interaction, and purchases using in-game currency.",
+        "Developed a Discord bot for remote status monitoring and agent control, with randomized movement and interaction timing to improve behavioral robustness."
+      ],
+      "chart": "flowchart LR\n  A((Game Frame))-->B[Gemini Vision Model]\n  B-->C{Decision}\n  C-->D[Navigation]\n  C-->E[Object Interaction]\n  C-->F[In-Game Purchase]\n  D-->G[Character Control]\n  E-->G\n  F-->G\n  G-->H[Discord Bot Monitor]\n  H-->I((Status / Control))"
     }
   ],
   "research": [
@@ -106,14 +122,6 @@
     }
   ],
   "wip": [
-    {
-      "name": "3D Models in HTML",
-      "type": "Dev Log",
-      "status": "Ongoing",
-      "progress": 20,
-      "desc": "Converting images to Base64, slicing them with canvas, and mapping textures onto a Three.js slime.",
-      "tags": ["Three.js", "JavaScript", "Canvas"]
-    },
     {
       "name": "…",
       "type": "TBD",

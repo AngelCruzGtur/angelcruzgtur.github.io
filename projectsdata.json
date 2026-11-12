@@ -1,20 +1,27 @@
 {
   "projects": [
     {
-      "name": "Forge",
+      "name": "California Wildfire Risk",
       "date": "2026",
-      "type": "Bioinformatics / ML Pipeline",
-      "emoji": "🧬",
-      "image": "images/forge.png",
-      "color": "linear-gradient(145deg,#1e3a5f,#2a5298)",
-      "desc": "A reference-free DNA analysis pipeline that detects cancer and antibiotic resistance from raw sequencing reads — no genome alignment required.",
-      "tags": ["Python", "PyTorch", "NetworkX", "Claude API", "GNN"],
-      "bullets": [
-        "Assembled raw reads into De Bruijn graphs and extracted 14 graph-level features for downstream classification.",
-        "Trained a GNN using GCN layers, Graph Attention, and global mean+max pooling to classify genomic patterns.",
-        "Replaced brute-force grid search with an LLM-driven parameter optimizer and added a natural language query interface."
+      "type": "Environmental Data Analysis / ML",
+      "emoji": "🔥",
+      "image": "images/california-wildfire-risk.png",
+      "color": "linear-gradient(145deg,#5a2d16,#b56526)",
+      "desc": "An exploratory analysis combining historical CAL FIRE wildfire records with weather data to examine fire conditions, map risk hotspots, and test large-fire prediction.",
+      "tags": [
+        "Python",
+        "pandas",
+        "PyTorch",
+        "Matplotlib",
+        "REST APIs"
       ],
-      "chart": "flowchart LR\n  A((Raw Reads))-->B[De Bruijn Graph]\n  B-->C[Feature Extraction]\n  C-->D{GNN Classifier}\n  D-->E[GCN Layers]\n  D-->F[Graph Attention]\n  E-->G[Pooling]\n  F-->G\n  G-->H[LLM Optimizer]\n  H-->I((Prediction))"
+      "bullets": [
+        "Fetches historical wildfire records from the CAL FIRE ArcGIS API and joins fire locations and dates with Open-Meteo weather data.",
+        "Calculates a transparent risk score from temperature, humidity, wind, precipitation, and soil moisture, with charts and California hotspot maps.",
+        "Tests PyTorch models for burned acreage and large-fire classification. The classifier reached a validation ROC-AUC of 0.65; acreage regression did not beat the mean baseline.",
+        "Includes an interactive notebook with saved data, explained scoring code, and editable weather scenarios. The analysis is educational and exploratory."
+      ],
+      "chart": "flowchart LR\n  A[CAL FIRE Records]-->C[Clean and Merge Data]\n  B[Open-Meteo Weather]-->C\n  C-->D[Weather Risk Score]\n  D-->E[Charts and Hotspot Maps]\n  C-->F[PyTorch Models]\n  F-->G[Baseline Evaluation]\n  C-->H[Interactive Notebook]"
     },
     {
       "name": "Mini Me AI",

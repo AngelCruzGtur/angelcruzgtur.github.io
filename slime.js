@@ -273,13 +273,16 @@ function cropTexture(source, x, y, w, h, outSize = 64) {
 function makeMaterial(source, x, y, w, h, opacity = 0.72) {
   return new THREE.MeshLambertMaterial({
     map: cropTexture(source, x, y, w, h),
-    transparent: true, alphaTest: 0.01, opacity, side: THREE.DoubleSide
+    transparent: true, depthWrite: false, alphaTest: 0.01, opacity, side: THREE.DoubleSide
   })
 }
 
 // ── Slime mesh builder ───────────────────────────────────────────────────────
 function createSlime(source, tintColor, size) {
   const group = new THREE.Group()
+  // Keep each slime's transparent layers together in a stable draw order.
+  // Depth writes let the shell hide its own tinted core as the cubes rotate.
+  group.renderOrder = group.id
 
   const outerCube = new THREE.Mesh(
     new THREE.BoxGeometry(size, size, size),
@@ -292,16 +295,18 @@ function createSlime(source, tintColor, size) {
       makeMaterial(source, 24, 8, 8, 8),
     ]
   )
+  outerCube.renderOrder = 1
 
   const innerCube = new THREE.Mesh(
     new THREE.BoxGeometry(size * 0.7, size * 0.7, size * 0.7),
-    new THREE.MeshLambertMaterial({ color: tintColor, transparent: true, opacity: 0.42, side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: tintColor, transparent: true, depthWrite: false, opacity: 0.42, side: THREE.DoubleSide })
   )
   innerCube.position.y = -0.08
 
-  const faceMat = new THREE.MeshBasicMaterial({ color: 0x315927, transparent: true, opacity: 0.62 })
+  const faceMat = new THREE.MeshBasicMaterial({ color: 0x315927, transparent: true, depthWrite: false, opacity: 0.62 })
   function faceBlock(w, h, fx, fy) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.14), faceMat)
+    m.renderOrder = 2
     m.position.set(fx, fy, size / 2 + 0.1)
     return m
   }

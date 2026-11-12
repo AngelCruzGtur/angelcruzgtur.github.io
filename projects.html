@@ -132,25 +132,24 @@
     .card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;}
     .card-tag{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;background:var(--tag-bg);border:1px solid var(--tag-border);color:var(--sub);}
 
-    /* ── WIP CARD ── */
-    .wip-card{
-      background:var(--card);border:1px solid rgba(39,104,64,0.18);
-      border-radius:14px;padding:13px 15px;
-      transition:box-shadow .22s,transform .22s;
-    }
-    .wip-card:hover{box-shadow:0 6px 22px rgba(0,0,0,0.07);transform:translateY(-1px);}
-    .wip-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;}
-    .wip-name{font-size:13px;font-weight:650;}
-    .wip-badge{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--green);}
-    .wip-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-    .wip-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(39,104,64,0.65);margin-bottom:4px;}
-    .wip-desc{font-size:11.5px;line-height:1.55;color:var(--sub);margin-bottom:7px;}
-    .wip-prog-row{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-bottom:3px;}
-    .wip-bar{height:3px;background:rgba(0,0,0,0.07);border-radius:2px;overflow:hidden;margin-bottom:7px;}
-    .wip-fill{height:100%;background:linear-gradient(90deg,#276840,#52b878);border-radius:2px;}
-    .wip-tags{display:flex;flex-wrap:wrap;gap:3px;}
-    .wip-tag{font-size:9.5px;font-weight:500;padding:2px 6px;border-radius:20px;background:rgba(39,104,64,0.06);border:1px solid rgba(39,104,64,0.18);color:rgba(39,104,64,0.85);}
+    /* Compact cards for the secondary hackathon section. */
+    #hackList{gap:0.5rem;}
+    #hackList .card{grid-template-columns:64px 1fr;border-radius:10px;}
+    #hackList .card-thumb{padding:7px;min-height:64px;}
+    #hackList .card-thumb img{max-height:44px;}
+    #hackList .card-thumb .fallback{font-size:22px;}
+    #hackList .card-body{padding:8px 10px;gap:3px;}
+    #hackList .card-name{font-size:12px;}
+    #hackList .card-date{font-size:9.5px;}
+    #hackList .card-type{font-size:9px;}
+    #hackList .card-hackathon{font-size:8.5px;padding:1px 6px;}
+    #hackList .card-desc{font-size:11px;line-height:1.4;-webkit-line-clamp:1;}
+    #hackList .card-tags{gap:2px;margin-top:1px;}
+    #hackList .card-tag{font-size:9px;padding:1px 5px;}
+
+    .project-link{display:inline-flex;align-items:center;padding:9px 14px;margin-bottom:1rem;border:1px solid var(--amber);border-radius:8px;color:var(--amber);font-size:13px;font-weight:600;text-decoration:none;}
+    .project-link:hover{background:rgba(168,92,10,0.07);}
+    .project-link:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
 
     /* ── NO RESULTS ── */
     .no-results{text-align:center;padding:3rem 0;color:var(--muted);font-size:14px;}
@@ -219,14 +218,6 @@
         <div class="sec-head"><p class="sec-label">Projects</p><div class="sec-line"></div></div>
         <div class="card-list" id="projectList"></div>
       </div>
-      <div>
-        <div class="sec-head"><p class="sec-label">Research</p><div class="sec-line"></div></div>
-        <div class="card-list" id="researchList"></div>
-      </div>
-      <div>
-        <div class="sec-head"><p class="sec-label">In Progress</p><div class="sec-line"></div></div>
-        <div class="card-list" id="wipList"></div>
-      </div>
     </div>
     <div class="col-right">
       <div>
@@ -276,25 +267,15 @@ let rendered={};
 fetch('projectsdata.json')
   .then(r=>r.json())
   .then(data=>{
-    const {projects,research,hackathons,wip}=data;
-    allProjects=[...projects,...research,...hackathons];
+    const {projects,hackathons}=data;
+    allProjects=[...projects,...hackathons];
 
     // add chart classDefs
     allProjects.forEach(p=>{ p.chart = p.chart+'\n'+G; });
 
     document.getElementById('projectList').innerHTML =projects.map((p,i)=>card(p,i)).join('');
-    document.getElementById('researchList').innerHTML=research.map((p,i)=>card(p,projects.length+i)).join('');
-    document.getElementById('hackList').innerHTML    =hackathons.map((p,i)=>card(p,projects.length+research.length+i)).join('');
+    document.getElementById('hackList').innerHTML=hackathons.map((p,i)=>card(p,projects.length+i)).join('');
 
-    document.getElementById('wipList').innerHTML=wip.map(w=>`
-      <div class="wip-card">
-        <div class="wip-top"><span class="wip-name">${w.name}</span><span class="wip-badge"><span class="wip-dot"></span>${w.status}</span></div>
-        <div class="wip-type">${w.type}</div>
-        <p class="wip-desc">${w.desc}</p>
-        <div class="wip-prog-row"><span>Progress</span><span>${w.progress}%</span></div>
-        <div class="wip-bar"><div class="wip-fill" style="width:${w.progress}%"></div></div>
-        <div class="wip-tags">${w.tags.map(t=>`<span class="wip-tag">${t}</span>`).join('')}</div>
-      </div>`).join('');
   })
   .catch(err=>console.error('Could not load projectsdata.json',err));
 
@@ -327,6 +308,7 @@ function openProject(i){
     </div>
     <p class="sheet-desc">${p.desc}</p>
     <div class="sheet-tags">${p.tags.map(t=>`<span class="sheet-tag">${t}</span>`).join('')}</div>
+    ${p.colabUrl?`<a class="project-link" href="${p.colabUrl}" target="_blank" rel="noopener noreferrer">Open in Google Colab ↗</a>`:''}
     <div class="detail-sec"><h3>What it does</h3><ul class="detail-list">${p.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>
     <div class="chart-sec"><h3>System Flow</h3><div class="chart-box" id="${cid}">Loading…</div></div>`;
   show();

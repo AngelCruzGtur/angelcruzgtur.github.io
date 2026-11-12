@@ -6,6 +6,7 @@
       "type": "Environmental Data Analysis / ML",
       "emoji": "🔥",
       "image": "images/california-wildfire-risk.png",
+      "colabUrl": "https://colab.research.google.com/github/AngelCruzGtur/angelcruzgtur.github.io/blob/main/notebooks/California_Wildfire_Risk.ipynb",
       "color": "linear-gradient(145deg,#5a2d16,#b56526)",
       "desc": "An exploratory analysis combining historical CAL FIRE wildfire records with weather data to examine fire conditions, map risk hotspots, and test large-fire prediction.",
       "tags": [
@@ -54,24 +55,6 @@
         "Developed a Discord bot for remote status monitoring and agent control, with randomized movement and interaction timing to improve behavioral robustness."
       ],
       "chart": "flowchart LR\n  A((Game Frame))-->B[Gemini Vision Model]\n  B-->C{Decision}\n  C-->D[Navigation]\n  C-->E[Object Interaction]\n  C-->F[In-Game Purchase]\n  D-->G[Character Control]\n  E-->G\n  F-->G\n  G-->H[Discord Bot Monitor]\n  H-->I((Status / Control))"
-    }
-  ],
-  "research": [
-    {
-      "name": "Research Paper",
-      "date": "2026",
-      "type": "Academic Research",
-      "emoji": "📄",
-      "image": "images/research-paper.png",
-      "color": "linear-gradient(145deg,#4a3520,#8b5e3c)",
-      "desc": "\"Rethinking Deep Self-Attention for Character-Level Language Modeling\" — a counterargument paper challenging the assumption that transformers fully replace RNNs.",
-      "tags": ["Research", "Transformers", "RNNs", "NLP", "Academic Writing"],
-      "bullets": [
-        "Challenged the prevailing claim that deep self-attention architectures supersede recurrent networks for character-level language modeling.",
-        "Analyzed trade-offs including fixed context windows, quadratic computational cost, and long-term dependency limitations.",
-        "Proposed hybrid and sequential architectures as a more practical direction, grounded in empirical and theoretical analysis."
-      ],
-      "chart": "flowchart LR\n  A((Claim))-->B{Evaluation}\n  B-->C[Context Windows]\n  B-->D[Compute Cost]\n  B-->E[Long-term Deps]\n  C-->F[Trade-off Analysis]\n  D-->F\n  E-->F\n  F-->G[Hybrid Proposal]\n  G-->H((Counterargument))"
     }
   ],
   "hackathons": [
@@ -126,16 +109,6 @@
         "Implemented a map generation system using a 40×40 sprite to define and spawn the game layout."
       ],
       "chart": "flowchart LR\n  A((Prompt))-->B{AI Interprets}\n  B-->C[Player Speed]\n  B-->D[Enemy Density]\n  B-->E[Room Sequence]\n  C-->G[JSON Config]\n  D-->G\n  E-->G\n  G-->H[Godot Loader]\n  H-->I((Playable Game))"
-    }
-  ],
-  "wip": [
-    {
-      "name": "…",
-      "type": "TBD",
-      "status": "Thinking",
-      "progress": 0,
-      "desc": "Give me a problem to solve or an idea to build!",
-      "tags": ["???"]
     }
   ]
 }

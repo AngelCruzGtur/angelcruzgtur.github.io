@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Projects</title>
   <link rel="icon" type="image/png" href="media/AC_pfp.png">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -150,6 +150,73 @@
     .project-link{display:inline-flex;align-items:center;padding:9px 14px;margin-bottom:1rem;border:1px solid var(--amber);border-radius:8px;color:var(--amber);font-size:13px;font-weight:600;text-decoration:none;}
     .project-link:hover{background:rgba(168,92,10,0.07);}
     .project-link:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
+    .notebook-shell{margin:1.8rem 0;border:1px solid #dadce0;border-radius:14px;background:#fff;box-shadow:0 3px 18px rgba(32,33,36,.04);overflow:hidden;color:#202124;}
+    .nb-toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #e8eaed;background:#fff;}
+    .nb-logo{font:700 25px/1 monospace;color:#e99318;letter-spacing:-4px;padding-right:4px;}
+    .nb-identity{flex:1;min-width:0;}
+    .nb-filename{font-size:13px;font-weight:600;overflow-wrap:anywhere;}
+    .nb-subtitle{display:flex;align-items:center;gap:6px;font-size:11px;color:#70757a;margin-top:4px;}
+    .nb-status{width:6px;height:6px;border-radius:50%;background:#3b8963;}
+    .nb-toolbar a{padding:8px 12px;border-radius:7px;background:#fef3e0;color:#965d06;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;}
+    .nb-toolbar a:hover{background:#fce6bd;}
+    .nb-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 20px;background:#fafbfc;border-bottom:1px solid #e8eaed;}
+    .nb-actions span{font:11px/1.5 "Inter",sans-serif;color:#70757a;}
+    .nb-actions button{border:0;background:transparent;color:#1a73e8;font:600 11px/1.5 "Inter",sans-serif;cursor:pointer;padding:5px 0;white-space:nowrap;}
+    .notebook-shell :is(a,button,summary):focus-visible{outline:2px solid #1a73e8;outline-offset:3px;}
+    .notebook-preview{max-width:1040px;margin:0 auto;padding:26px 28px 30px;font:13px/1.7 "Inter",sans-serif;overflow-wrap:anywhere;}
+    .notebook-preview h1{font-size:25px;line-height:1.3;letter-spacing:-.6px;font-weight:650;margin-bottom:12px;}
+    .notebook-preview h2{font-size:18px;line-height:1.4;letter-spacing:-.25px;margin:30px 0 12px;font-weight:600;}
+    .notebook-preview h3{font-size:14px;margin:18px 0 8px;}
+    .nb-markdown{padding:0 12px;}
+    .notebook-preview p,.notebook-preview ul{margin:10px 0;color:#4b5057;}
+    .notebook-preview ul{padding-left:20px;}
+    .notebook-preview li{margin:6px 0;}
+    .notebook-preview strong{color:#30343b;font-weight:600;}
+    .notebook-preview a{color:#1a73e8;text-underline-offset:3px;}
+    .notebook-preview :not(pre)>code{background:#f1f3f4;border-radius:4px;padding:2px 4px;font-size:11px;color:#454a52;}
+    .nb-cell{margin:16px 0;border:1px solid #e4e7eb;border-radius:9px;overflow:hidden;}
+    .nb-code{background:#f8f9fa;}
+    .nb-code summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:12px 16px;color:#5f6368;font-size:11px;font-weight:500;user-select:none;}
+    .nb-code summary::-webkit-details-marker{display:none;}
+    .nb-prompt{font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:#7b818a;min-width:24px;}
+    .nb-chevron{margin-left:auto;transition:transform .15s;}
+    .nb-code[open] .nb-chevron{transform:rotate(180deg);}
+    .notebook-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;}
+    .nb-code pre{padding:0 20px 18px 52px;color:#30343b;}
+    .nb-output{padding:14px 18px 18px;border-top:1px solid #e4e7eb;background:#fff;}
+    .nb-output-label{display:block;margin-bottom:10px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#868b93;font-weight:600;}
+    .nb-output pre{padding:8px 0;color:#4b5057;}
+    .nb-chart{margin:8px 0 0;text-align:center;}
+    .notebook-preview .nb-chart img{display:block;width:auto;height:auto;max-width:min(100%,520px);max-height:300px;margin:0 auto;}
+    .notebook-preview .nb-heatmap img{max-width:min(100%,680px);max-height:580px;}
+    .notebook-preview .nb-chart.is-expanded img{width:100%;max-width:900px;max-height:none;}
+    .nb-chart button{min-height:44px;padding:10px 14px;border:0;background:transparent;color:#1a73e8;font:500 11px/1.5 "Inter",sans-serif;cursor:pointer;}
+    .notebook-table{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;margin:8px 0;}
+    .notebook-preview table{border-collapse:collapse;font-size:11px;width:100%;}
+    .notebook-preview th,.notebook-preview td{padding:8px 10px;border:0;border-bottom:1px solid #edf0f2;text-align:left!important;max-width:220px;}
+    .notebook-preview th{font-weight:600;color:#5f6368;background:#f8f9fa;}
+    .notebook-preview tbody tr:nth-child(even){background:#fafbfc;}
+    .nb-code .k,.nb-code .kn,.nb-code .kd,.nb-code .ow{color:#8e24aa;font-weight:500;}
+    .nb-code .s,.nb-code .s1,.nb-code .s2,.nb-code .sa,.nb-code .si{color:#188038;}
+    .nb-code .c,.nb-code .c1{color:#80868b;font-style:italic;}
+    .nb-code .nf,.nb-code .nb{color:#1967d2;}
+    .nb-code .mi,.nb-code .mf{color:#d56e0c;}
+    @media(max-width:600px){
+      .nb-toolbar{padding:12px;gap:9px;flex-wrap:wrap;}
+      .nb-toolbar a{margin-left:31px;min-height:44px;display:inline-flex;align-items:center;}
+      .nb-actions{padding:8px 12px;align-items:flex-start;flex-wrap:wrap;gap:0;}
+      .nb-actions span{flex-basis:100%;}
+      .nb-actions button{min-height:44px;text-align:left;}
+      .notebook-preview{padding:18px 10px;}
+      .notebook-preview h1{font-size:21px;}
+      .nb-markdown{padding:0 6px;}
+      .nb-code pre{padding:0 12px 14px;}
+      .nb-output{padding:12px 10px;}
+      .notebook-preview .nb-chart img{max-height:220px;}
+      .notebook-preview .nb-heatmap img{max-height:420px;}
+      .notebook-preview .nb-chart.is-expanded img{max-height:none;}
+      .nb-code summary{min-height:44px;}
+    }
 
     /* ── NO RESULTS ── */
     .no-results{text-align:center;padding:3rem 0;color:var(--muted);font-size:14px;}
@@ -169,7 +236,7 @@
     }
     .sheet.show{transform:translateY(0);}
     .sheet-handle{width:36px;height:4px;background:rgba(0,0,0,0.1);border-radius:2px;margin:10px auto 0;flex-shrink:0;}
-    .sheet-scroll{overflow-y:auto;padding:1.1rem 1.6rem 2.5rem;flex:1;}
+    .sheet-scroll{overflow-y:auto;overscroll-behavior-y:contain;min-height:0;padding:1.1rem 1.6rem 2.5rem;flex:1;}
     .sheet-scroll::-webkit-scrollbar{display:none;}
 
     .sheet-header{display:flex;align-items:center;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(0,0,0,0.07);}
@@ -199,6 +266,13 @@
       .columns{grid-template-columns:1fr;}
       .col-left{border-right:none;padding-right:0;border-bottom:1px solid rgba(0,0,0,0.07);padding-bottom:2rem;}
       .card{grid-template-columns:80px 1fr;}
+    }
+    @media(max-width:600px){
+      .sheet-scroll{padding:1rem .75rem max(1.5rem,env(safe-area-inset-bottom));}
+      .sheet-header{gap:.6rem;flex-wrap:wrap;}
+      .sheet-name{font-size:16px;}
+      .sheet-type{font-size:10px;overflow-wrap:anywhere;}
+      .sheet-thumb{width:44px;height:44px;}
     }
   </style>
 </head>
@@ -291,6 +365,20 @@ document.getElementById('searchInput').addEventListener('input',function(){
   document.getElementById('noResults').style.display=(!any&&q)?'block':'none';
 });
 
+function toggleNotebookCode(button){
+  const expanded=button.getAttribute('aria-expanded')!=='true';
+  button.closest('.notebook-shell').querySelectorAll('.nb-code').forEach(cell=>{cell.open=expanded;});
+  button.setAttribute('aria-expanded',String(expanded));
+  button.textContent=expanded?'Collapse all code':'Expand all code';
+}
+
+function toggleNotebookChart(button){
+  const expanded=button.getAttribute('aria-expanded')!=='true';
+  button.closest('.nb-chart').classList.toggle('is-expanded',expanded);
+  button.setAttribute('aria-expanded',String(expanded));
+  button.textContent=expanded?'Make graph smaller':'Enlarge graph';
+}
+
 // Sheet
 function openProject(i){
   const p=allProjects[i];const cid=`cs-${i}`;
@@ -308,10 +396,22 @@ function openProject(i){
     </div>
     <p class="sheet-desc">${p.desc}</p>
     <div class="sheet-tags">${p.tags.map(t=>`<span class="sheet-tag">${t}</span>`).join('')}</div>
-    ${p.colabUrl?`<a class="project-link" href="${p.colabUrl}" target="_blank" rel="noopener noreferrer">Open in Google Colab ↗</a>`:''}
+    ${p.colabUrl&&!p.notebookPreview?`<a class="project-link" href="${p.colabUrl}" target="_blank" rel="noopener noreferrer">Open in Google Colab ↗</a>`:''}
     <div class="detail-sec"><h3>What it does</h3><ul class="detail-list">${p.bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>
+    ${p.notebookPreview?`<section class="notebook-shell" aria-label="Wildfire analysis notebook">
+      <header class="nb-toolbar"><span class="nb-logo" aria-hidden="true">&lt;&gt;</span><div class="nb-identity"><div class="nb-filename">California_Wildfire_Risk.ipynb</div><div class="nb-subtitle"><span class="nb-status" aria-hidden="true"></span>Python 3 · Saved notebook</div></div><a href="${p.colabUrl}" target="_blank" rel="noopener noreferrer">Open in Colab ↗</a></header>
+      <div class="nb-actions"><span>Read the results here. Edit and run in Colab.</span><button type="button" onclick="toggleNotebookCode(this)" aria-expanded="false" aria-controls="notebook-${i}">Expand all code</button></div>
+      <div class="notebook-preview" id="notebook-${i}" aria-live="polite">Loading notebook…</div>
+    </section>`:''}
     <div class="chart-sec"><h3>System Flow</h3><div class="chart-box" id="${cid}">Loading…</div></div>`;
   show();
+  document.getElementById('sheetScroll').scrollTop=0;
+  if(p.notebookPreview){
+    const preview=document.getElementById(`notebook-${i}`);
+    fetch(p.notebookPreview).then(r=>{if(!r.ok)throw new Error('Notebook unavailable');return r.text();})
+      .then(html=>{if(preview.isConnected)preview.innerHTML=html;})
+      .catch(()=>{if(preview.isConnected)preview.textContent='Preview unavailable. Use Open in Google Colab above to read the notebook.';});
+  }
   setTimeout(()=>{if(!rendered[i]){window.renderMermaid(p.chart,cid);rendered[i]=true;}},100);
 }
 
@@ -319,8 +419,8 @@ function show(){document.getElementById('overlay').classList.add('show');documen
 function closeSheet(){document.getElementById('overlay').classList.remove('show');document.getElementById('sheet').classList.remove('show');document.body.style.overflow='';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 let ty=0;
-document.getElementById('sheet').addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
-document.getElementById('sheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>80)closeSheet();},{passive:true});
+document.querySelector('.sheet-handle').addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+document.querySelector('.sheet-handle').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-ty>80)closeSheet();},{passive:true});
 </script>
 </body>
 </html>

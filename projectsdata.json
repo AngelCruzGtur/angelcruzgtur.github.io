@@ -6,6 +6,7 @@
       "type": "Environmental Data Analysis / ML",
       "emoji": "🔥",
       "image": "images/california-wildfire-risk.png",
+      "notebookPreview": "notebooks/wildfire-preview.html",
       "colabUrl": "https://colab.research.google.com/github/AngelCruzGtur/angelcruzgtur.github.io/blob/main/notebooks/California_Wildfire_Risk.ipynb",
       "color": "linear-gradient(145deg,#5a2d16,#b56526)",
       "desc": "An exploratory analysis combining historical CAL FIRE wildfire records with weather data to examine fire conditions, map risk hotspots, and test large-fire prediction.",

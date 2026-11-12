@@ -512,9 +512,14 @@ slider.addEventListener("input", () => setSlimeCount(parseInt(slider.value)))
 setSlimeCount(1)
 
 // ── Animation loop ───────────────────────────────────────────────────────────
-function animate() {
-  requestAnimationFrame(animate)
+// The existing physics values are calibrated for 60 updates per second.
+// Decouple them from rendering so 60, 144, and 240 Hz displays behave alike.
+const PHYSICS_STEP = 1 / 60
+const MAX_FRAME_TIME = 0.1
+let previousFrameTime = performance.now() / 1000
+let physicsAccumulator = 0
 
+function updatePhysics() {
   const b = getBounds()
   const t = performance.now() * 0.002
   const targetX = mouseX * (b.halfW - 2)
@@ -638,10 +643,24 @@ function animate() {
     }
   })
 
+}
+
+function animate(nowMs) {
+  requestAnimationFrame(animate)
+
+  const now = nowMs / 1000
+  physicsAccumulator += Math.min(now - previousFrameTime, MAX_FRAME_TIME)
+  previousFrameTime = now
+
+  while (physicsAccumulator >= PHYSICS_STEP) {
+    updatePhysics()
+    physicsAccumulator -= PHYSICS_STEP
+  }
+
   renderer.render(scene, camera)
 }
 
-animate()
+requestAnimationFrame(animate)
 
 // ── Resize ───────────────────────────────────────────────────────────────────
 let lastMobile = isMobile()

@@ -124,6 +124,13 @@
 			padding: 6px 8px;
 			border: 2px solid #2f2f2f;
 			text-shadow: 2px 2px 0 #1d1d1d;
+			animation: updated-pulse 1s infinite ease-in-out;
+			pointer-events: none;
+		}
+
+		@keyframes updated-pulse {
+			0%, 100% { transform: scale(1); }
+			50% { transform: scale(1.2); }
 		}
 
 		.resume-wrap {
